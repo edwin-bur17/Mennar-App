@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function HomePage() {
   const [token, setToken] = useState("")
 
-  useEffect(()=> {
+  useEffect(() => {
     const getToken = async () => {
       const token = await getQueryToken()
       setToken(token)
@@ -16,7 +16,7 @@ export default function HomePage() {
   return (
     <div>
       HOME PAGE
-      <p>su token es: {token}</p>
+      <p>Token para hacer la consulta:{token}</p>
     </div>
   );
 }

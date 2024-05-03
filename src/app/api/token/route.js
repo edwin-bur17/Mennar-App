@@ -3,11 +3,12 @@ import axios from "axios";
 
 export async function GET() {
     try {
-        const res = await axios("https://wsmipres.sispro.gov.co/WSSUMMIPRESNOPBS/api/GenerarToken/817005385/F6BF055E-4200-43E4-89AA-198B0A66010D")
+        const res = await axios(`${process.env.NEXT_PUBLIC_API_URL}/GenerarToken/${process.env.NEXT_PUBLIC_NIT}/${process.env.NEXT_PUBLIC_TOKEN}`)
         if (res.status !== 200) {
             throw new Error(`Fallo en la respuesta HTTP con estado ${res.status}`)
         } 
         const token = res.data
+        console.log("respuesta del token desde la api de next js")
         console.log(res.data)
         return NextResponse.json({
             token : token

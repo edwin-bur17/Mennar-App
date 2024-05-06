@@ -1,31 +1,26 @@
 import axios from "axios"
 
-export default async function direccionamientoFecha(startDate, endDate, queryToken) {
-
-    const responses = []
-
+export default async function direccionamientoFecha(startDateStr, endDateStr, queryToken) {
+    let startDate = new Date(startDateStr)
+    let endDate = new Date(endDateStr)
+    const responses = [] // Array de las respuestas
     if (startDate > endDate) {
-        return "La fecha de inicio de ser menor a la fecha de fin"
+        return "La fecha de inicio debe ser menor a la fecha de fin"
     }
-    let currentDate = new Date(startDate)
-    const lastDate = new Date(endDate)
-
-    while (currentDate <= lastDate) {
+    let currentDate = startDate
+    // ---------- Ciclo while para ejecutar cada petción por cada fecha del rango
+    while (currentDate <= endDate) {
         const formattedDate = currentDate.toISOString().split('T')[0]
-        console.log(formattedDate)
         try {
             const url = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXFecha/${process.env.NEXT_PUBLIC_NIT}/${queryToken}/${formattedDate}`
-            console.log(url)
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXFecha/${process.env.NEXT_PUBLIC_NIT}/${queryToken}/${formattedDate}`)
-            if (res.status === 200) {
-                responses.push(res.data);
-            }else {
-                console.error(`La solicitud para la fecha ${formattedDate} falló con el código de estado: ${res.status}`)
+            const res = await axios.get(url) // Petición a la api
+            if (res.status === 200 && res.data.length > 0) { // solo agrego las respuestas que hayan datos
+                responses.push(...res.data) // copio la data al array
             }
         } catch (error) {
             console.log("Error al procesar la petición de direccionamiento por fecha")
         }
-         currentDate.setDate(currentDate.getDate() + 1)
+         currentDate.setDate(currentDate.getDate() + 1) // Aumentar el contador
     }
     return responses
 }

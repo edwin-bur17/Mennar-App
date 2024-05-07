@@ -2,13 +2,17 @@
 import getQueryToken from "@/utils/query_token";
 import { useEffect, useState } from "react";
 import direccionamientoFecha from "@/utils/direccionamaniento_fecha";
+import DireccionamientoCard from "@/components/DireccionamientoCard";
+import Loading from "@/components/Loading";
 
 function DireccionamientoPage() {
     const [token, setToken] = useState("")
     const [startDate, setStartDate] = useState("")
     const [endDate, setEndDate] = useState("")
     const [data, setData] = useState([])
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [isSearch, setIsSearch] = useState(false)
 
     useEffect(() => {
         const getToken = async () => {
@@ -22,15 +26,17 @@ function DireccionamientoPage() {
     // Envio del formulario
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (startDate === '' && endDate === '') {
+        console.log(startDate)
+        console.log(endDate)
+        if (startDate === '' && endDate === '') { // Validar los campos
             setError("Todos los campos son obligatorios")
             return
         }
         try {
+            setLoading(true)
+            setIsSearch(true)
             const res = await direccionamientoFecha(startDate, endDate, token)
-            console.log("respuesta en la page.jsx: ", res)
-            
-            if (res && typeof res === "object") {
+            if (res && typeof res === "object") { // Validar la respuesta para settiar correctamente
                 setData(res)
                 setError(null)
             } else {
@@ -38,6 +44,8 @@ function DireccionamientoPage() {
             }
         } catch (error) {
             console.log("Error al ejecutar la función de direccionamiento por fecha", error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -72,17 +80,22 @@ function DireccionamientoPage() {
                 {error}
             </div>}
 
-            <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
-                {data.map((direccionamiento) => {
-                    <div key={direccionamiento.ID}>
-                        <p>Id direccionaiento: {direccionamiento.IDDireccionamiento}</p>
-                        <p>N° Paciente: {direccionamiento.NoIDPaciente}</p>
-                        <p>FEcha máxima de entrega: {direccionamiento.FecMaxEnt}</p>
-                        <p>Cant tot a entregar{direccionamiento.CantTotAEntregar}</p>
-                    </div>
-                })}
+            <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
+                {loading ? (
+                    <Loading />
+                ) : isSearch ? (
+                    data.length > 0 ? (
+                        data.map((direccionamiento) => (
+                            <DireccionamientoCard 
+                            key={direccionamiento.ID}
+                            direccionamiento={direccionamiento}
+                            />
+                        ))
+                    ) : (
+                        <h3 className="text-white text-lg">No hay resultados</h3>
+                    )
+                ) : null }
             </article>
-            
         </section>
     )
 }

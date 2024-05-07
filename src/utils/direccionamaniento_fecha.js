@@ -18,7 +18,7 @@ export default async function direccionamientoFecha(startDateStr, endDateStr, qu
                 responses.push(...res.data) // copio la data al array
             }
         } catch (error) {
-            console.log("Error al procesar la petición de direccionamiento por fecha")
+            console.log("Error al procesar la petición de direccionamiento por fecha, desde la función de direccionamiento por fecha")
         }
          currentDate.setDate(currentDate.getDate() + 1) // Aumentar el contador
     }

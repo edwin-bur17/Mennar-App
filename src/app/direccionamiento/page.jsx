@@ -6,13 +6,14 @@ import direccionamientoFecha from "@/utils/direccionamaniento_fecha";
 import DireccionamientoCard from "@/components/DireccionamientoCard";
 import Loading from "@/components/Loading";
 import SearchForm from "@/components/SearchForm";
+import { documentTypeOptions } from "@/services/documentTypeOptions";
 
 function DireccionamientoPage() {
     const [token, setToken] = useState("")
-    // const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" })
     const [startDate, setStartDate] = useState("")
     const [endDate, setEndDate] = useState("")
-    const [user, setUser] = useState({ date: "", documentType: "", documentNumber: "" })
+    const [documentType, setDocumentType] = useState("")
+    const [documentNumber, setDocumentNumber] = useState("")
     const [prescriptionNumber, setPrescriptionNumber] = useState("")
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -32,50 +33,35 @@ function DireccionamientoPage() {
     // ---------------- MANEJO DEL CAMBIO ( ONCHANGE ) PARA CADA FORMULARIO ---------------
 
     // Formulario de búsqueda por rango de fechas
-    const handleStarDateChange = (e) => { // Campo fecha inicio
-        setStartDate(e.target.value)
-    }
-    const handleEndDateChange = (e) => { // Campo fecha fin
-        setEndDate(e.target.value)
-    }
+    const handleStarDateChange = (e) => { setStartDate(e.target.value) } // fecha inicio
+    const handleEndDateChange = (e) => { setEndDate(e.target.value) } // fecha fin
 
     // Formulario de búsqueda por número de prescripción
-    const handlePrescriptionNumber = (e) => { // Campo número de prescripción
-        setPrescriptionNumber(e.target.value)
-    }
+    const handlePrescriptionNumber = (e) => { setPrescriptionNumber(e.target.value) } // número de prescripción
+
+    // Formulario por usuario
+    const handleDocumentTypeChange = (e) => { setDocumentType(e.target.value) } // tipo documento
+    const handleDocumentNumberChange = (e) => { setDocumentNumber(e.target.value) } // número documento
 
 
     // --------------- PROPS: CAMPOS PARA CADA FORMULARIO --------------
 
-    // Búsqueda por rango de fecha
-    const fieldsDateRange = [
-        {
-            id: "startDate",
-            label: "Fecha Inicio",
-            type: "date",
-            value: startDate,
-            onChange: handleStarDateChange
-        },
-        {
-            id: "endDate",
-            label: "Fecha Fin",
-            type: "date",
-            value: endDate,
-            onChange: handleEndDateChange
-        },
+    // -------- Búsqueda por rango de fecha
+    const fieldsDateRange = [ // Campos del formulario
+        { id: "startDate", label: "Fecha Inicio:", type: "date", value: startDate, onChange: handleStarDateChange, },
+        { id: "endDate", label: "Fecha Fin:", type: "date", value: endDate, onChange: handleEndDateChange, },
+    ]
+    
+    // -------- Búsqueda por número de prescripción
+    const fieldsPrescriptionNumber = [ // Campos del formulario
+        { id: "prescriptionNumber", label: "Número de prescripción:", type: "number", value: prescriptionNumber, onChange: handlePrescriptionNumber }
     ]
 
-    // Búsqueda por Número de prescripción
-    const fieldsPrescriptionNumber = [
-        {
-            id: "prescriptionNumber",
-            label: "Número de prescripción",
-            type: "number",
-            value: prescriptionNumber,
-            onChange: handlePrescriptionNumber
-        }
+    // -------- Búsqueda por paciente fecha
+    const fieldsDatePatient = [ // Campos del formulario
+        { id: "documentType", label: "Tipo de documento:", type: "select", value: documentType, onChange: handleDocumentTypeChange, options: documentTypeOptions, },
+        { id: "documentNumber", label: "Número de documento:", type: "number", value: documentNumber, onChange: handleDocumentNumberChange, }
     ]
-
 
     // --------------- HANDLESUBMIT PARA LOS FORMULAROS --------------
 
@@ -84,7 +70,7 @@ function DireccionamientoPage() {
         e.preventDefault()
         console.log("fecha inicio: ", startDate)
         console.log("fecha fin: ", endDate)
-        if (startDate === "" && endDate === "") { // Validar los campos
+        if (startDate === "" || endDate === "") { // Validar los campos
             setError("Todos los campos son obligatorios")
             return
         }
@@ -93,7 +79,10 @@ function DireccionamientoPage() {
             setIsSearch(true)
             const res = await direccionamientoFecha(startDate, endDate, token)
             if (res && typeof res === "object") { // Validar la respuesta para settiar correctamente
+                console.log("Respuesta desde rango de fecha")
                 setData(res)
+                setStartDate("")
+                setEndDate("")
                 setError(null)
             } else {
                 setError(res)
@@ -108,7 +97,6 @@ function DireccionamientoPage() {
     // Envio del formulario por número de prescripción
     const handleSubmitPrescriptionNumber = async (e) => {
         e.preventDefault()
-        console.log("Estas buscando por numero de prescripción: ", prescriptionNumber)
         if (prescriptionNumber === "") {
             setError("Todos los campos son obligatorios")
             return
@@ -117,36 +105,77 @@ function DireccionamientoPage() {
             setLoading(true)
             setIsSearch(true)
             const res = await axios(`${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`) // Petición a la api
-            console.log(res.data)
             setData(res.data)
+            setPrescriptionNumber("") 
         } catch (error) {
             console.log("Error al intentar buscar direccionamiento por número de prescripción: ", error)
-        }finally {
+        } finally {
             setLoading(false)
         }
-        
+    }
+
+    const handleSubmitDatePatient = async (e) => {
+        e.preventDefault()
+        if (startDate === "" || endDate === "") { // Validar los campos
+            setError("Todos los campos son obligatorios")
+            return
+        }
+        if (documentType === "" || documentNumber === "") {
+            setError("Todos los campos son obligatorios")
+            return
+        }
+        try {
+            setLoading(true)
+            setIsSearch(true)
+            const res = await direccionamientoFecha(startDate, endDate, token, documentType, documentNumber)
+            if (res && typeof res === "object") { // Validar la respuesta para settiar correctamente
+                console.log("Respuesta desde paciente y rango de fecha")
+                console.log(res)
+                setData(res)
+                setStartDate("")
+                setEndDate("")
+                setDocumentType("")
+                setDocumentNumber("")
+                setError(null)
+            } else {
+                setError(res)
+            }
+        } catch (error) {
+            console.log("Error al intentar buscar direccionamiento paciente por fecha: ", error)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
         <section>
-            <h1 className="text-center text-white mb-5">Consultar Direccionamiento</h1>
-            <SearchForm
-                title="Por rango de fecha"
-                fields={fieldsDateRange}
-                onSubmit={handleSubmitDateRange}
-            />
+            <h1 className="text-center text-white text-2xl font-bold my-5">Consultar Direccionamiento</h1>
+            <div className="flex justify-between">
+                <SearchForm
+                    title="Por rango de fecha"
+                    fields={fieldsDateRange}
+                    onSubmit={handleSubmitDateRange}
+                />
+                <SearchForm
+                    title="Por fecha y paciente"
+                    fields={fieldsDatePatient}
+                    onSubmit={handleSubmitDatePatient}
+                    rangeStart={startDate}
+                    rangeEnd={endDate}
+                />
+                <SearchForm
+                    title="Por número de prescripción"
+                    fields={fieldsPrescriptionNumber}
+                    onSubmit={handleSubmitPrescriptionNumber}
+                />
+            </div>
 
-            <SearchForm
-                title="Por número de prescripción"
-                fields={fieldsPrescriptionNumber}
-                onSubmit={handleSubmitPrescriptionNumber}
-            />
 
             {error && <div className="bg-red-500 text-white text-lg rounded-lg px-4 py-2 w-1/2">
                 {error}
             </div>}
 
-            <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
+            <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 mt-5">
                 {loading ? (
                     <Loading />
                 ) : isSearch ? (
@@ -158,7 +187,7 @@ function DireccionamientoPage() {
                             />
                         ))
                     ) : (
-                        <h3 className="text-white text-lg">No hay resultados</h3>
+                        <h3 className="text-white text-lg">No hay resultados, revisa los campos de búsqueda e intenta nuevamente</h3>
                     )
                 ) : null}
             </article>

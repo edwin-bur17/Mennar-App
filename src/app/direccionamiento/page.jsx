@@ -7,6 +7,7 @@ import DireccionamientoCard from "@/components/DireccionamientoCard";
 import Loading from "@/components/Loading";
 import SearchForm from "@/components/SearchForm";
 import { documentTypeOptions } from "@/services/documentTypeOptions";
+import showAlert from "@/services/alertSweet";
 
 function DireccionamientoPage() {
     const [token, setToken] = useState("")
@@ -17,7 +18,6 @@ function DireccionamientoPage() {
     const [prescriptionNumber, setPrescriptionNumber] = useState("")
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
     const [isSearch, setIsSearch] = useState(false)
 
     // ---------------- OBTENER EL TOKEN CONSULTA ---------------
@@ -68,10 +68,8 @@ function DireccionamientoPage() {
     // Envio del formulario por rango de fecha
     const handleSubmitDateRange = async (e) => {
         e.preventDefault()
-        console.log("fecha inicio: ", startDate)
-        console.log("fecha fin: ", endDate)
         if (startDate === "" || endDate === "") { // Validar los campos
-            setError("Todos los campos son obligatorios")
+            showAlert("Todos los campos son obligatorios")
             return
         }
         try {
@@ -79,13 +77,11 @@ function DireccionamientoPage() {
             setIsSearch(true)
             const res = await direccionamientoFecha(startDate, endDate, token)
             if (res && typeof res === "object") { // Validar la respuesta para settiar correctamente
-                console.log("Respuesta desde rango de fecha")
                 setData(res)
                 setStartDate("")
                 setEndDate("")
-                setError(null)
             } else {
-                setError(res)
+                showAlert(res)
             }
         } catch (error) {
             console.log("Error al ejecutar la función de direccionamiento por fecha", error)
@@ -98,7 +94,7 @@ function DireccionamientoPage() {
     const handleSubmitPrescriptionNumber = async (e) => {
         e.preventDefault()
         if (prescriptionNumber === "") {
-            setError("Todos los campos son obligatorios")
+            showAlert("Todos los campos son obligatorios")
             return
         }
         try {
@@ -116,12 +112,8 @@ function DireccionamientoPage() {
 
     const handleSubmitDatePatient = async (e) => {
         e.preventDefault()
-        if (startDate === "" || endDate === "") { // Validar los campos
-            setError("Todos los campos son obligatorios")
-            return
-        }
         if (documentType === "" || documentNumber === "") {
-            setError("Todos los campos son obligatorios")
+            showAlert("Todos los campos son obligatorios")
             return
         }
         try {
@@ -129,16 +121,13 @@ function DireccionamientoPage() {
             setIsSearch(true)
             const res = await direccionamientoFecha(startDate, endDate, token, documentType, documentNumber)
             if (res && typeof res === "object") { // Validar la respuesta para settiar correctamente
-                console.log("Respuesta desde paciente y rango de fecha")
-                console.log(res)
                 setData(res)
                 setStartDate("")
                 setEndDate("")
                 setDocumentType("")
                 setDocumentNumber("")
-                setError(null)
             } else {
-                setError(res)
+                showAlert(res)
             }
         } catch (error) {
             console.log("Error al intentar buscar direccionamiento paciente por fecha: ", error)
@@ -169,11 +158,6 @@ function DireccionamientoPage() {
                     onSubmit={handleSubmitPrescriptionNumber}
                 />
             </div>
-
-
-            {error && <div className="bg-red-500 text-white text-lg rounded-lg px-4 py-2 w-1/2">
-                {error}
-            </div>}
 
             <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 mt-5">
                 {loading ? (

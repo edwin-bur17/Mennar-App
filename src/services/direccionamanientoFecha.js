@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export default async function direccionamientoFecha(startDateStr, endDateStr, queryToken, documentType = null, documentNumber = null) {
+export default async function getDireccionamientoFecha(startDateStr, endDateStr, queryToken, documentType = null, documentNumber = null) {
     let startDate = new Date(startDateStr)
     let endDate = new Date(endDateStr)
     const responses = [] // Array de las respuestas

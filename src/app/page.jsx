@@ -1,5 +1,5 @@
 "use client"
-import getQueryToken from "@/utils/query_token";
+import getQueryToken from "@/services/queryToken";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
 

@@ -24,7 +24,10 @@ const SearchFormContainer = () => {
         handleSubmitDatePatient,
         data,
         loading,
-        isSearch
+        isSearch,
+        handleCheckboxChange,
+        handleSelectAll,
+        selected
     } = useSearchForm({ // Envío los estados (PROPS) al hook para hacer el onChange 
         startDate,
         setStartDate,
@@ -109,7 +112,14 @@ const SearchFormContainer = () => {
                     onSubmit={handleSubmitPrescriptionNumber}
                 />
             </div>
-            <ResultCardList data={data} loading={loading} isSearch={isSearch} />
+            <ResultCardList 
+            data={data} 
+            loading={loading} 
+            isSearch={isSearch}
+            handleCheckboxChange={handleCheckboxChange}
+            handleSelectAll={handleSelectAll}
+            selected={selected} 
+            />
         </div>
     )
 }

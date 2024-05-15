@@ -19,6 +19,7 @@ export const useSearchForm = ({
     const [data, setData] = useState([]) // Array de respuestas
     const [loading, setLoading] = useState(false) // Cargando
     const [isSearch, setIsSearch] = useState(false) // Búsqueda
+    const [selected, setSelected] = useState([]) // Array para almacenar los direccionamientos (objetos) seleccionados 
 
     const { fetchDireccionamientoFecha, fetchDireccionamientoXPrescripcion } = useApiCall() // Destructuración de las peticiones del hook 
 
@@ -46,6 +47,7 @@ export const useSearchForm = ({
         try {
             setLoading(true);
             setIsSearch(true);
+            setSelected([])
             const res = await fetchDireccionamientoFecha(startDate, endDate);
             if (res && typeof res === 'object') {
                 setData(res);
@@ -71,6 +73,7 @@ export const useSearchForm = ({
         try {
             setLoading(true);
             setIsSearch(true);
+            setSelected([])
             const res = await fetchDireccionamientoXPrescripcion(prescriptionNumber);
             setData(res);
             setPrescriptionNumber('');
@@ -91,6 +94,7 @@ export const useSearchForm = ({
         try {
             setLoading(true);
             setIsSearch(true);
+            setSelected([])
             const res = await fetchDireccionamientoFecha(startDate, endDate, documentType, documentNumber);
             if (res && typeof res === 'object') {
                 setData(res);
@@ -108,6 +112,28 @@ export const useSearchForm = ({
         }
     };
 
+    // MANEJO DE CAMBIO EN LOS CHECKBOXS PARA SELECCIONAR LOS DIRECCIONAMIENTOS
+
+    // Actualizar el estado selected, dependiendo del cambio en los checbox de cada direccionamiento
+    const handleCheckboxChange = (direcionamiento) => {
+        if (selected.includes(direcionamiento)) {
+            // Si el direccionamiento ya se encuentra en el array selected, lo elimina
+            setSelected(selected.filter((item) => item !== direcionamiento ))
+        } else {
+            // Si no está en el array selected, lo agrega.
+            setSelected([...selected, direcionamiento])
+        }
+    }
+
+    // Seleccionar o deseleccionar todos los direccionamientos a la vez
+    const handleSelectAll = () => {
+        if (selected.length === data.length) { // si están todos seleccionados, los deselecciona
+            setSelected([])
+        } else { // si no, los selecciona todos
+            setSelected(data)
+        }
+    }
+
     return {
         handleStartDateChange,
         handleEndDateChange,
@@ -120,5 +146,8 @@ export const useSearchForm = ({
         data,
         loading,
         isSearch,
+        handleCheckboxChange,
+        handleSelectAll,
+        selected
     }
 }

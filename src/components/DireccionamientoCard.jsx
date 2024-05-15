@@ -1,4 +1,4 @@
-function DireccionamientoCard({ direccionamiento }) {
+function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange }) {
     const bg = direccionamiento.FecAnulacion ? "bg-red-300" : "bg-slate-300"
     return (
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
@@ -8,9 +8,16 @@ function DireccionamientoCard({ direccionamiento }) {
             <p>N° Identificación Paciente: {direccionamiento.NoIDPaciente}</p>
             <p>Fecha máxima de entrega: {direccionamiento.FecMaxEnt}</p>
             <p>Cantidad total a entregar: {direccionamiento.CantTotAEntregar}</p>
-            <p>Fecha anulación: {direccionamiento.FecAnulacion}</p>
+            <p>Tipo Id Proveedor: {direccionamiento.TipoIDProv}</p>
+            <p>Número Id Proveedor: {direccionamiento.NoIDProv}</p>
+            <p>Servicio a entregar: {direccionamiento.CodSerTecAEntregar}</p>
             <p>Fecha del direccionamiento: <span className="text-green-700"> {direccionamiento.FecDireccionamiento}</span></p>
-            <input type="checkbox" />
+            <input 
+                type="checkbox" 
+                className="rounded-xl"
+                checked={selected}
+                onChange={() => handleCheckboxChange(direccionamiento)}
+            />
         </div>
     )
 }

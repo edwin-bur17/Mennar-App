@@ -11,7 +11,10 @@ const ResultCardList = ({ data,
 }) => {
 
     const programming = () => {
-        console.log("Direccionamientos seleccionados: ", selected)
+        selected.forEach(direccionamientoParaProgramacion => {
+            // Enviar direccionamientoParaProgramacion a la API mediante una petición PUT
+            console.log('Enviando a la API:', direccionamientoParaProgramacion);
+          });
     }
 
     return (
@@ -44,7 +47,7 @@ const ResultCardList = ({ data,
                                 <DireccionamientoCard
                                     key={direccionamiento.ID}
                                     direccionamiento={direccionamiento}
-                                    selected={selected.includes(direccionamiento)}
+                                    selected={selected.some(item => item.ID === direccionamiento.IDDireccionamiento)}
                                     handleCheckboxChange={handleCheckboxChange}
                                 />
                             ))}

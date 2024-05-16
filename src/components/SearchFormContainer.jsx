@@ -26,7 +26,7 @@ const SearchFormContainer = () => {
         loading,
         isSearch,
         handleCheckboxChange,
-        handleSelectAll,
+        handleSelectAllNotNull,
         selected
     } = useSearchForm({ // Envío los estados (PROPS) al hook para hacer el onChange 
         startDate,
@@ -117,7 +117,7 @@ const SearchFormContainer = () => {
             loading={loading} 
             isSearch={isSearch}
             handleCheckboxChange={handleCheckboxChange}
-            handleSelectAll={handleSelectAll}
+            handleSelectAllNotNull={handleSelectAllNotNull}
             selected={selected} 
             />
         </div>

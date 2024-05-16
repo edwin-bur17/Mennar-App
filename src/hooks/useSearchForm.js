@@ -117,20 +117,22 @@ export const useSearchForm = ({
     // Actualizar el estado selected, dependiendo del cambio en los checbox de cada direccionamiento
     const handleCheckboxChange = (direcionamiento) => {
         if (selected.includes(direcionamiento)) {
-            // Si el direccionamiento ya se encuentra en el array selected, lo elimina
-            setSelected(selected.filter((item) => item !== direcionamiento ))
+            // Si el direccionamiento ya se encuentra en el array selected, lo quita. (deseleccionar el checkbox)
+            setSelected(selected.filter((item) => item !== direcionamiento))
         } else {
-            // Si no está en el array selected, lo agrega.
+            // Si no está en el array selected, lo agrega. (seleccionar el checkbox)
             setSelected([...selected, direcionamiento])
         }
     }
 
-    // Seleccionar o deseleccionar todos los direccionamientos a la vez
-    const handleSelectAll = () => {
-        if (selected.length === data.length) { // si están todos seleccionados, los deselecciona
+    // Seleccionar o deseleccionar todos los direccionamientos que no estén anulados
+    const handleSelectAllNotNull = (direccionamientos) => {
+        // Filtrar el array direccionamientos y crear otro solo con los que no esten anulados
+        const direccionamientosNotNull = direccionamientos.filter((direccionamiento) => !direccionamiento.FecAnulacion)
+        if (selected.length === direccionamientosNotNull.length) { // Si todos están seleccionados, los deselecciona.
             setSelected([])
-        } else { // si no, los selecciona todos
-            setSelected(data)
+        } else { // si no los selecciona.
+            setSelected(direccionamientosNotNull)
         }
     }
 
@@ -147,7 +149,7 @@ export const useSearchForm = ({
         loading,
         isSearch,
         handleCheckboxChange,
-        handleSelectAll,
+        handleSelectAllNotNull,
         selected
     }
 }

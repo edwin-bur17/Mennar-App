@@ -11,13 +11,14 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
             <p>Tipo Id Proveedor: {direccionamiento.TipoIDProv}</p>
             <p>Número Id Proveedor: {direccionamiento.NoIDProv}</p>
             <p>Servicio a entregar: {direccionamiento.CodSerTecAEntregar}</p>
-            <p>Fecha del direccionamiento: <span className="text-green-700"> {direccionamiento.FecDireccionamiento}</span></p>
-            <input 
-                type="checkbox" 
-                className="rounded-xl"
-                checked={selected}
-                onChange={() => handleCheckboxChange(direccionamiento)}
-            />
+            <p>Fecha del direccionamiento: <span className="font-bold"> {direccionamiento.FecDireccionamiento}</span></p>
+            {!direccionamiento.FecAnulacion &&
+                <input
+                    type="checkbox"
+                    className="accent-blue-600 h-4 w-4 cursor-pointer rounded-lg transition-all duration-300  focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-blue-500 checked:bg-blue-600 checked:hover:bg-blue-700 checked:focus:ring-blue-600"
+                    checked={selected}
+                    onChange={() => handleCheckboxChange(direccionamiento)}
+                />}
         </div>
     )
 }

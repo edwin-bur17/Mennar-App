@@ -1,13 +1,14 @@
 import DireccionamientoCard from "./DireccionamientoCard";
 import Loading from "./Loading";
+import DireccionamientosProgrammingAlert from "./DireccionamientosProgrammingAlert";
 
-const ResultCardList = ({ data, 
-    loading, 
-    isSearch, 
+const ResultCardList = ({ data,
+    loading,
+    isSearch,
     handleCheckboxChange,
-    handleSelectAll,
-    selected 
-    }) => {
+    handleSelectAllNotNull,
+    selected
+}) => {
 
     const programming = () => {
         console.log("Direccionamientos seleccionados: ", selected)
@@ -20,34 +21,33 @@ const ResultCardList = ({ data,
             ) : isSearch ? (
                 data.length > 0 ? (
                     <>
+                        <p className="text-white my-5">Total de resultados: <span className="font-semibold">{data.length}</span> </p>
                         {selected.length > 0 && (
-                            <div className="flex justify-between items-center bg-slate-100 text-gray-950 p-3 mt-8 rounded-md ">
-                                <p>{selected.length} {selected.length === 1 ? "Direccionamiento seleccionado" : "Direccionamientos seleccionados"}</p>
-                                    <button 
-                                        className="bg-green-500 hover:bg-green-600 text-white transition-colors rounded-md px-3 py-2"
-                                        onClick={programming}
-                                    >Programación</button>
-                            </div>
+                            <DireccionamientosProgrammingAlert
+                                selected={selected}
+                                programming={programming}
+                            />
                         )}
                         <div className="mt-5">
-                            <label htmlFor="" className="text-white font-medium text-lg">
-                                <input 
+                            <input
                                 type="checkbox"
-                                checked={selected.length === data.length}
-                                onChange={handleSelectAll}
-                                />
-                                Seleccionar/Deseleccionar todos
+                                className="accent-blue-600 h-4 w-4 cursor-pointer rounded-lg transition-all duration-300  focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-blue-500 checked:bg-blue-600 checked:hover:bg-blue-700 checked:focus:ring-blue-600"
+                                checked={selected.length === data.filter((direccionamiento) => !direccionamiento.FecAnulacion).length}
+                                onChange={() => handleSelectAllNotNull(data)}
+                            />
+                            <label className="text-white font-medium ms-5">
+                                Seleccionar/Deseleccionar todos los direccionamientos NO anulados
                             </label>
                         </div>
                         <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
-                        {data.map((direccionamiento) => (
-                            <DireccionamientoCard
-                                key={direccionamiento.ID}
-                                direccionamiento={direccionamiento}
-                                selected={selected.includes(direccionamiento)}
-                                handleCheckboxChange={handleCheckboxChange}
-                            />
-                        ))}
+                            {data.map((direccionamiento) => (
+                                <DireccionamientoCard
+                                    key={direccionamiento.ID}
+                                    direccionamiento={direccionamiento}
+                                    selected={selected.includes(direccionamiento)}
+                                    handleCheckboxChange={handleCheckboxChange}
+                                />
+                            ))}
                         </article>
                     </>
                 ) : (

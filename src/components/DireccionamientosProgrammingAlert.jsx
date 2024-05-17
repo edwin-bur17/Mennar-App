@@ -1,4 +1,13 @@
-const DireccionamientosProgrammingAlert = ({ selected, programming }) => {
+// import { useApiCall } from "@/hooks/useApiCall";
+import axios from "axios"
+
+const DireccionamientosProgrammingAlert = ({ selected }) => {
+    // const { fetchProgramarDireccionamientos } = useApiCall()
+    const programming = async () => {
+        console.log(selected)
+        const res = await axios.put("/api/programar/direccionamientos", [ selected ])
+        console.log(res)
+    }
     return (
         <div className="flex justify-between items-center bg-slate-100 text-gray-950 p-3 mt-8 rounded-md transition-all">
             <p>{selected.length} {selected.length === 1 ? "Direccionamiento seleccionado" : "Direccionamientos seleccionados"}</p>

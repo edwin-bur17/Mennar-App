@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useApiCall } from "./useApiCall";
 import showAlert from "@/services/alertSweet";
-import DireccionamientosProgrammingAlert from "@/components/DireccionamientosProgrammingAlert";
 
 export const useSearchForm = ({
     startDate,
@@ -123,7 +122,7 @@ export const useSearchForm = ({
             FecMaxEnt: direccionamiento.FecMaxEnt,
             TipoIDSedeProv: direccionamiento.TipoIDProv,
             NoIDSedeProv: direccionamiento.NoIDProv,
-            CodSedeProv: "COD",
+            CodSedeProv: "PROV000762",
             CodSerTecAEntregar: direccionamiento.CodSerTecAEntregar,
             CantTotAEntregar: direccionamiento.CantTotAEntregar
         }
@@ -147,7 +146,7 @@ export const useSearchForm = ({
             FecMaxEnt: direccionamiento.FecMaxEnt,
             TipoIDSedeProv: direccionamiento.TipoIDProv,
             NoIDSedeProv: direccionamiento.NoIDProv,
-            CodSedeProv: "COD",
+            CodSedeProv: "PROV000762",
             CodSerTecAEntregar: direccionamiento.CodSerTecAEntregar,
             CantTotAEntregar: direccionamiento.CantTotAEntregar
         }))

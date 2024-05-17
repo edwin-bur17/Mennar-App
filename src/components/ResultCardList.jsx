@@ -2,21 +2,7 @@ import DireccionamientoCard from "./DireccionamientoCard";
 import Loading from "./Loading";
 import DireccionamientosProgrammingAlert from "./DireccionamientosProgrammingAlert";
 
-const ResultCardList = ({ data,
-    loading,
-    isSearch,
-    handleCheckboxChange,
-    handleSelectAllNotNull,
-    selected
-}) => {
-
-    const programming = () => {
-        selected.forEach(direccionamientoParaProgramacion => {
-            // Enviar direccionamientoParaProgramacion a la API mediante una petición PUT
-            console.log('Enviando a la API:', direccionamientoParaProgramacion);
-          });
-    }
-
+const ResultCardList = ({ data, loading, isSearch, handleCheckboxChange, handleSelectAllNotNull, selected }) => {
     return (
         <section>
             {loading ? (
@@ -28,7 +14,6 @@ const ResultCardList = ({ data,
                         {selected.length > 0 && (
                             <DireccionamientosProgrammingAlert
                                 selected={selected}
-                                programming={programming}
                             />
                         )}
                         <div className="mt-5">

@@ -112,13 +112,13 @@ const SearchFormContainer = () => {
                     onSubmit={handleSubmitPrescriptionNumber}
                 />
             </div>
-            <ResultCardList 
-            data={data} 
-            loading={loading} 
-            isSearch={isSearch}
-            handleCheckboxChange={handleCheckboxChange}
-            handleSelectAllNotNull={handleSelectAllNotNull}
-            selected={selected} 
+            <ResultCardList
+                data={data}
+                loading={loading}
+                isSearch={isSearch}
+                handleCheckboxChange={handleCheckboxChange}
+                handleSelectAllNotNull={handleSelectAllNotNull}
+                selected={selected}
             />
         </div>
     )

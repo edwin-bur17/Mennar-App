@@ -2,9 +2,10 @@ import axios from "axios"
 
 const DireccionamientosProgrammingAlert = ({ selected }) => {
     const programming = async () => {
+        console.log("Direccionamientos para programación: ")
         console.log(selected)
-        const res = await axios.put("/api/programar/direccionamientos", { direccionamientos: selected })
-        console.log(res.data.responses.message)
+        // const res = await axios.put("/api/programar/direccionamientos", { direccionamientos: selected })
+        // console.log(res.data.responses.message)
     }
     return (
         <div className="flex justify-between items-center bg-slate-100 text-gray-950 p-3 mt-8 rounded-md transition-all">

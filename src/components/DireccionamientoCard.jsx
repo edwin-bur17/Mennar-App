@@ -14,7 +14,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
             <p>Servicio a entregar: {direccionamiento.CodSerTecAEntregar}</p>
             <p>Fecha del direccionamiento: <span className="font-bold"> {direccionamiento.FecDireccionamiento}</span></p>
             <p>Estado: {estadoDireccionamiento(direccionamiento.EstDireccionamiento)}</p>
-            {!direccionamiento.FecAnulacion &&
+            {direccionamiento.EstDireccionamiento === 1 &&
                 <input
                     type="checkbox"
                     className="accent-blue-600 h-4 w-4 cursor-pointer rounded-lg transition-all duration-300  focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-blue-500 checked:bg-blue-600 checked:hover:bg-blue-700 checked:focus:ring-blue-600"

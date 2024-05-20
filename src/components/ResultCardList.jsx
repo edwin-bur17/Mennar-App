@@ -2,7 +2,7 @@ import DireccionamientoCard from "./DireccionamientoCard";
 import Loading from "./Loading";
 import DireccionamientosProgrammingAlert from "./DireccionamientosProgrammingAlert";
 
-const ResultCardList = ({ data, loading, isSearch, handleCheckboxChange, handleSelectAllNotNull, selected }) => {
+const ResultCardList = ({ data, loading, isSearch, handleCheckboxChange, handleSelectAllAssets, selected }) => {
     return (
         <section>
             {loading ? (
@@ -20,11 +20,11 @@ const ResultCardList = ({ data, loading, isSearch, handleCheckboxChange, handleS
                             <input
                                 type="checkbox"
                                 className="accent-blue-600 h-4 w-4 cursor-pointer rounded-lg transition-all duration-300  focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-blue-500 checked:bg-blue-600 checked:hover:bg-blue-700 checked:focus:ring-blue-600"
-                                checked={selected.length === data.filter((direccionamiento) => !direccionamiento.FecAnulacion).length}
-                                onChange={() => handleSelectAllNotNull(data)}
+                                checked={selected.length === data.filter((direccionamiento) => direccionamiento.EstDireccionamiento !== 0 && direccionamiento.EstDireccionamiento !== 2).length}
+                                onChange={() => handleSelectAllAssets(data)}
                             />
                             <label className="text-white font-medium ms-5">
-                                Seleccionar/Deseleccionar todos los direccionamientos NO anulados
+                                Seleccionar/Deseleccionar todos los direccionamientos activos
                             </label>
                         </div>
                         <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">

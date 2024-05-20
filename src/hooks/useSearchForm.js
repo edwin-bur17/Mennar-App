@@ -126,22 +126,29 @@ export const useSearchForm = ({
             CodSerTecAEntregar: direccionamiento.CodSerTecAEntregar,
             CantTotAEntregar: direccionamiento.CantTotAEntregar
         }
-        if (selected.some(item => item.ID === programmingDireccionamiento.ID)) {
-            // Si el direccionamiento ya se encuentra en el array selected, lo quita. (deseleccionar el checkbox)
-            setSelected(selected.filter((item) => item.ID !== programmingDireccionamiento.ID))
-        } else {
-            // Si no está en el array selected, lo agrega. (seleccionar el checkbox)
-            setSelected([...selected, programmingDireccionamiento])
-        }
+
+        // Verificar si el direccionamiento está anulado o previamente programado
+        const isNull = direccionamiento.EstDireccionamiento === 0
+        const isProgramming = direccionamiento.EstDireccionamiento === 2
+
+        if (!isNull && !isProgramming) {
+             // Si el direccionamiento ya se encuentra en el array selected, lo quita. (deseleccionar el checkbox)
+            if (selected.some(item => item.ID === programmingDireccionamiento.ID)) {
+                setSelected(selected.filter(item => item.ID !== programmingDireccionamiento.ID))
+            } else {
+                // Si no está en el array selected, lo agrega. (seleccionar el checkbox)
+                setSelected([...selected, programmingDireccionamiento])
+            }
+        } 
     }
 
     // Seleccionar o deseleccionar todos los direccionamientos que no estén anulados
-    const handleSelectAllNotNull = (direccionamientos) => {
-        // Filtrar el array direccionamientos y crear otro solo con los que no esten anulados
-        const direccionamientosNotNull = direccionamientos.filter((direccionamiento) => !direccionamiento.FecAnulacion)
+    const handleSelectAllAssets = (direccionamientos) => {
+        // Filtrar el array direccionamientos y crear otro solo con los que esten activos (sin los anulados y los ya programados)
+        const direccionamientosAssets = direccionamientos.filter((direccionamiento) => direccionamiento.EstDireccionamiento !== 0 && direccionamiento.EstDireccionamiento !== 2)
 
-        // Crear el objeto direccionamiento (con base en el array de los no anulados) el cual será enviado en la petición
-        const programmingDireccionamientos = direccionamientosNotNull.map(direccionamiento => ({
+        // Crear el objeto direccionamiento (con base en el array de los activos) el cual será enviado en la petición
+        const programmingDireccionamientos = direccionamientosAssets.map(direccionamiento => ({
             ID: direccionamiento.ID,
             FecMaxEnt: direccionamiento.FecMaxEnt,
             TipoIDSedeProv: direccionamiento.TipoIDProv,
@@ -170,7 +177,7 @@ export const useSearchForm = ({
         loading,
         isSearch,
         handleCheckboxChange,
-        handleSelectAllNotNull,
+        handleSelectAllAssets,
         selected
     }
 }

@@ -1,3 +1,4 @@
+import estadoDireccionamiento from "@/utils/estadoDireccionamiento"
 function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange }) {
     const bg = direccionamiento.FecAnulacion ? "bg-red-300" : "bg-slate-300"
     return (
@@ -12,6 +13,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
             <p>Número Id Proveedor: {direccionamiento.NoIDProv}</p>
             <p>Servicio a entregar: {direccionamiento.CodSerTecAEntregar}</p>
             <p>Fecha del direccionamiento: <span className="font-bold"> {direccionamiento.FecDireccionamiento}</span></p>
+            <p>Estado: {estadoDireccionamiento(direccionamiento.EstDireccionamiento)}</p>
             {!direccionamiento.FecAnulacion &&
                 <input
                     type="checkbox"

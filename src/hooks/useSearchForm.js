@@ -118,7 +118,7 @@ export const useSearchForm = ({
     const handleCheckboxChange = (direccionamiento) => {
         // Crear el direccionamiento que será enviado en la petición
         const programmingDireccionamiento = {
-            ID: direccionamiento.IDDireccionamiento,
+            ID: direccionamiento.ID,
             FecMaxEnt: direccionamiento.FecMaxEnt,
             TipoIDSedeProv: direccionamiento.TipoIDProv,
             NoIDSedeProv: direccionamiento.NoIDProv,
@@ -142,7 +142,7 @@ export const useSearchForm = ({
 
         // Crear el objeto direccionamiento (con base en el array de los no anulados) el cual será enviado en la petición
         const programmingDireccionamientos = direccionamientosNotNull.map(direccionamiento => ({
-            ID: direccionamiento.IDDireccionamiento,
+            ID: direccionamiento.ID,
             FecMaxEnt: direccionamiento.FecMaxEnt,
             TipoIDSedeProv: direccionamiento.TipoIDProv,
             NoIDSedeProv: direccionamiento.NoIDProv,

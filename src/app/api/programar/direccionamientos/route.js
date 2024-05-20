@@ -2,21 +2,33 @@ import getQueryToken from "@/services/queryToken";
 import { NextResponse } from "next/server";
 import axios from "axios";
 
-
-export function GET() {
-    return NextResponse.json({ "message": "Hola desde programar direccionamientos" })
-}
-
 export async function PUT(request) {
-    const { selected } = await request.json()
-        console.log(selected)
+    const { direccionamientos } = await request.json() // Extraer el array de direccionamientos para programar
     try {
         const queryToken = await getQueryToken()
         const ulrQuery = `${process.env.NEXT_PUBLIC_API_URL}/Programacion/${process.env.NEXT_PUBLIC_NIT}/${queryToken}`
-        for (const direccionamiento of selected) {
-            await axios.put(ulrQuery, direccionamiento)
+        const responses = [] // respuestas
+        for (const direccionamiento of direccionamientos) { // Ciclo for para enviar cada direccionamiento del array
+            try {
+                await axios.put(ulrQuery, direccionamiento)
+                responses.push({ direccionamiento, success: true })
+            } catch (error) {
+                if (error.response && error.response.data && error.response.data.Errors) {
+                    console.log("data error:", error.response.data.Errors)
+                    const errorMessages = error.response.data.Errors // si hay un error, lo almaceno
+                    console.log(errorMessages)
+                    responses.push({ direccionamiento, success: false, message: errorMessages })
+                } else {
+                    responses.push({ direccionamiento, success: false, error })
+                }
+            }
         }
-        return NextResponse.json({ "message": "Programación de direccionamiento(s) completada" }, { status: 200 })
+        // Si al menos un direccionamiento falló devuelve un multi-status 207
+        if (responses.some(({ success }) => !success)) {
+            return NextResponse.json({ responses }, { status: 207 })
+        } else { // Si no devuelve un mensaje de exito
+            return NextResponse.json({ message: "Programación de direccionamiento(s) exitosa" }, { status: 200 })
+        }
     } catch (error) {
         console.log("Error al realizar la programación de uno o más direccionamientos", error)
         return NextResponse.json({ error: "Error al realizar la programación de uno o más direccionamientos" }, { status: 500 })

@@ -41,7 +41,7 @@ export const useSearchForm = ({
     const handleSubmitDateRange = async (e) => {
         e.preventDefault();
         if (startDate === '' || endDate === '') {
-            showAlert('Todos los campos son obligatorios para rango de fecha');
+            showAlert("Todos los campos son obligatorios para rango de fecha", "error");
             return;
         }
         try {
@@ -67,7 +67,7 @@ export const useSearchForm = ({
     const handleSubmitPrescriptionNumber = async (e) => {
         e.preventDefault();
         if (prescriptionNumber === '') {
-            showAlert('Todos los campos son obligatorios para número de prescripción');
+            showAlert("Todos los campos son obligatorios para número de prescripción", "error");
             return;
         }
         try {
@@ -88,7 +88,7 @@ export const useSearchForm = ({
     const handleSubmitDatePatient = async (e) => {
         e.preventDefault();
         if (documentType === '' || documentNumber === '') {
-            showAlert('Todos los campos son obligatorios para paciente');
+            showAlert("Todos los campos son obligatorios para paciente", "error");
             return;
         }
         try {
@@ -139,7 +139,7 @@ export const useSearchForm = ({
                 // Si no está en el array selected, lo agrega. (seleccionar el checkbox)
                 setSelected([...selected, programmingDireccionamiento])
             }
-        } 
+        }
     }
 
     // Seleccionar o deseleccionar todos los direccionamientos que no estén anulados

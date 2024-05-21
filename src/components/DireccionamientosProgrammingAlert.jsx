@@ -1,11 +1,23 @@
+import showAlert from "@/services/alertSweet"
 import axios from "axios"
 
 const DireccionamientosProgrammingAlert = ({ selected }) => {
     const programming = async () => {
         console.log("Direccionamientos para programación: ")
         console.log(selected)
-        // const res = await axios.put("/api/programar/direccionamientos", { direccionamientos: selected })
-        // console.log(res.data.responses.message)
+        try {
+            const res = await axios.put("/api/programar/direccionamientos", { direccionamientos: selected })
+            if (res.status === 200) {
+                console.log(res.data.message)
+                showAlert(res.data.message, "success")
+            } else {
+                console.log(res.data)
+            }
+        } catch (error) {
+            console.log("Error al enviar los direccionamientos desde el frontend: ", error)
+            showAlert(error.response.data.error, "error")
+        }
+
     }
     return (
         <div className="flex justify-between items-center bg-slate-100 text-gray-950 p-3 mt-8 rounded-md transition-all">

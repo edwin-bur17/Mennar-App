@@ -14,10 +14,11 @@ export async function PUT(request) {
                 responses.push({ direccionamiento, success: true })
             } catch (error) {
                 if (error.response && error.response.data && error.response.data.Errors) {
-                    console.log("data error:", error.response.data.Errors)
-                    const errorMessages = error.response.data.Errors // si hay un error, lo almaceno
+                    const message = error.response.data.Message
+                    console.log("data error:", error.response.data.Errors[0])
+                    const error = error.response.data.Errors[0] // si hay un error, lo almaceno
                     console.log(errorMessages)
-                    responses.push({ direccionamiento, success: false, message: errorMessages })
+                    responses.push({ direccionamiento, success: false, message: message, error: error })
                 } else {
                     responses.push({ direccionamiento, success: false, error })
                 }

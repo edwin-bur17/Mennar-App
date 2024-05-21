@@ -2,7 +2,7 @@ import DireccionamientoCard from "./DireccionamientoCard";
 import Loading from "./Loading";
 import DireccionamientosProgrammingAlert from "./DireccionamientosProgrammingAlert";
 
-const ResultCardList = ({ data, loading, isSearch, handleCheckboxChange, handleSelectAllAssets, selected }) => {
+const ResultCardList = ({ data, setData, loading, isSearch, handleCheckboxChange, handleSelectAllAssets, selected, setSelected, searchParams }) => {
     return (
         <section>
             {loading ? (
@@ -14,6 +14,9 @@ const ResultCardList = ({ data, loading, isSearch, handleCheckboxChange, handleS
                         {selected.length > 0 && (
                             <DireccionamientosProgrammingAlert
                                 selected={selected}
+                                searchParams={searchParams}
+                                setData={setData}
+                                setSelected={setSelected}
                             />
                         )}
                         <div className="mt-5">

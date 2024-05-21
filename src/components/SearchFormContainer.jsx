@@ -23,11 +23,14 @@ const SearchFormContainer = () => {
         handleSubmitPrescriptionNumber,
         handleSubmitDatePatient,
         data,
+        setData,
         loading,
         isSearch,
         handleCheckboxChange,
         handleSelectAllAssets,
-        selected
+        selected,
+        setSelected,
+        searchParams
     } = useSearchForm({ // Envío los estados (PROPS) al hook para hacer el onChange 
         startDate,
         setStartDate,
@@ -114,11 +117,14 @@ const SearchFormContainer = () => {
             </div>
             <ResultCardList
                 data={data}
+                setData={setData}
                 loading={loading}
                 isSearch={isSearch}
                 handleCheckboxChange={handleCheckboxChange}
                 handleSelectAllAssets={handleSelectAllAssets}
+                setSelected={setSelected}
                 selected={selected}
+                searchParams={searchParams}
             />
         </div>
     )

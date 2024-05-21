@@ -20,6 +20,7 @@ export const useSearchForm = ({
     const [loading, setLoading] = useState(false) // Cargando
     const [isSearch, setIsSearch] = useState(false) // Búsqueda
     const [selected, setSelected] = useState([]) // Array para almacenar los direccionamientos (objetos) seleccionados 
+    const [searchParams, setSearchParmas] = useState({})
 
     const { fetchDireccionamientoFecha, fetchDireccionamientoXPrescripcion } = useApiCall() // Destructuración de las peticiones del hook 
 
@@ -48,6 +49,7 @@ export const useSearchForm = ({
             setLoading(true);
             setIsSearch(true);
             setSelected([])
+            setSearchParmas({startDate, endDate})
             const res = await fetchDireccionamientoFecha(startDate, endDate);
             if (res && typeof res === 'object') {
                 setData(res);
@@ -74,6 +76,7 @@ export const useSearchForm = ({
             setLoading(true);
             setIsSearch(true);
             setSelected([])
+            setSearchParmas({prescriptionNumber})
             const res = await fetchDireccionamientoXPrescripcion(prescriptionNumber);
             setData(res);
             setPrescriptionNumber('');
@@ -95,6 +98,7 @@ export const useSearchForm = ({
             setLoading(true);
             setIsSearch(true);
             setSelected([])
+            setSearchParmas({startDate, endDate, documentType, documentNumber})
             const res = await fetchDireccionamientoFecha(startDate, endDate, documentType, documentNumber);
             if (res && typeof res === 'object') {
                 setData(res);
@@ -174,10 +178,13 @@ export const useSearchForm = ({
         handleSubmitPrescriptionNumber,
         handleSubmitDatePatient,
         data,
+        setData,
         loading,
         isSearch,
         handleCheckboxChange,
         handleSelectAllAssets,
-        selected
+        selected,
+        setSelected,
+        searchParams
     }
 }

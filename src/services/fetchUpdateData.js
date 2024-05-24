@@ -11,12 +11,17 @@ export async function fetchUpdateData(searchParams, setData) {
             } else {
                 res = await fetchDireccionamientoFecha(searchParams.startDate, searchParams.endDate)
             }
-        } else {
+        } else if (searchParams.prescriptionNumber) {
             res = await fetchDireccionamientoXPrescripcion(searchParams.prescriptionNumber)
+            console.log("actualizando la data por número de prescripción")
+            console.log("número de prescripción: ", searchParams.prescriptionNumber)
         }
+        console.log("data actualizada: ", res)
         if (res && typeof res === "object") {
+            console.log("todo ok con la data ")
             setData(res)
         } else {
+            console.log("la data de la actualización no es un object ")
             showAlert(res, "error")
         }
     } catch (error) {

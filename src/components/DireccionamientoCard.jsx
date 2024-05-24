@@ -1,6 +1,7 @@
 import estadoDireccionamiento from "@/utils/estadoDireccionamiento"
+import CheckboxInput from "./CheckboxInput"
 function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange }) {
-    const bg = direccionamiento.FecAnulacion ? "bg-red-300" : "bg-slate-300"
+    const bg = direccionamiento.EstDireccionamiento === 0 ? "bg-red-300" : "bg-slate-300"
     return (
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
             <h2 className="font-semibold">ID: {direccionamiento.ID}</h2>
@@ -15,12 +16,12 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
             <p>Fecha del direccionamiento: <span className="font-bold"> {direccionamiento.FecDireccionamiento}</span></p>
             <p>Estado: {estadoDireccionamiento(direccionamiento.EstDireccionamiento)}</p>
             {direccionamiento.EstDireccionamiento === 1 &&
-                <input
-                    type="checkbox"
-                    className="accent-blue-600 h-4 w-4 cursor-pointer rounded-lg transition-all duration-300  focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-blue-500 checked:bg-blue-600 checked:hover:bg-blue-700 checked:focus:ring-blue-600"
+                <CheckboxInput
                     checked={selected}
-                    onChange={() => handleCheckboxChange(direccionamiento)}
-                />}
+                    onCheckboxChange={handleCheckboxChange}
+                    direccionamiento={direccionamiento}
+                />
+            }
         </div>
     )
 }

@@ -37,13 +37,12 @@ const ResultCardList = ({ data, setData, loading, isSearch, handleCheckboxChange
                                 <label className="text-white ms-4">{isCheckedAllAssets ? "Deseleccionar todos los direccionamientos activos" : "Seleccionar todos los direccionamientos activos"}</label>
                             </div>
                         )}
-
                         <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
                             {data.map((direccionamiento) => (
                                 <DireccionamientoCard
                                     key={direccionamiento.ID}
                                     direccionamiento={direccionamiento}
-                                    selected={selected.some(item => item.ID === direccionamiento.IDDireccionamiento)}
+                                    selected={selected.some(item => item.ID === direccionamiento.ID)}
                                     handleCheckboxChange={handleCheckboxChange}
                                 />
                             ))}

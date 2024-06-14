@@ -2,7 +2,7 @@
 import { useSearchForm } from "@/hooks/useSearchForm";
 import SearchForm from "./SearchForm";
 import { useState } from "react";
-import { documentTypeOptions } from "@/services/documentTypeOptions";
+import { documentTypeOptions } from "@/utils/documentTypeOptions";
 import ResultCardList from "./ResultCardList";
 
 const SearchFormContainer = () => {
@@ -95,7 +95,7 @@ const SearchFormContainer = () => {
     ];
 
     return (
-        <div>
+        <>
             <div className="flex justify-between">
                 <SearchForm
                     title="Por rango de fecha"
@@ -126,7 +126,7 @@ const SearchFormContainer = () => {
                 selected={selected}
                 searchParams={searchParams}
             />
-        </div>
+        </>
     )
 }
 

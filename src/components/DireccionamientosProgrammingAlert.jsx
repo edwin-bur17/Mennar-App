@@ -28,10 +28,10 @@ const DireccionamientosProgrammingAlert = ({ selected, setSelected, searchParams
         }
     }
     return (
-        <div className="sticky top-0 z-10 flex justify-between items-center bg-slate-100 text-gray-950 p-3 mt-8 rounded-md transition-all">
+        <div className="sticky top-0 z-10 flex justify-between items-center bg-slate-100 text-gray-950 p-3 mt-8 rounded-md transition-all duration-500 ease-in-out">
             <p>{selected.length} {selected.length === 1 ? "Direccionamiento seleccionado" : "Direccionamientos seleccionados"}</p>
             <button
-                className={`${isLoading ? "bg-green-400" : "bg-green-600 hover:bg-green-500"} text-white transition-colors rounded-md px-3 py-2`}
+                className={`${isLoading ? "bg-green-400" : "bg-green-600 hover:bg-green-500"} text-white transition-all duration-500 ease-in-out rounded-md px-3 py-2`}
                 onClick={programming}
                 disabled={isLoading}
             >

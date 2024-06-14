@@ -5,16 +5,18 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
     return (
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
             <h2 className="font-semibold">ID: {direccionamiento.ID}</h2>
-            <p>Id direccionamiento: {direccionamiento.IDDireccionamiento}</p>
-            <p>Número de prescripción: {direccionamiento.NoPrescripcion}</p>
-            <p>N° Identificación Paciente: {direccionamiento.NoIDPaciente}</p>
-            <p>Fecha máxima de entrega: {direccionamiento.FecMaxEnt}</p>
-            <p>Cantidad total a entregar: {direccionamiento.CantTotAEntregar}</p>
-            <p>Tipo Id Proveedor: {direccionamiento.TipoIDProv}</p>
-            <p>Número Id Proveedor: {direccionamiento.NoIDProv}</p>
-            <p>Servicio a entregar: {direccionamiento.CodSerTecAEntregar}</p>
-            <p>Fecha del direccionamiento: <span className="font-bold"> {direccionamiento.FecDireccionamiento}</span></p>
-            <p>Estado: {estadoDireccionamiento(direccionamiento.EstDireccionamiento)}</p>
+            <ul className="mt-2 space-x-1">
+                <li>Id direccionamiento: {direccionamiento.IDDireccionamiento}</li>
+                <li>Número de prescripción: {direccionamiento.NoPrescripcion}</li>
+                <li>N° Identificación Paciente: {direccionamiento.NoIDPaciente}</li>
+                <li>Fecha máxima de entrega: {direccionamiento.FecMaxEnt}</li>
+                <li>Cantidad total a entregar: {direccionamiento.CantTotAEntregar}</li>
+                <li>Tipo Id Proveedor: {direccionamiento.TipoIDProv}</li>
+                <li>Número Id Proveedor: {direccionamiento.NoIDProv}</li>
+                <li>Servicio a entregar: {direccionamiento.CodSerTecAEntregar}</li>
+                <li>Fecha del direccionamiento: <strong> {direccionamiento.FecDireccionamiento}</strong></li>
+                <li>Estado: {estadoDireccionamiento(direccionamiento.EstDireccionamiento)}</li>
+            </ul>
             {direccionamiento.EstDireccionamiento === 1 &&
                 <CheckboxInput
                     checked={selected}

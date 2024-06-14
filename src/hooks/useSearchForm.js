@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useApiCall } from "./useApiCall";
 import showAlert from "@/services/alertSweet";
+import { useOnChangeCheckbox } from "./useOnChangeCheckbox";
 
 export const useSearchForm = ({
     startDate,
@@ -19,10 +20,10 @@ export const useSearchForm = ({
     const [data, setData] = useState([]) // Array de respuestas
     const [loading, setLoading] = useState(false) // Cargando
     const [isSearch, setIsSearch] = useState(false) // Búsqueda
-    const [selected, setSelected] = useState([]) // Array para almacenar los direccionamientos (objetos) seleccionados 
     const [searchParams, setSearchParmas] = useState({})
 
     const { fetchDireccionamientoFecha, fetchDireccionamientoXPrescripcion } = useApiCall() // Destructuración de las peticiones del hook 
+    const {selected, setSelected, handleCheckboxChange, handleSelectAllAssets} = useOnChangeCheckbox()
 
     // *************** MANEJO DEL ONCHANGE PARA CADA INPUT ***************
 
@@ -92,7 +93,7 @@ export const useSearchForm = ({
     // Formulario por paciente mediante un rango de fecha
     const handleSubmitDatePatient = async (e) => {
         e.preventDefault();
-        if (documentType === '' || documentNumber === '') {
+        if (documentType === "" || documentNumber === "" || startDate === "" || endDate === "") {
             showAlert("Todos los campos son obligatorios para paciente", "error");
             return;
         }
@@ -118,61 +119,6 @@ export const useSearchForm = ({
             setLoading(false);
         }
     };
-
-    // MANEJO DE CAMBIO EN LOS CHECKBOXS PARA SELECCIONAR LOS DIRECCIONAMIENTOS
-
-    // Actualizar el estado selected, dependiendo del cambio en los checbox de cada direccionamiento
-    const handleCheckboxChange = (direccionamiento) => {
-        // Crear el direccionamiento que será enviado en la petición
-        const programmingDireccionamiento = {
-            ID: direccionamiento.ID,
-            FecMaxEnt: direccionamiento.FecMaxEnt,
-            TipoIDSedeProv: direccionamiento.TipoIDProv,
-            NoIDSedeProv: direccionamiento.NoIDProv,
-            CodSedeProv: "PROV000762",
-            CodSerTecAEntregar: direccionamiento.CodSerTecAEntregar,
-            CantTotAEntregar: direccionamiento.CantTotAEntregar
-        }
-
-        console.log(programmingDireccionamiento)
-
-        // Verificar si el direccionamiento está anulado o previamente programado
-        const isNull = direccionamiento.EstDireccionamiento === 0
-        const isProgramming = direccionamiento.EstDireccionamiento === 2
-
-        if (!isNull && !isProgramming) {
-            // Si el direccionamiento ya se encuentra en el array selected, lo quita. (deseleccionar el checkbox)
-            if (selected.some(item => item.ID === programmingDireccionamiento.ID)) {
-                setSelected(selected.filter(item => item.ID !== programmingDireccionamiento.ID))
-            } else {
-                // Si no está en el array selected, lo agrega. (seleccionar el checkbox)
-                setSelected([...selected, programmingDireccionamiento])
-            }
-        }
-    }
-
-    // Seleccionar o deseleccionar todos los direccionamientos que no estén anulados
-    const handleSelectAllAssets = (direccionamientos) => {
-        console.log(direccionamientos)
-        // Filtrar el array direccionamientos y crear otro solo con los que esten activos (sin los anulados y los ya programados)
-        const direccionamientosAssets = direccionamientos.filter((direccionamiento) => direccionamiento.EstDireccionamiento !== 0 && direccionamiento.EstDireccionamiento !== 2)
-        console.log(direccionamientosAssets)
-        // Crear el objeto direccionamiento (con base en el array de los activos) el cual será enviado en la petición
-        const programmingDireccionamientos = direccionamientosAssets.map(direccionamiento => ({
-            ID: direccionamiento.ID,
-            FecMaxEnt: direccionamiento.FecMaxEnt,
-            TipoIDSedeProv: direccionamiento.TipoIDProv,
-            NoIDSedeProv: direccionamiento.NoIDProv,
-            CodSedeProv: "PROV000762",
-            CodSerTecAEntregar: direccionamiento.CodSerTecAEntregar,
-            CantTotAEntregar: direccionamiento.CantTotAEntregar
-        }))
-        if (selected.length === programmingDireccionamientos.length) { // Si todos están seleccionados, los deselecciona.
-            setSelected([])
-        } else { // si no los selecciona.
-            setSelected(programmingDireccionamientos)
-        }
-    }
 
     return {
         handleStartDateChange,

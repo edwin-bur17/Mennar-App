@@ -12,10 +12,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Sidebar />
-        <main className="container mx-auto">
-          {children}
-        </main>
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1 p-5 transition-all duration-300">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );

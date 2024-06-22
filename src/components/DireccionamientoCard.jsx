@@ -6,7 +6,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
             <h2 className="font-semibold">ID: {direccionamiento.ID}</h2>
             <ul className="mt-2 space-x-1">
-                <li>Id direccionamiento: {direccionamiento.IDDireccionamiento}</li>
+                <li>{direccionamiento.IDDireccionamiento ? direccionamiento.IDDireccionamiento : direccionamiento.IDProgramacion}</li>
                 <li>Número de prescripción: {direccionamiento.NoPrescripcion}</li>
                 <li>N° Identificación Paciente: {direccionamiento.NoIDPaciente}</li>
                 <li>Fecha máxima de entrega: {direccionamiento.FecMaxEnt}</li>
@@ -24,6 +24,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                     direccionamiento={direccionamiento}
                 />
             }
+            {direccionamiento.IDProgramacion && <button className="bg-green-500 rounded-full py-2 px-3" type="button">Entrega</button>}
         </div>
     )
 }

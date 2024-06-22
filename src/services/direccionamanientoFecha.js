@@ -1,6 +1,7 @@
 import axios from "axios"
 
-export default async function getDireccionamientoFecha(startDateStr, endDateStr, queryToken, documentType = null, documentNumber = null) {
+export default async function getDireccionamientoFecha(startDateStr, endDateStr, queryToken, documentType = null, documentNumber = null, currentUrl) {
+    console.log("url actual: ", currentUrl)
     let startDate = new Date(startDateStr)
     let endDate = new Date(endDateStr)
     const responses = [] // Array de las respuestas
@@ -14,9 +15,17 @@ export default async function getDireccionamientoFecha(startDateStr, endDateStr,
         let url
         try {
             if (documentType && documentNumber) {
-                url = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPacienteFecha/${process.env.NEXT_PUBLIC_NIT}/${formattedDate}/${queryToken}/${documentType}/${documentNumber}`
+                if (currentUrl === "direccionamientos") {
+                    url = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPacienteFecha/${process.env.NEXT_PUBLIC_NIT}/${formattedDate}/${queryToken}/${documentType}/${documentNumber}`
+                } else {
+                    url = `${process.env.NEXT_PUBLIC_API_URL}/ProgramacionXPacienteFecha/${process.env.NEXT_PUBLIC_NIT}/${formattedDate}/${queryToken}/${documentType}/${documentNumber}`
+                }
             }else {
-                url = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXFecha/${process.env.NEXT_PUBLIC_NIT}/${queryToken}/${formattedDate}`
+                if (currentUrl === "direccionamientos") {
+                    url = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXFecha/${process.env.NEXT_PUBLIC_NIT}/${queryToken}/${formattedDate}`
+                } else {
+                    url = `${process.env.NEXT_PUBLIC_API_URL}/ProgramacionXFecha/${process.env.NEXT_PUBLIC_NIT}/${queryToken}/${formattedDate}`
+                }
             }
             const res = await axios.get(url) // Petición a la api
             if (res.status === 200 && res.data.length > 0) { // solo agrego las respuestas que hayan datos
@@ -27,5 +36,6 @@ export default async function getDireccionamientoFecha(startDateStr, endDateStr,
         }
          currentDate.setDate(currentDate.getDate() + 1) // Aumentar el contador
     }
+    console.log(responses)
     return responses
 }

@@ -1,10 +1,11 @@
 import { FaHome, FaUser, FaCog, FaChartBar, FaEnvelope} from "react-icons/fa"
-import { FaFileInvoice, FaFileCircleCheck } from "react-icons/fa6";
+import { FaFileInvoice } from "react-icons/fa6";
+import { GiMedicinePills } from "react-icons/gi";
 
 export const sidebarItems = [
     { icon: FaHome, text: "Inicio", path: "/", matchPath: /^\/$/ },
-    { icon: FaFileInvoice, text: "Direccionamientos", path: "/direccionamiento", matchPath: /^\/direccionamiento/ },
-    { icon: FaFileCircleCheck, text: "Programación", path: "/programacion", matchPath: /^\/programacion/ },
+    { icon: FaFileInvoice, text: "Direccionamientos", path: "/direccionamientos", matchPath: /^\/direccionamientos/ },
+    { icon: GiMedicinePills, text: "Entrega", path: "/entrega", matchPath: /^\/entrega/ },
     { icon: FaUser, text: "Perfil", path: "/profile", matchPath: /^\/profile/ },
     { icon: FaChartBar, text: "Estadísticas", path: "/stats", matchPath: /^\/stats/ },
     { icon: FaEnvelope, text: "Mensajes", path: "/messages", matchPath: /^\/message/ },

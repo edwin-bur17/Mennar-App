@@ -1,34 +1,25 @@
-import axios from "axios"
-import { getEndpoint } from "@/utils/getEndPoint"
+import { fetchData } from "./fecthdate/fetchData"
+import { getDatesArray } from "./fecthdate/getDatesArray"
 
 export default async function getDateRangeData(startDateStr, endDateStr, queryToken, documentType = null, documentNumber = null, currentModule) {
-    console.log("módulo actual: ", currentModule)
+    // Convertir las fechas de string a un objeto Date
     let startDate = new Date(startDateStr)
     let endDate = new Date(endDateStr)
-    const responses = [] // Array de las respuestas
-    if (startDate > endDate) {
+
+    if (startDate > endDate) { // Validar las fechas
         return "La fecha de inicio debe ser menor a la fecha de fin"
     }
-    let currentDate = startDate
-    // ---------- Ciclo while para ejecutar cada petición por cada fecha del rango
-    while (currentDate <= endDate) {
-        const formattedDate = currentDate.toISOString().split('T')[0]
-        let url
-        try {
-            if (documentType && documentNumber) {
-                url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porPacienteFecha")}/${process.env.NEXT_PUBLIC_NIT}/${formattedDate}/${queryToken}/${documentType}/${documentNumber}`
-            }else {
-                url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porFecha")}/${process.env.NEXT_PUBLIC_NIT}/${queryToken}/${formattedDate}`
-            }
-            console.log("URL ACTUAL DE LA PETICIÓN DESDE GETDATERANGEDATA: ", url)
-            const res = await axios.get(url) // Petición a la api
-            if (res.status === 200 && res.data.length > 0) { // solo agrego las respuestas que hayan datos
-                responses.push(...res.data) // copio la data al array
-            }
-        } catch (error) {
-            console.log("Error al procesar la petición de direccionamiento por fecha, desde la función de direccionamiento por fecha")
-        }
-         currentDate.setDate(currentDate.getDate() + 1) // Aumentar el contador
+    const dates = getDatesArray(startDate, endDate); // Obtener un array de las fechas según el rango
+    const controller = new AbortController(); // Controlador de aborto para poder cancelar las peticiones si es necesario.
+  
+    // Manejo de errores y consulta a la api
+    try {
+        const responses = await Promise.all(dates.map(date => fetchData(date, queryToken, documentType, documentNumber, currentModule, controller.signal)));
+        return responses.flat().filter(response => response !== null);
+    } catch (error) {
+        console.error("Error al obtener datos del rango de fechas (desde getDateRangeData.js):", error);
+        throw error;
+    } finally {
+        controller.abort(); // Cancela cualquier petición pendiente
     }
-    return responses
 }

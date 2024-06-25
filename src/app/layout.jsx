@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import { ModuleProvider } from "@/context/moduleContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,12 +13,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex h-screen overflow-hidden">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto p-5 transition-all duration-300 bg-gray-700 my-5 mr-5 rounded-lg">
-            {children}
-          </main>
-        </div>
+        <ModuleProvider>
+          <div className="flex h-screen overflow-hidden">
+            <Sidebar />
+            <main className="flex-1 overflow-y-auto p-5 transition-all duration-300 bg-gray-700 my-5 mr-5 rounded-lg">
+              {children}
+            </main>
+          </div>
+        </ModuleProvider>
       </body>
     </html>
   );

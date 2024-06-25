@@ -22,7 +22,7 @@ export const useSearchForm = ({
     const [isSearch, setIsSearch] = useState(false) // Búsqueda
     const [searchParams, setSearchParmas] = useState({})
 
-    const { fetchDireccionamientoFecha, fetchDireccionamientoXPrescripcion } = useApiCall() // Destructuración de las peticiones del hook 
+    const { fetchByDate, fecthByPrescriptionNumber } = useApiCall() // Destructuración de las peticiones del hook 
     const {selected, setSelected, handleCheckboxChange, handleSelectAllAssets} = useOnChangeCheckbox()
 
     // *************** MANEJO DEL ONCHANGE PARA CADA INPUT ***************
@@ -52,7 +52,7 @@ export const useSearchForm = ({
             setSelected([])
             setData([])
             setSearchParmas({ startDate, endDate })
-            const res = await fetchDireccionamientoFecha(startDate, endDate);
+            const res = await fetchByDate(startDate, endDate);
             if (res && typeof res === 'object') {
                 setData(res);
                 setStartDate('');
@@ -80,7 +80,7 @@ export const useSearchForm = ({
             setSelected([])
             setData([])
             setSearchParmas({ prescriptionNumber })
-            const res = await fetchDireccionamientoXPrescripcion(prescriptionNumber);
+            const res = await fecthByPrescriptionNumber(prescriptionNumber);
             setData(res);
             setPrescriptionNumber('');
         } catch (error) {
@@ -103,7 +103,7 @@ export const useSearchForm = ({
             setSelected([])
             setData([])
             setSearchParmas({ startDate, endDate, documentType, documentNumber })
-            const res = await fetchDireccionamientoFecha(startDate, endDate, documentType, documentNumber);
+            const res = await fetchByDate(startDate, endDate, documentType, documentNumber);
             if (res && typeof res === 'object') {
                 setData(res);
                 setStartDate('');

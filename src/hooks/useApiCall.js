@@ -1,18 +1,18 @@
 import axios from "axios";
 import getQueryToken from "@/services/queryToken";
-import getDireccionamientoFecha from "@/services/direccionamanientoFecha";
-import { usePathname } from "next/navigation";
+import getDateRangeData from "@/services/getDateRangeData";
+import { useModule } from "@/context/moduleContext";
+import { getEndpoint } from "@/utils/getEndPoint";
 
 export const useApiCall = () => {
-    const pathname = usePathname()
-    const currentUrl = pathname.slice(1)
-    console.log(currentUrl)
+    const { currentModule } = useModule()
+
     // Llamado a la api para buscar direccionamiento por rango de fecha y paciente
-    const fetchDireccionamientoFecha = async (startDate, endDate, documentType, documentNumber) => {
-        console.log("url actual desde useApiCall.jsx: " ,currentUrl)
+    const fetchByDate = async (startDate, endDate, documentType, documentNumber) => {
+        console.log("url actual desde useApiCall.jsx: ", currentModule)
         try {
             const token = await getQueryToken()
-            const res = await getDireccionamientoFecha(startDate, endDate, token, documentType, documentNumber, currentUrl)
+            const res = await getDateRangeData(startDate, endDate, token, documentType, documentNumber, currentModule)
             return res
         } catch (error) {
             console.log("Error al obtener el direcccionamiento por fecha, desde useApiCall.js: ", error)
@@ -21,16 +21,11 @@ export const useApiCall = () => {
     }
 
     // Llamado a la api para buscar direccionamiento por número de prescripción
-    const fetchDireccionamientoXPrescripcion = async (prescriptionNumber) => {
+    const fecthByPrescriptionNumber = async (prescriptionNumber) => {
         console.log(prescriptionNumber)
-        let url
         try {
             const token = await getQueryToken()
-            if (currentUrl === "direccionamientos") {
-                url = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
-            } else {
-                url = `${process.env.NEXT_PUBLIC_API_URL}/ProgramacionXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
-            }
+            let url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porPrescripcion")}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             console.log("url de la consulta par anúmero de prescripción: ", url)
             const res = await axios(url)
             return res.data
@@ -40,5 +35,5 @@ export const useApiCall = () => {
         }
     }
 
-    return { fetchDireccionamientoFecha, fetchDireccionamientoXPrescripcion }
+    return { fetchByDate, fecthByPrescriptionNumber }
 }

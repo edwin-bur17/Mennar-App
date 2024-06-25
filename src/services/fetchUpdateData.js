@@ -2,17 +2,17 @@ import { useApiCall } from "@/hooks/useApiCall"
 import showAlert from "./alertSweet"
 
 export async function fetchUpdateData(searchParams, setData) {
-    const { fetchDireccionamientoFecha, fetchDireccionamientoXPrescripcion } = useApiCall()
+    const { fetchByDate, fecthByPrescriptionNumber } = useApiCall()
     try {
         let res
         if (searchParams.startDate && searchParams.endDate) {
             if (searchParams.documentType && searchParams.documentNumber) {
-                res = await fetchDireccionamientoFecha(searchParams.startDate, searchParams.endDate, searchParams.documentType, searchParams.documentNumber)
+                res = await fetchByDate(searchParams.startDate, searchParams.endDate, searchParams.documentType, searchParams.documentNumber)
             } else {
-                res = await fetchDireccionamientoFecha(searchParams.startDate, searchParams.endDate)
+                res = await fetchByDate(searchParams.startDate, searchParams.endDate)
             }
         } else if (searchParams.prescriptionNumber) {
-            res = await fetchDireccionamientoXPrescripcion(searchParams.prescriptionNumber)
+            res = await fecthByPrescriptionNumber(searchParams.prescriptionNumber)
             console.log("actualizando la data por número de prescripción")
             console.log("número de prescripción: ", searchParams.prescriptionNumber)
         }

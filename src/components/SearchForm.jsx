@@ -1,4 +1,9 @@
-function SearchForm({ title, fields, onSubmit, rangeStart, rangeEnd }) {
+function SearchForm({ title, fields, onSubmit, onChange, rangeStart, rangeEnd }) {
+    // Manejar el cambio en los inputs
+    const handleChange = (e) => {
+        const { id, value } = e.target
+        onChange(id, value)
+    }
     return (
         <div>
             <h3 className="text-white text-center font-bold">{title}</h3>
@@ -12,7 +17,7 @@ function SearchForm({ title, fields, onSubmit, rangeStart, rangeEnd }) {
                                 className="bg-slate-100 px-4 py-2 mb-2 rounded-lg w-64"
                                 id={field.id}
                                 value={field.value}
-                                onChange={field.onChange}
+                                onChange={handleChange}
                             >
                                 <option value="">Selecione una opción</option>
                                 {field.options.map((option, index) => (
@@ -27,7 +32,7 @@ function SearchForm({ title, fields, onSubmit, rangeStart, rangeEnd }) {
                                 type={field.type}
                                 id={field.id}
                                 value={field.value}
-                                onChange={field.onChange}
+                                onChange={handleChange}
                             />
                         )}
                     </div>

@@ -1,29 +1,19 @@
 "use client"
-import { useSearchForm } from "@/hooks/useSearchForm";
+import { useSearchForm } from "@/context/searchFormContext";
 import SearchForm from "./SearchForm";
-import { useState } from "react";
 import { documentTypeOptions } from "@/utils/documentTypeOptions";
 import ResultCardList from "./ResultCardList";
 
 const SearchFormContainer = () => {
-    // Estados para los campos del formulario
-    const [startDate, setStartDate] = useState("") // Fecha de inicio
-    const [endDate, setEndDate] = useState("") // Fecha fin
-    const [documentType, setDocumentType] = useState(""); // Tipo de documento
-    const [documentNumber, setDocumentNumber] = useState(""); // Número de documento
-    const [prescriptionNumber, setPrescriptionNumber] = useState(""); // Número de prescripción
 
-    const { // Destructuro el hook con los resultados del onChange en su respectivo handleChange, ademas de la data, loading e isSearch
-        handleStartDateChange,
-        handleEndDateChange,
-        handleDocumentTypeChange,
-        handleDocumentNumberChange,
-        handlePrescriptionNumberChange,
-        handleSubmitDateRange,
-        handleSubmitPrescriptionNumber,
-        handleSubmitDatePatient,
+    const { startDate,
+        endDate,
+        documentType,
+        documentNumber,
+        prescriptionNumber,
+        updateForm,
+        handleSubmit,
         data,
-        setData,
         loading,
         isSearch,
         handleCheckboxChange,
@@ -31,67 +21,25 @@ const SearchFormContainer = () => {
         selected,
         setSelected,
         searchParams
-    } = useSearchForm({ // Envío los estados (PROPS) al hook para hacer el onChange 
-        startDate,
-        setStartDate,
-        endDate,
-        setEndDate,
-        documentType,
-        setDocumentType,
-        documentNumber,
-        setDocumentNumber,
-        prescriptionNumber,
-        setPrescriptionNumber,
-    });
+    } = useSearchForm()
 
     // *************** CAMPOS (PROPS) DE CADA FORMULARIO ***************
 
     // Formulario búsqueda por rango de fecha
     const fieldsDateRange = [
-        {
-            id: 'startDate',
-            label: 'Fecha Inicio:',
-            type: 'date',
-            value: startDate,
-            onChange: handleStartDateChange,
-        },
-        {
-            id: 'endDate',
-            label: 'Fecha Fin:',
-            type: 'date',
-            value: endDate,
-            onChange: handleEndDateChange,
-        },
+        { id: 'startDate', label: 'Fecha Inicio:', type: 'date', value: startDate, },
+        { id: 'endDate', label: 'Fecha Fin:', type: 'date', value: endDate, },
     ];
 
     // Formulario búsqueda por paciente mediante un rango de fecha
     const fieldsDatePatient = [
-        {
-            id: 'documentType',
-            label: 'Tipo de documento:',
-            type: 'select',
-            value: documentType,
-            onChange: handleDocumentTypeChange,
-            options: documentTypeOptions,
-        },
-        {
-            id: 'documentNumber',
-            label: 'Número de documento:',
-            type: 'number',
-            value: documentNumber,
-            onChange: handleDocumentNumberChange,
-        },
+        { id: 'documentType', label: 'Tipo de documento:', type: 'select', value: documentType, options: documentTypeOptions, },
+        { id: 'documentNumber', label: 'Número de documento:', type: 'number', value: documentNumber, },
     ];
 
     // Formulario búsqueda por número de prescripción
     const fieldsPrescriptionNumber = [
-        {
-            id: 'prescriptionNumber',
-            label: 'Número de prescripción:',
-            type: 'number',
-            value: prescriptionNumber,
-            onChange: handlePrescriptionNumberChange,
-        },
+        { id: 'prescriptionNumber', label: 'Número de prescripción:', type: 'number', value: prescriptionNumber, },
     ];
 
     return (
@@ -100,24 +48,26 @@ const SearchFormContainer = () => {
                 <SearchForm
                     title="Por rango de fecha"
                     fields={fieldsDateRange}
-                    onSubmit={handleSubmitDateRange}
+                    onSubmit={(e) => handleSubmit(e, "dateRange")}
+                    onChange={updateForm}
                 />
                 <SearchForm
                     title="Por fecha y paciente"
                     fields={fieldsDatePatient}
-                    onSubmit={handleSubmitDatePatient}
+                    onSubmit={(e) => handleSubmit(e, "datePatient")}
+                    onChange={updateForm}
                     rangeStart={startDate}
                     rangeEnd={endDate}
                 />
                 <SearchForm
                     title="Por número de prescripción"
                     fields={fieldsPrescriptionNumber}
-                    onSubmit={handleSubmitPrescriptionNumber}
+                    onSubmit={(e) => handleSubmit(e, "prescriptionNumber")}
+                    onChange={updateForm}
                 />
             </div>
             <ResultCardList
                 data={data}
-                setData={setData}
                 loading={loading}
                 isSearch={isSearch}
                 handleCheckboxChange={handleCheckboxChange}

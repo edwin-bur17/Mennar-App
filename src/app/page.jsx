@@ -11,7 +11,7 @@ export default function HomePage() {
       setToken(token)
     }
     getToken()
-  }, [])
+  }, [token])
   console.log(token)
   return (
     <div className="text-white">

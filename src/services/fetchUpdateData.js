@@ -1,7 +1,7 @@
 import { useApiCall } from "@/hooks/useApiCall"
 import showAlert from "./alertSweet"
 
-export async function fetchUpdateData(searchParams, setData) {
+export async function fetchUpdateData(searchParams, setSearchResults) {
     const { fetchByDate, fecthByPrescriptionNumber } = useApiCall()
     try {
         let res
@@ -19,7 +19,7 @@ export async function fetchUpdateData(searchParams, setData) {
         console.log("data actualizada: ", res)
         if (res && typeof res === "object") {
             console.log("todo ok con la data ")
-            setData(res)
+            setSearchResults({data: res})
         } else {
             console.log("la data de la actualización no es un object ")
             showAlert(res, "error")

@@ -28,6 +28,7 @@ export const useApiCall = () => {
             let url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porPrescripcion")}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             console.log("url de la consulta par anúmero de prescripción: ", url)
             const res = await axios(url)
+            console.log("data desde useApicall: ", res.data)
             return res.data
         } catch (error) {
             console.log("Error al obtener el direcccionamiento por número de prescripción, desde useApiCall.js: ", error)

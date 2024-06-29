@@ -3,8 +3,10 @@ import Loading from "./Loading";
 import DireccionamientosProgrammingAlert from "./DireccionamientosProgrammingAlert";
 import CheckboxInput from "./CheckboxInput";
 import SearchSumary from "./SearchSumary";
+import { useSearchForm } from "@/context/searchFormContext";
 
-const ResultCardList = ({ data, setData, loading, isSearch, handleCheckboxChange, handleSelectAllAssets, selected, setSelected, searchParams }) => {
+const ResultCardList = () => {
+    const {data, loading, isSearch, handleCheckboxChange, handleSelectAllAssets, selected} = useSearchForm()
     // todos los direccionamientos activos están seleccionados
     const isCheckedAllAssets = selected.length === data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1).length
     return (
@@ -14,17 +16,9 @@ const ResultCardList = ({ data, setData, loading, isSearch, handleCheckboxChange
             ) : isSearch ? (
                 data.length > 0 ? (
                     <>
-                        <SearchSumary
-                            data={data}
-                            searchParams={searchParams}
-                        />
+                        <SearchSumary />
                         {selected.length > 0 && (
-                            <DireccionamientosProgrammingAlert
-                                selected={selected}
-                                searchParams={searchParams}
-                                setData={setData}
-                                setSelected={setSelected}
-                            />
+                            <DireccionamientosProgrammingAlert />
                         )}
                         {data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1).length > 0 && (
                             <div className="my-5">

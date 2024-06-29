@@ -3,8 +3,10 @@ import { useState } from 'react'
 import showAlert from "@/services/alertSweet"
 import axios from "axios"
 import { fetchUpdateData } from "@/services/fetchUpdateData"
+import { useSearchForm } from '@/context/searchFormContext'
 
-const DireccionamientosProgrammingAlert = ({ selected, setSelected, searchParams, setData }) => {
+const DireccionamientosProgrammingAlert = () => {
+    const {selected, setSelected, updateDataAfterProgramming} = useSearchForm()
     const [isLoading, setIsLoading] = useState(false) // Estado de carga para la programación y actualización
     const programming = async () => {
         console.log("Direccionamientos para programación: ")
@@ -13,10 +15,10 @@ const DireccionamientosProgrammingAlert = ({ selected, setSelected, searchParams
             setIsLoading(true)
             const res = await axios.put("/api/programar/direccionamientos", { direccionamientos: selected })
             if (res.status === 200) {
-                console.log(res.data.message)
-                await fetchUpdateData(searchParams, setData) // Actualizar el estado de la consulta actual
+                await updateDataAfterProgramming()
                 showAlert(res.data.message)
                 setSelected([])
+                console.log(res.data.message)
             } else {
                 console.log(res.data)
             }

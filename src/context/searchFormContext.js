@@ -40,7 +40,7 @@ function reducer(state, action) {
 export const SearchFormProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
     const { fecthByPrescriptionNumber, fetchByDate } = useApiCall()
-    const {selected, setSelected, handleCheckboxChange, handleSelectAllAssets} = useOnChangeCheckbox()
+    const { selected, setSelected, handleCheckboxChange, handleSelectAllAssets } = useOnChangeCheckbox()
 
     // Actualizar (los valores) de los inputs del formulario
     const updateForm = useCallback((field, value) => {
@@ -105,10 +105,10 @@ export const SearchFormProvider = ({ children }) => {
         try {
             setSearchResults({ loading: true, isSearch: true, data: [], searchParams });
             setSelected([])
-           
+
             if (typeof fetchFunction !== "function") { // Validar si es una función 
                 throw new Error(`fetchFunction no es una función válida para el tipo: ${type}`)
-            } 
+            }
             const res = await fetchFunction()
             if (res && typeof res === "object") {
                 setSearchResults({ data: res, loading: false })
@@ -125,6 +125,54 @@ export const SearchFormProvider = ({ children }) => {
 
     }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults])
 
+    // Actualizar la data despues de programar los direccionamientos
+    const updateDataAfterProgramming = useCallback(async (programmedIds) => {
+        const { searchParams } = state.searchResults
+
+        // Actualiza los datos localmente
+        const updatedData = data.map(item =>
+            programmedIds.includes(item.id) ? { ...item, status: 'programmed' } : item
+        );
+
+        // Actualiza el estado con los datos modificados inmediatamente
+        setSearchResults(prevState => ({ ...prevState, data: updatedData }));
+
+        let fetchFunction
+        if (searchParams.prescriptionNumber) {
+            console.log("actualizando data por número d eprescripción")
+            fetchFunction = () => fecthByPrescriptionNumber(searchParams.prescriptionNumber)
+        } else if (searchParams.documentType && searchParams.documentNumber) {
+            console.log("actualizando data por paciente fecha")
+            fetchFunction = () => fetchByDate(searchParams.startDate, searchParams.endDate, searchParams.documentType, searchParams.documentNumber);
+        } else {
+            console.log("actualizando data por rango de fecha")
+            fetchFunction = () => fetchByDate(searchParams.startDate, searchParams.endDate);
+        }
+
+        try {
+            setSearchResults(prevState => ({ ...prevState, loading: true }));
+            const freshData = await fetchFunction();
+            console.log(typeof (freshData))
+            console.log("data actualizada: ", freshData)
+            if (freshData && typeof freshData === "object") {
+                // Combina los datos frescos con el estado actualizado localmente
+                const finalData = freshData.map(item => {
+                    const localItem = updatedData.find(localItem => localItem.id === item.id);
+                    return localItem || item;
+                });
+
+                setSearchResults(prevState => ({ ...prevState, data: finalData, loading: false }));
+            } else {
+                setSearchResults({ loading: false });
+                showAlert("Error al actualizar los datos", "error");
+            }
+        } catch (error) {
+            console.error("Error al actualizar los datos después de la programación:", error);
+            setSearchResults({ loading: false });
+            showAlert("Error al actualizar los datos despues de programarlos", "error");
+        }
+    }, [state.searchResults, setSearchResults, fecthByPrescriptionNumber, fetchByDate])
+
     const value = {
         ...state.formData,
         ...state.searchResults,
@@ -133,7 +181,8 @@ export const SearchFormProvider = ({ children }) => {
         selected,
         setSelected,
         handleSelectAllAssets,
-        handleCheckboxChange
+        handleCheckboxChange,
+        updateDataAfterProgramming
     }
 
     return (

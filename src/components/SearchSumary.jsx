@@ -2,9 +2,12 @@
 import { useState } from "react"
 import { AiOutlineEye } from "react-icons/ai";
 import { AiOutlineEyeInvisible } from "react-icons/ai";
+import { useSearchForm } from "@/context/searchFormContext";
 
-const SearchSumary = ({ data, searchParams }) => {
+const SearchSumary = () => {
     const [isVisible, setIsVisible] = useState(true)
+    const {data, searchParams} = useSearchForm()
+
     // Resumen de la búsqueda
     const total = data.length
     const cancelled = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 0).length

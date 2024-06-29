@@ -13,14 +13,6 @@ const SearchFormContainer = () => {
         prescriptionNumber,
         updateForm,
         handleSubmit,
-        data,
-        loading,
-        isSearch,
-        handleCheckboxChange,
-        handleSelectAllAssets,
-        selected,
-        setSelected,
-        searchParams
     } = useSearchForm()
 
     // *************** CAMPOS (PROPS) DE CADA FORMULARIO ***************
@@ -66,16 +58,7 @@ const SearchFormContainer = () => {
                     onChange={updateForm}
                 />
             </div>
-            <ResultCardList
-                data={data}
-                loading={loading}
-                isSearch={isSearch}
-                handleCheckboxChange={handleCheckboxChange}
-                handleSelectAllAssets={handleSelectAllAssets}
-                setSelected={setSelected}
-                selected={selected}
-                searchParams={searchParams}
-            />
+            <ResultCardList/>
         </>
     )
 }

@@ -74,20 +74,17 @@ export const SearchFormProvider = ({ children }) => {
 
         switch (type) {
             case "dateRange":
-                console.log("switch en rango de fecha")
                 isValid = validateFields(["startDate", "endDate"])
                 searchParams = { startDate, endDate }
                 fetchFunction = () => fetchByDate(startDate, endDate)
                 break;
             case "datePatient":
-                console.log("switch en paciente fecha")
                 isValid = validateFields(["startDate", "endDate", "documentType", "documentNumber"])
                 searchParams = { startDate, endDate, documentType, documentNumber }
                 fetchFunction = () => fetchByDate(startDate, endDate, documentType, documentNumber)
                 break;
 
             case "prescriptionNumber":
-                console.log("switch en número de prescripción")
                 isValid = validateFields(["prescriptionNumber"])
                 searchParams = { prescriptionNumber }
                 fetchFunction = () => fecthByPrescriptionNumber(prescriptionNumber)
@@ -126,44 +123,30 @@ export const SearchFormProvider = ({ children }) => {
     }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults])
 
     // Actualizar la data despues de programar los direccionamientos
-    const updateDataAfterProgramming = useCallback(async (programmedIds) => {
+    const updateDataAfterProgramming = useCallback(async () => {
         const { searchParams } = state.searchResults
-
-        // Actualiza los datos localmente
-        const updatedData = data.map(item =>
-            programmedIds.includes(item.id) ? { ...item, status: 'programmed' } : item
-        );
-
-        // Actualiza el estado con los datos modificados inmediatamente
-        setSearchResults(prevState => ({ ...prevState, data: updatedData }));
-
         let fetchFunction
+        
         if (searchParams.prescriptionNumber) {
-            console.log("actualizando data por número d eprescripción")
             fetchFunction = () => fecthByPrescriptionNumber(searchParams.prescriptionNumber)
         } else if (searchParams.documentType && searchParams.documentNumber) {
-            console.log("actualizando data por paciente fecha")
             fetchFunction = () => fetchByDate(searchParams.startDate, searchParams.endDate, searchParams.documentType, searchParams.documentNumber);
         } else {
-            console.log("actualizando data por rango de fecha")
             fetchFunction = () => fetchByDate(searchParams.startDate, searchParams.endDate);
         }
 
-        try {
-            setSearchResults(prevState => ({ ...prevState, loading: true }));
-            const freshData = await fetchFunction();
-            console.log(typeof (freshData))
-            console.log("data actualizada: ", freshData)
-            if (freshData && typeof freshData === "object") {
-                // Combina los datos frescos con el estado actualizado localmente
-                const finalData = freshData.map(item => {
-                    const localItem = updatedData.find(localItem => localItem.id === item.id);
-                    return localItem || item;
-                });
+        if (typeof fetchFunction !== "function") { // Validar si es una función 
+            throw new Error(`fetchFunction no es una función válida`)
+        }
 
-                setSearchResults(prevState => ({ ...prevState, data: finalData, loading: false }));
+        try {
+            setSearchResults({ loading: true })
+            const freshData = await fetchFunction();
+            if (freshData && typeof freshData === "object") {
+                setSearchResults({ data: freshData, loading: false })
+                
             } else {
-                setSearchResults({ loading: false });
+                setSearchResults({ loading: false })
                 showAlert("Error al actualizar los datos", "error");
             }
         } catch (error) {
@@ -171,7 +154,7 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: false });
             showAlert("Error al actualizar los datos despues de programarlos", "error");
         }
-    }, [state.searchResults, setSearchResults, fecthByPrescriptionNumber, fetchByDate])
+    }, [state.searchResults, setSearchResults])
 
     const value = {
         ...state.formData,

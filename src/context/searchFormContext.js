@@ -1,4 +1,5 @@
 "use client"
+import { useModule } from "./moduleContext"
 import { createContext, useContext, useReducer, useCallback } from "react"
 import { useApiCall } from "@/hooks/useApiCall"
 import showAlert from "@/services/alertSweet"
@@ -21,6 +22,7 @@ const initialState = {
         loading: false,
         isSearch: false,
         searchParams: {},
+        searchModule: null
     }
 }
 
@@ -41,6 +43,7 @@ export const SearchFormProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
     const { fecthByPrescriptionNumber, fetchByDate } = useApiCall()
     const { selected, setSelected, handleCheckboxChange, handleSelectAllAssets } = useOnChangeCheckbox()
+    const { currentModule } = useModule()
 
     // Actualizar (los valores) de los inputs del formulario
     const updateForm = useCallback((field, value) => {
@@ -100,7 +103,7 @@ export const SearchFormProvider = ({ children }) => {
         }
 
         try {
-            setSearchResults({ loading: true, isSearch: true, data: [], searchParams });
+            setSearchResults({ loading: true, isSearch: true, data: [], searchParams, searchModule: currentModule });
             setSelected([])
 
             if (typeof fetchFunction !== "function") { // Validar si es una función 

@@ -1,7 +1,7 @@
 "use client"
 import { useModule } from "./moduleContext"
 import { createContext, useContext, useReducer, useCallback } from "react"
-import { useApiCall } from "@/hooks/useApiCall"
+import { apiCall } from "@/api/apiCall"
 import showAlert from "@/services/alertSweet"
 import { useOnChangeCheckbox } from "@/hooks/useOnChangeCheckbox"
 
@@ -41,7 +41,7 @@ function reducer(state, action) {
 
 export const SearchFormProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { fecthByPrescriptionNumber, fetchByDate } = useApiCall()
+    const { fecthByPrescriptionNumber, fetchByDate } = apiCall()
     const { selected, setSelected, handleCheckboxChange, handleSelectAllAssets } = useOnChangeCheckbox()
     const { currentModule } = useModule()
 

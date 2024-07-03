@@ -1,5 +1,5 @@
-import { fetchData } from "./fecthdate/fetchData"
-import { getDatesArray } from "./fecthdate/getDatesArray"
+import { fetchData } from "./fetchData"
+import { getDatesArray } from "./getDatesArray"
 
 export default async function getDateRangeData(startDateStr, endDateStr, queryToken, documentType = null, documentNumber = null, currentModule) {
     // Convertir las fechas de string a un objeto Date

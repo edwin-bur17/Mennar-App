@@ -1,6 +1,6 @@
 import DireccionamientoCard from "./DireccionamientoCard";
 import Loading from "./Loading";
-import DireccionamientosProgrammingAlert from "./DireccionamientosProgrammingAlert";
+import ProgrammingAlert from "./ProgrammingAlert";
 import CheckboxInput from "./CheckboxInput";
 import SearchSumary from "./SearchSumary";
 import { useSearchForm } from "@/context/searchFormContext";
@@ -28,9 +28,9 @@ const ResultCardList = () => {
                     <>
                         <SearchSumary />
                         {selected.length > 0 && (
-                            <DireccionamientosProgrammingAlert />
+                            <ProgrammingAlert />
                         )}
-                        {activeDireccionamientos.length > 0 && (
+                        {activeDireccionamientos && (
                             <div className="my-5">
                                 <CheckboxInput
                                     checked={isCheckedAllAssets}

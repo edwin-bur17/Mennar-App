@@ -1,10 +1,10 @@
 import axios from "axios";
 import getQueryToken from "@/services/queryToken";
-import getDateRangeData from "@/services/getDateRangeData";
+import getDateRangeData from "@/services/fecthdate/getDateRangeData";
 import { useModule } from "@/context/moduleContext";
 import { getEndpoint } from "@/utils/getEndPoint";
 
-export const useApiCall = () => {
+export const apiCall = () => {
     const { currentModule } = useModule()
 
     // Llamado a la api para buscar direccionamiento por rango de fecha y paciente

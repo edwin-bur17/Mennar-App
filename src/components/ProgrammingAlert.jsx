@@ -4,7 +4,7 @@ import showAlert from "@/services/alertSweet"
 import axios from "axios"
 import { useSearchForm } from '@/context/searchFormContext'
 
-const DireccionamientosProgrammingAlert = () => {
+const ProgrammingAlert = () => {
     const [isProgramming, setIsProgramming] = useState(false)
     const { selected, setSelected, updateDataAfterProgramming } = useSearchForm()
    
@@ -49,4 +49,4 @@ const DireccionamientosProgrammingAlert = () => {
     )
 }
 
-export default DireccionamientosProgrammingAlert
+export default ProgrammingAlert

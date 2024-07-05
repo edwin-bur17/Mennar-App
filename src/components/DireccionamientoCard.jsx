@@ -1,17 +1,20 @@
+import { useModule } from "@/context/moduleContext"
+import { useSearchForm } from "@/context/searchFormContext"
 import estadoDireccionamiento from "@/utils/estadoDireccionamiento"
 import { formatDate } from "@/utils/formatDate"
-import { useModule } from "@/context/moduleContext"
 import CheckboxInput from "./CheckboxInput"
 import CardField from "./CardField"
 
 function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange }) {
+    const { openModal } = useSearchForm()
     const { currentModule } = useModule()
     const isDireccionamiento = currentModule === "direccionamientos"
     const bg = direccionamiento.EstDireccionamiento === 0 ? "bg-red-300" : "bg-slate-300"
+
     return (
-        <div className={` ${bg} p-4 rounded-lg text-gray-950`}>
+        <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
             <h2 className="font-semibold">ID: {direccionamiento.ID}</h2>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1">
                 <CardField
                     title={isDireccionamiento ? "ID direccionamiento" : "ID Programación:"}
                     content={isDireccionamiento ? direccionamiento.IDDireccionamiento : direccionamiento.IDProgramacion}
@@ -34,8 +37,8 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                 />
                 <CardField
                     title="Proveedor"
-                    content={isDireccionamiento 
-                        ? `${direccionamiento.TipoIDProv} - ${direccionamiento.NoIDProv}` 
+                    content={isDireccionamiento
+                        ? `${direccionamiento.TipoIDProv} - ${direccionamiento.NoIDProv}`
                         : `${direccionamiento.TipoIDSedeProv} - ${direccionamiento.NoIDSedeProv}`}
                 />
                 <CardField
@@ -61,7 +64,10 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                 />
             }
             {!isDireccionamiento &&
-                <button className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3" type="button">Entrega</button>
+                <button
+                    className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
+                    onClick={() => openModal(direccionamiento)}
+                >Entrega</button>
             }
         </div>
     )

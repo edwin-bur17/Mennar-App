@@ -23,6 +23,10 @@ const initialState = {
         isSearch: false,
         searchParams: {},
         searchModule: null
+    },
+    modalDelivery: {
+        isModalOpen: false,
+        currentDireccionamiento: null
     }
 }
 
@@ -34,6 +38,10 @@ function reducer(state, action) {
             return { ...state, formData: initialState.formData };
         case "SET_SEARCH_RESULTS": // 
             return { ...state, searchResults: { ...state.searchResults, ...action.payload } };
+        case "OPEN_MODAL":
+            return { ...state, modalDelivery: { isModalOpen: true, currentDireccionamiento: action.payload } }
+        case "CLOSE_MODAL":
+            return { ...state, modalDelivery: { isModalOpen: false, currentDireccionamiento: null } }
         default:
             return state
     }
@@ -65,6 +73,19 @@ export const SearchFormProvider = ({ children }) => {
         return fields.every(field => state.formData[field] !== "")
     }, [state.formData])
 
+    // Abrir modal entrega
+    const openModal = (direccionamiento) => {
+        if (direccionamiento && typeof direccionamiento === "object") {
+            dispatch({ type: "OPEN_MODAL", payload: direccionamiento })
+        } else {
+            console.error("Intento de abrir la modal inválido", direccionamiento)
+        }
+    }
+
+    // Cerrar modal entrega
+    const closeModal = () => {
+        dispatch({ type: "CLOSE_MODAL" })
+    }
 
     // Envío del formulario
     const handleSubmit = useCallback(async (e, type) => {
@@ -129,7 +150,7 @@ export const SearchFormProvider = ({ children }) => {
     const updateDataAfterProgramming = useCallback(async () => {
         const { searchParams } = state.searchResults
         let fetchFunction
-        
+
         if (searchParams.prescriptionNumber) {
             fetchFunction = () => fecthByPrescriptionNumber(searchParams.prescriptionNumber)
         } else if (searchParams.documentType && searchParams.documentNumber) {
@@ -147,7 +168,7 @@ export const SearchFormProvider = ({ children }) => {
             const freshData = await fetchFunction();
             if (freshData && typeof freshData === "object") {
                 setSearchResults({ data: freshData, loading: false })
-                
+
             } else {
                 setSearchResults({ loading: false })
                 showAlert("Error al actualizar los datos", "error");
@@ -162,13 +183,16 @@ export const SearchFormProvider = ({ children }) => {
     const value = {
         ...state.formData,
         ...state.searchResults,
+        ...state.modalDelivery,
         updateForm,
         handleSubmit,
         selected,
         setSelected,
         handleSelectAllAssets,
         handleCheckboxChange,
-        updateDataAfterProgramming
+        updateDataAfterProgramming,
+        openModal,
+        closeModal
     }
 
     return (

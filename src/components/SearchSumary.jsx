@@ -10,9 +10,9 @@ const SearchSumary = () => {
 
     // Resumen de la búsqueda
     const total = data.length
-    const cancelled = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 0).length
-    const assets = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1).length
-    const programmed = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 2).length
+    const cancelled = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento || direccionamiento.EstProgramacion === 0 ).length 
+    const assets = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento || direccionamiento.EstProgramacion === 1).length
+    const programmed = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento || direccionamiento.EstProgramacion === 2).length
     console.log(searchParams)
 
     const handleToggleVisibility = () => { setIsVisible(!isVisible) }

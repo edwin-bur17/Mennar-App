@@ -1,16 +1,27 @@
+import { useSearchForm } from "@/context/searchFormContext";
+import { useModule } from "@/context/moduleContext";
 import DireccionamientoCard from "./DireccionamientoCard";
 import Loading from "./Loading";
 import ProgrammingAlert from "./ProgrammingAlert";
 import CheckboxInput from "./CheckboxInput";
 import SearchSumary from "./SearchSumary";
-import { useSearchForm } from "@/context/searchFormContext";
-import { useModule } from "@/context/moduleContext";
+import ModalDelivery from "./ModalDelivery"
 
 const ResultCardList = () => {
-    const { data, loading, isSearch, handleCheckboxChange, handleSelectAllAssets, selected, searchModule } = useSearchForm()
+    const {
+        data,
+        loading,
+        isSearch,
+        handleCheckboxChange,
+        handleSelectAllAssets,
+        selected,
+        searchModule,
+        currentDireccionamiento,
+        isModalOpen,
+        closeModal
+    } = useSearchForm()
     const { currentModule } = useModule()
-
-    // Mostrar la data de acuerdoal módulo actual
+    // Mostrar la data de acuerdo al módulo actual
     const showData = isSearch && (currentModule === searchModule)
 
     // Direcionamientos activos
@@ -18,7 +29,7 @@ const ResultCardList = () => {
 
     // todos los direccionamientos activos están seleccionados
     const isCheckedAllAssets = selected.length === data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1).length
-    
+
     return (
         <section>
             {loading ? (
@@ -52,12 +63,19 @@ const ResultCardList = () => {
                                 />
                             ))}
                         </article>
+                        {isModalOpen &&
+                            <ModalDelivery
+                                onClose={closeModal}
+                                isOpen={isModalOpen}
+                                direccionamiento={currentDireccionamiento}
+                            />
+                        }
                     </>
                 ) : (
-                    <h3 className="text-white text-lg">No hay resultados, revisa los campos de búsqueda e intenta nuevamente</h3>
+                    <p className="text-white text-lg text-center mt-10">No hay resultados, revisa los campos de búsqueda e intenta nuevamente</p>
                 )
             ) : isSearch ? (
-                <h3 className="text-white text-lg">Los resultados de la búsqueda no corresponden al módulo actual</h3>
+                <p className="text-white text-lg text-center mt-10">Los resultados de la búsqueda no corresponden al módulo actual</p>
             ) : null}
         </section>
     )

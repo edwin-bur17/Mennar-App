@@ -9,7 +9,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
     const { openModal } = useSearchForm()
     const { currentModule } = useModule()
     const isDireccionamiento = currentModule === "direccionamientos"
-    const bg = direccionamiento.EstDireccionamiento === 0 ? "bg-red-300" : "bg-slate-300"
+    const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-red-300" : "bg-slate-300"
 
     return (
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
@@ -63,7 +63,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                     direccionamiento={direccionamiento}
                 />
             }
-            {!isDireccionamiento &&
+            {direccionamiento.EstProgramacion === 1 &&
                 <button
                     className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(direccionamiento)}

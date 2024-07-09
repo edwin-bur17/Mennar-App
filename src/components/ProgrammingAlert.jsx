@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react'
 import showAlert from "@/services/alertSweet"
 import axios from "axios"
 import { useSearchForm } from '@/context/searchFormContext'
+import Spinner from './Spinner'
 
 const ProgrammingAlert = () => {
     const [isProgramming, setIsProgramming] = useState(false)
@@ -13,7 +14,7 @@ const ProgrammingAlert = () => {
         if (isProgramming) return
         try {
             setIsProgramming(true)
-            const res = await axios.put("/api/programar/direccionamientos", { direccionamientos: selected })
+            const res = await axios.put("/api/direccionamiento/programar", { direccionamientos: selected })
             if (res.status === 200) {
                 await new Promise(resolve => setTimeout(resolve, 1500))
                 await updateDataAfterProgramming()
@@ -39,10 +40,7 @@ const ProgrammingAlert = () => {
                 disabled={isProgramming}
             >
                 {isProgramming ? (
-                    <div className="flex items-center">
-                        <span className="animate-spin rounded-full h-5 w-5 border-4 border-white border-t-gray-300 mr-2"></span>
-                        Programando ...
-                    </div>
+                    <Spinner text="Programando ..."/>
                 ) : ("Programar")}
             </button>
         </div>

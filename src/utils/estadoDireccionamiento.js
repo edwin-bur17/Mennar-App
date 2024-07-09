@@ -1,11 +1,18 @@
+import { useModule } from "@/context/moduleContext"
 export default function estadoDireccionamiento(estado) {
+    const {currentModule} = useModule()
+
     switch (estado) {
         case 0:
             return "Anulado"
         case 1:
             return "Activo"
         case 2:
-            return "Programado"
+            if (currentModule === "direccionamientos") {
+                return "Programado"
+            }else{
+                return "Procesado"
+            }  
         default:
             return "Desconocido"
     }

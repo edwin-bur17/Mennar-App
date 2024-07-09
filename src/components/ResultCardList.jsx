@@ -5,7 +5,7 @@ import Loading from "./Loading";
 import ProgrammingAlert from "./ProgrammingAlert";
 import CheckboxInput from "./CheckboxInput";
 import SearchSumary from "./SearchSumary";
-import ModalDelivery from "./ModalDelivery"
+import DeliveryModal from "./delivery/DeliveryModal"
 
 const ResultCardList = () => {
     const {
@@ -16,9 +16,7 @@ const ResultCardList = () => {
         handleSelectAllAssets,
         selected,
         searchModule,
-        currentDireccionamiento,
         isModalOpen,
-        closeModal
     } = useSearchForm()
     const { currentModule } = useModule()
     // Mostrar la data de acuerdo al módulo actual
@@ -64,11 +62,7 @@ const ResultCardList = () => {
                             ))}
                         </article>
                         {isModalOpen &&
-                            <ModalDelivery
-                                onClose={closeModal}
-                                isOpen={isModalOpen}
-                                direccionamiento={currentDireccionamiento}
-                            />
+                            <DeliveryModal />
                         }
                     </>
                 ) : (

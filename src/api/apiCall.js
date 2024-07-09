@@ -9,13 +9,12 @@ export const apiCall = () => {
 
     // Llamado a la api para buscar direccionamiento por rango de fecha y paciente
     const fetchByDate = async (startDate, endDate, documentType, documentNumber) => {
-        console.log("url actual desde useApiCall.jsx: ", currentModule)
         try {
             const token = await getQueryToken()
             const res = await getDateRangeData(startDate, endDate, token, documentType, documentNumber, currentModule)
             return res
         } catch (error) {
-            console.log("Error al obtener el direcccionamiento por fecha, desde useApiCall.js: ", error)
+            console.error("Error al obtener el direcccionamiento por fecha, desde useApiCall.js: ", error)
             return "Error al obtener el direcccionamiento por fecha (rango/paciente)"
         }
     }
@@ -26,12 +25,10 @@ export const apiCall = () => {
         try {
             const token = await getQueryToken()
             let url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porPrescripcion")}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
-            console.log("url de la consulta par anúmero de prescripción: ", url)
             const res = await axios(url)
-            console.log("data desde useApicall: ", res.data)
             return res.data
         } catch (error) {
-            console.log("Error al obtener el direcccionamiento por número de prescripción, desde useApiCall.js: ", error)
+            console.error("Error al obtener el direcccionamiento por número de prescripción, desde useApiCall.js: ", error)
             return "Error al obtener el direcccionamiento por número de prescripción"
         }
     }

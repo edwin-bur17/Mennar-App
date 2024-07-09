@@ -1,19 +1,18 @@
-"use client"
 import { useState } from "react"
-import { AiOutlineEye } from "react-icons/ai";
-import { AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useSearchForm } from "@/context/searchFormContext";
+import { useModule } from "@/context/moduleContext";
 
 const SearchSumary = () => {
     const [isVisible, setIsVisible] = useState(true)
-    const {data, searchParams} = useSearchForm()
+    const {data} = useSearchForm()
+    const {currentModule} = useModule()
 
     // Resumen de la búsqueda
     const total = data.length
-    const cancelled = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento || direccionamiento.EstProgramacion === 0 ).length 
-    const assets = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento || direccionamiento.EstProgramacion === 1).length
-    const programmed = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento || direccionamiento.EstProgramacion === 2).length
-    console.log(searchParams)
+    const cancelled = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ).length 
+    const assets = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1 || direccionamiento.EstProgramacion === 1).length
+    const programmed = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 2 || direccionamiento.EstProgramacion === 2).length
 
     const handleToggleVisibility = () => { setIsVisible(!isVisible) }
 
@@ -29,10 +28,10 @@ const SearchSumary = () => {
             >
                 <div className="bg-white flex justify-around items-center p-2 h-full">
                     <h3>Resumen de la búsqueda</h3>
-                    <p>Total: {total}</p>
-                    <p className="text-red-500">Anulados: {cancelled}</p>
-                    <p>Activos: {assets}</p>
-                    <p className="text-green-600">Programados: {programmed}</p>
+                    <span>Total: {total}</span>
+                    <span className="text-red-500">Anulados: {cancelled}</span>
+                    <span>Activos: {assets}</span>
+                    <span className="text-green-600">{currentModule === "direccionamientos" ? "Programados:" : "Procesados:"} {programmed}</span>
                 </div>
             </div>
         </div>

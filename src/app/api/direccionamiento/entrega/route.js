@@ -8,7 +8,7 @@ export async function PUT(request) {
         const queryToken = await getQueryToken()
         const ulrQuery = `${process.env.NEXT_PUBLIC_API_URL}/Entrega/${process.env.NEXT_PUBLIC_NIT}/${queryToken}`
         const res = await axios.put(ulrQuery, formData)
-        return NextResponse.json({ message: "Entrega exitosa", data: res.data }, { status: 200 })
+        return NextResponse.json({ message: "Entrega exitosa", Ids: res.data[0] }, { status: 200 })
     } catch (error) {
         if (error.response) {
             if (error.response.status === 422) {

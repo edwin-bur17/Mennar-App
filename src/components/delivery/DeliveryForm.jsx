@@ -42,8 +42,9 @@ const DeliveryForm = () => {
         try {
             setIsLoading(true)
             const res = await axios.put("/api/direccionamiento/entrega", { formData })
-            console.log(res)
             if (res.status === 200) {
+                console.log(res.data.Ids.Id)
+                console.log(res.data.Ids.IdEntrega)
                 await new Promise(resolve => setTimeout(resolve, 1500))
                 updateDataAfterProgramming()
                 closeModal()

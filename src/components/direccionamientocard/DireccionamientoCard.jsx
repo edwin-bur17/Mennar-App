@@ -2,19 +2,20 @@ import { useModule } from "@/context/moduleContext"
 import { useSearchForm } from "@/context/searchFormContext"
 import estadoDireccionamiento from "@/utils/estadoDireccionamiento"
 import { formatDate } from "@/utils/formatDate"
-import CheckboxInput from "./CheckboxInput"
-import CardField from "./CardField"
+import technologyType from "@/utils/technologyType"
+import CheckboxInput from "../CheckboxInput"
+import { CardField, Progress } from "./ui/ui"
 
 function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange }) {
     const { openModal } = useSearchForm()
     const { currentModule } = useModule()
     const isDireccionamiento = currentModule === "direccionamientos"
-    const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-red-300" : "bg-slate-300"
+    const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-red-100" : "bg-slate-300"
 
     return (
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
-            <h2 className="font-semibold">ID: {direccionamiento.ID}</h2>
-            <div className="grid grid-cols-2 gap-1">
+            <Progress direccionamiento={direccionamiento} />
+            <div className="grid grid-cols-3 gap-2">
                 <CardField
                     title={isDireccionamiento ? "ID direccionamiento" : "ID Programación:"}
                     content={isDireccionamiento ? direccionamiento.IDDireccionamiento : direccionamiento.IDProgramacion}
@@ -36,10 +37,8 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                     content={direccionamiento.CantTotAEntregar}
                 />
                 <CardField
-                    title="Proveedor"
-                    content={isDireccionamiento
-                        ? `${direccionamiento.TipoIDProv} - ${direccionamiento.NoIDProv}`
-                        : `${direccionamiento.TipoIDSedeProv} - ${direccionamiento.NoIDSedeProv}`}
+                    title="Servicio o tecnológia"
+                    content={technologyType(direccionamiento.TipoTec)}
                 />
                 <CardField
                     title="Servicio a entregar"
@@ -50,7 +49,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                     content={isDireccionamiento ? formatDate(direccionamiento.FecDireccionamiento) : formatDate(direccionamiento.FecProgramacion)}
                 />
                 <CardField
-                    title="Estado"
+                    title="Estado actual"
                     content={isDireccionamiento
                         ? estadoDireccionamiento(direccionamiento.EstDireccionamiento)
                         : estadoDireccionamiento(direccionamiento.EstProgramacion)}
@@ -69,6 +68,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                     onClick={() => openModal(direccionamiento)}
                 >Entrega</button>
             }
+            
         </div>
     )
 }

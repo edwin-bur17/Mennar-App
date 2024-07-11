@@ -1,6 +1,6 @@
 import { useSearchForm } from "@/context/searchFormContext";
 import { useModule } from "@/context/moduleContext";
-import DireccionamientoCard from "./DireccionamientoCard";
+import DireccionamientoCard from "./direccionamientocard/DireccionamientoCard";
 import Loading from "./Loading";
 import ProgrammingAlert from "./ProgrammingAlert";
 import CheckboxInput from "./CheckboxInput";
@@ -51,7 +51,7 @@ const ResultCardList = () => {
                                 </label>
                             </div>
                         )}
-                        <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+                        <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-5">
                             {data.map((direccionamiento) => (
                                 <DireccionamientoCard
                                     key={direccionamiento.ID}

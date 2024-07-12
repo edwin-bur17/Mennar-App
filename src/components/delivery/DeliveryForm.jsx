@@ -43,18 +43,16 @@ const DeliveryForm = () => {
             setIsLoading(true)
             const res = await axios.put("/api/direccionamiento/entrega", { formData })
             if (res.status === 200) {
-                console.log(res.data.Ids.Id)
-                console.log(res.data.Ids.IdEntrega)
+                let entregaId = res.data.Ids.IdEntrega // Id de la entrega exitosa
                 await new Promise(resolve => setTimeout(resolve, 1500))
-                updateDataAfterProgramming()
+                updateDataAfterProgramming(ID, entregaId)
                 closeModal()
                 setAlert(res.data.message)
                 showAlert(res.data.message, "success")
+                console.log(currentDireccionamiento)
             }
         } catch (error) {
             if (error.response && error.response.status === 422) {
-                console.error("Error de validación:", error.response.data.message);
-                console.error("Detalles:", error.response.data.details);
                 showAlert("Error al hacer la entrega, revisa la alerta", "error")
                 setAlert(error.response.data.details)
             } else {

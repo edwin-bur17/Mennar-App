@@ -16,6 +16,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
             <Progress direccionamiento={direccionamiento} />
             <div className="grid grid-cols-3 gap-2">
+                <CardField title="ID" content={direccionamiento.ID}/>
                 <CardField
                     title={isDireccionamiento ? "ID direccionamiento" : "ID Programación:"}
                     content={isDireccionamiento ? direccionamiento.IDDireccionamiento : direccionamiento.IDProgramacion}
@@ -54,6 +55,12 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                         ? estadoDireccionamiento(direccionamiento.EstDireccionamiento)
                         : estadoDireccionamiento(direccionamiento.EstProgramacion)}
                 />
+                {direccionamiento.IDEntrega && (
+                    <CardField
+                    title="Id de la entrega"
+                    content={direccionamiento.IDEntrega}
+                />
+                )}
             </div>
             {direccionamiento.EstDireccionamiento === 1 &&
                 <CheckboxInput
@@ -64,11 +71,16 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
             }
             {direccionamiento.EstProgramacion === 1 &&
                 <button
-                    className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
+                    className="bg-sky-600 text-white hover:bg-sky-500 rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(direccionamiento)}
                 >Entrega</button>
             }
-            
+            {direccionamiento.IDEntrega &&
+                <button
+                    className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
+                    onClick={() => openModal(direccionamiento)}
+                >Reporte entrega</button>
+            }
         </div>
     )
 }

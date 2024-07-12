@@ -147,7 +147,8 @@ export const SearchFormProvider = ({ children }) => {
     }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults])
 
     // Actualizar la data despues de programar los direccionamientos
-    const updateDataAfterProgramming = useCallback(async () => {
+    const updateDataAfterProgramming = useCallback(async (direccionamientoId, entregaId) => {
+        console.log(direccionamientoId, entregaId)
         const { searchParams } = state.searchResults
         let fetchFunction
 
@@ -167,8 +168,11 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: true })
             const freshData = await fetchFunction();
             if (freshData && typeof freshData === "object") {
-                setSearchResults({ data: freshData, loading: false })
-
+                 // Aquí se agrega el campo de IdEntrega al direccionamiento actual
+            const updatedData = freshData.map(item => 
+                item.ID === direccionamientoId ? { ...item, IDEntrega: entregaId } : item
+            )
+                setSearchResults({ data: updatedData, loading: false })
             } else {
                 setSearchResults({ loading: false })
                 showAlert("Error al actualizar los datos", "error");

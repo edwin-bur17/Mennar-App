@@ -1,6 +1,7 @@
 import { Dialog, DialogPanel, DialogBackdrop, Transition, TransitionChild } from '@headlessui/react'
 import { Fragment } from 'react'
-import DeliveryForm from './DeliveryForm'
+import DeliveryForm from './delivery/DeliveryForm'
+import InvoiceForm from './invoice/InvoiceForm';
 import { IoClose } from "react-icons/io5";
 import { useSearchForm } from '@/context/searchFormContext'
 
@@ -40,7 +41,8 @@ const ModalDelivery = ({ }) => {
                                         <IoClose size={32} />
                                     </button>
                                 </div>
-                                <DeliveryForm />
+                                {/* <DeliveryForm /> */}
+                                <InvoiceForm />
                             </DialogPanel>
                         </TransitionChild>
                     </div>

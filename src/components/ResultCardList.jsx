@@ -5,7 +5,7 @@ import Loading from "./Loading";
 import ProgrammingAlert from "./ProgrammingAlert";
 import CheckboxInput from "./CheckboxInput";
 import SearchSumary from "./SearchSumary";
-import DeliveryModal from "./delivery/DeliveryModal"
+import Modal from "./Modal"
 
 const ResultCardList = () => {
     const {
@@ -62,7 +62,7 @@ const ResultCardList = () => {
                             ))}
                         </article>
                         {isModalOpen &&
-                            <DeliveryModal />
+                            <Modal />
                         }
                     </>
                 ) : (

@@ -3,7 +3,8 @@ import axios from "axios"
 import { useState } from "react"
 import { typeOptions } from "@/utils/documentTypeOptions"
 import showAlert from "@/services/alertSweet"
-import { Alert, Button, Input } from "./ui/ui"
+import { Alert, Button } from "./ui/ui"
+import Input from "@/components/Input"
 const DeliveryForm = () => {
     const { closeModal, currentDireccionamiento, updateDataAfterProgramming } = useSearchForm()
     const { ID, CodSerTecAEntregar, CantTotAEntregar } = currentDireccionamiento

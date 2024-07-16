@@ -5,7 +5,7 @@ import Loading from "./Loading";
 import ProgrammingAlert from "./ProgrammingAlert";
 import CheckboxInput from "./CheckboxInput";
 import SearchSumary from "./SearchSumary";
-import Modal from "./Modal"
+import Modal from "./delivery/Modal"
 
 const ResultCardList = () => {
     const {

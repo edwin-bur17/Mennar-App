@@ -1,5 +1,5 @@
 import Spinner from "@/components/Spinner"
-const Button = ({ isLoading }) => {
+const Button = ({ isLoading, title }) => {
     return (
         <button
             type="submit"
@@ -8,7 +8,7 @@ const Button = ({ isLoading }) => {
         >
             {isLoading ? (
                 <Spinner text="Enviando ..." />
-            ) : ("Entrega")}
+            ) : title}
         </button>
     )
 }

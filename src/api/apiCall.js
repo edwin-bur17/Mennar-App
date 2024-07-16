@@ -21,7 +21,6 @@ export const apiCall = () => {
 
     // Llamado a la api para buscar direccionamiento por número de prescripción
     const fecthByPrescriptionNumber = async (prescriptionNumber) => {
-        console.log(prescriptionNumber)
         try {
             const token = await getQueryToken()
             let url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porPrescripcion")}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
@@ -33,5 +32,24 @@ export const apiCall = () => {
         }
     }
 
-    return { fetchByDate, fecthByPrescriptionNumber }
+    // Agregar data adicional luego de hacer una entrega
+    const fecthAdditionalData = async (noPrescription, Id) => {
+        try {
+            const token = await getQueryToken()
+            let url = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${noPrescription}`
+            const res = await axios(url)
+            let direccionamientoData = res.data
+            let index = direccionamientoData.findIndex(item => item.ID === Id)
+            if (index !== -1) {
+                const { NoSubEntrega, NoIDEPS, CodEPS } = direccionamientoData[index];
+                return { NoSubEntrega, NoIDEPS, CodEPS };
+            } else {
+                throw new Error("No se encontró el objeto con el ID especificado")
+            }
+        } catch (error) {
+            console.error("Error al obtener la data adicional, desde useApiCall.js: ", error)
+            return "Error al obtener la data adicional por número de prescripción"
+        }
+    }
+    return { fetchByDate, fecthByPrescriptionNumber, fecthAdditionalData }
 }

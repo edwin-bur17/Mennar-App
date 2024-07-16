@@ -1,4 +1,15 @@
-const Input = ({ label, id, type, value, onChange, readOnly, options, maxLength, colSpan, className }) => (
+const Input = ({
+    label,
+    id,
+    type,
+    value,
+    onChange,
+    readOnly,
+    options,
+    maxLength,
+    colSpan,
+    className,
+    placeholder }) => (
     <div className={`mb-4 ${colSpan}`}>
         <label htmlFor={id} className="block mb-1 text-base font-medium text-gray-700">
             {label}
@@ -26,6 +37,7 @@ const Input = ({ label, id, type, value, onChange, readOnly, options, maxLength,
                 onChange={onChange}
                 readOnly={readOnly}
                 maxLength={maxLength}
+                placeholder={placeholder}
             />
         )}
     </div>

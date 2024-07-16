@@ -1,13 +1,14 @@
 import { useSearchForm } from "@/context/searchFormContext"
 import axios from "axios"
 import { useState } from "react"
+import { apiCall } from "@/api/apiCall"
 import { typeOptions } from "@/utils/documentTypeOptions"
 import showAlert from "@/services/alertSweet"
-import { Alert, Button } from "./ui/ui"
-import Input from "@/components/Input"
+import { Button, Alert, Input } from "./ui/ui"
 const DeliveryForm = () => {
+    const { fecthAdditionalData } = apiCall()
     const { closeModal, currentDireccionamiento, updateDataAfterProgramming } = useSearchForm()
-    const { ID, CodSerTecAEntregar, CantTotAEntregar } = currentDireccionamiento
+    const { ID, CodSerTecAEntregar, CantTotAEntregar, NoPrescripcion } = currentDireccionamiento
     const [formData, setFormData] = useState({
         ID: ID,
         CodSerTecEntregado: CodSerTecAEntregar,
@@ -45,12 +46,16 @@ const DeliveryForm = () => {
             const res = await axios.put("/api/direccionamiento/entrega", { formData })
             if (res.status === 200) {
                 let entregaId = res.data.Ids.IdEntrega // Id de la entrega exitosa
+                const additionalData = await fecthAdditionalData(NoPrescripcion, ID)
+                const updateData ={ // Data adicional para la facturación y el reporte entrega
+                    IDEntrega: entregaId,
+                    ...additionalData
+                }
                 await new Promise(resolve => setTimeout(resolve, 1500))
-                updateDataAfterProgramming(ID, entregaId)
+                updateDataAfterProgramming(ID, updateData)
                 closeModal()
                 setAlert(res.data.message)
                 showAlert(res.data.message, "success")
-                console.log(currentDireccionamiento)
             }
         } catch (error) {
             if (error.response && error.response.status === 422) {
@@ -67,11 +72,11 @@ const DeliveryForm = () => {
     const formFields = [ //Campos del formulario
         { label: "Código servicio a entregar:", id: "CodSerTecAEntregar", type: "text", value: CodSerTecAEntregar, readOnly: true },
         { label: "Cantidad Total a entregar:", id: "CantTotAEntregar", type: "text", value: CantTotAEntregar, readOnly: true },
-        { label: "Cantidad entregada:", id: "CantTotEntregada", type: "number", value: formData.CantTotEntregada },
+        { label: "Cantidad entregada:", id: "CantTotEntregada", type: "number", value: formData.CantTotEntregada, placeholder: "Digita la cantidad entregada" },
         { label: "Fecha de Entrega:", id: "FecEntrega", type: "date", value: formData.FecEntrega },
-        { label: "Número de lote:", id: "NoLote", type: "number", value: formData.NoLote },
+        { label: "Número de lote:", id: "NoLote", type: "number", value: formData.NoLote, placeholder: "Digita el número del lote" },
         { label: "Tipo de Identificación:", id: "TipoIDRecibe", type: "select", value: formData.TipoIDRecibe, options: typeOptions },
-        { label: "Número de Identificación:", id: "NoIDRecibe", type: "number", value: formData.NoIDRecibe, maxLength: "10" },
+        { label: "Número de Identificación:", id: "NoIDRecibe", type: "number", value: formData.NoIDRecibe, maxLength: "10", placeholder: "Digita el número de identificación" },
     ];
     return (
         <form onSubmit={handleSubmit}>
@@ -87,7 +92,7 @@ const DeliveryForm = () => {
                     />
                 ))}
             </div>
-            <Button isLoading={isLoading} />
+            <Button isLoading={isLoading} title="Entregar"/>
         </form>
     )
 }

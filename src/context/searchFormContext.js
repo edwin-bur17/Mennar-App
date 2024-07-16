@@ -147,8 +147,9 @@ export const SearchFormProvider = ({ children }) => {
     }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults])
 
     // Actualizar la data despues de programar los direccionamientos
-    const updateDataAfterProgramming = useCallback(async (direccionamientoId, entregaId) => {
-        console.log(direccionamientoId, entregaId)
+    const updateDataAfterProgramming = useCallback(async (direccionamientoId, additionalData) => {
+        console.log(direccionamientoId)
+        console.log(additionalData)
         const { searchParams } = state.searchResults
         let fetchFunction
 
@@ -168,10 +169,10 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: true })
             const freshData = await fetchFunction();
             if (freshData && typeof freshData === "object") {
-                 // Aquí se agrega el campo de IdEntrega al direccionamiento actual
-            const updatedData = freshData.map(item => 
-                item.ID === direccionamientoId ? { ...item, IDEntrega: entregaId } : item
-            )
+                // Aquí se agrega el campo de IdEntrega al direccionamiento actual
+                const updatedData = freshData.map(item =>
+                    item.ID === direccionamientoId ? { ...item, ...additionalData } : item
+                )
                 setSearchResults({ data: updatedData, loading: false })
             } else {
                 setSearchResults({ loading: false })
@@ -196,7 +197,7 @@ export const SearchFormProvider = ({ children }) => {
         handleCheckboxChange,
         updateDataAfterProgramming,
         openModal,
-        closeModal
+        closeModal,
     }
 
     return (

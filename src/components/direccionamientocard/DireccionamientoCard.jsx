@@ -16,7 +16,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
             <Progress direccionamiento={direccionamiento} />
             <div className="grid grid-cols-3 gap-2">
-                <CardField title="ID" content={direccionamiento.ID}/>
+                <CardField title="ID" content={direccionamiento.ID} />
                 <CardField
                     title={isDireccionamiento ? "ID direccionamiento" : "ID Programación:"}
                     content={isDireccionamiento ? direccionamiento.IDDireccionamiento : direccionamiento.IDProgramacion}
@@ -57,10 +57,22 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                 />
                 {direccionamiento.IDEntrega && (
                     <CardField
-                    title="Id de la entrega"
-                    content={direccionamiento.IDEntrega}
-                />
+                        title="Id de la entrega"
+                        content={direccionamiento.IDEntrega}
+                    />
                 )}
+                <CardField
+                    title="Número subentrega"
+                    content={direccionamiento.NoSubEntrega}
+                />
+                <CardField
+                    title="Id EPS"
+                    content={direccionamiento.NoIDEPS}
+                />
+                <CardField
+                    title="Código EPS"
+                    content={direccionamiento.CodEPS}
+                />
             </div>
             {direccionamiento.EstDireccionamiento === 1 &&
                 <CheckboxInput
@@ -75,11 +87,11 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                     onClick={() => openModal(direccionamiento)}
                 >Entrega</button>
             }
-            {direccionamiento.IDEntrega &&
+            {direccionamiento.EstProgramacion === 2 &&
                 <button
                     className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(direccionamiento)}
-                >Reporte entrega</button>
+                >Facturación</button>
             }
         </div>
     )

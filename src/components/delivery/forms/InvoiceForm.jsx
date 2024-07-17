@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { useSearchForm } from "@/context/searchFormContext";
 import { Input, Button, Alert } from "./ui/ui"
 import totalInvoiceValue from "@/utils/totalInvoiceValue";
+import showAlert from "@/services/alertSweet";
 
 export const InvoiceForm = () => {
   const { closeModal, currentDireccionamiento, updateDataAfterProgramming } = useSearchForm()
@@ -47,15 +49,25 @@ export const InvoiceForm = () => {
       [id]: value,
       ...(id === "CuotaModer" && value !== "" ? { Copago: "0" } : {}),
       ...(id === "Copago" && value !== "" ? { CuotaModer: "0" } : {})
-
     }))
   }
 
-  const handleOnSubmit = (e) => {
+  const handleOnSubmit = async (e) => {
     e.preventDefault()
     if (!validateFields()) {
       setAlert("Todos los campos son obligatorios para hacer la entrega")
       return
+    }
+    try {
+      const res = await axios.put("/api/direccionamiento/facturar", { invoiceData })
+      console.log(res.data.message)
+      showAlert(res.data.message, "success")
+    } catch (error) {
+      if (error.response && error.response.status === 422) {
+        setAlert(error.response.data.details)
+      } else {
+        console.error("Error en la solicitud (facturar un direccionamiento):", error.response?.data || error.message);
+      }
     }
   }
 

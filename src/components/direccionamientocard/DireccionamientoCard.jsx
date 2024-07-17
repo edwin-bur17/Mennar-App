@@ -56,23 +56,26 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                         : estadoDireccionamiento(direccionamiento.EstProgramacion)}
                 />
                 {direccionamiento.IDEntrega && (
-                    <CardField
-                        title="Id de la entrega"
-                        content={direccionamiento.IDEntrega}
-                    />
+                    <>
+                        <CardField
+                            title="Id de la entrega"
+                            content={direccionamiento.IDEntrega}
+                        />
+                        <CardField
+                            title="Número subentrega"
+                            content={direccionamiento.NoSubEntrega}
+                        />
+                        <CardField
+                            title="Id EPS"
+                            content={direccionamiento.NoIDEPS}
+                        />
+                        <CardField
+                            title="Código EPS"
+                            content={direccionamiento.CodEPS}
+                        />
+                    </>
+
                 )}
-                <CardField
-                    title="Número subentrega"
-                    content={direccionamiento.NoSubEntrega}
-                />
-                <CardField
-                    title="Id EPS"
-                    content={direccionamiento.NoIDEPS}
-                />
-                <CardField
-                    title="Código EPS"
-                    content={direccionamiento.CodEPS}
-                />
             </div>
             {direccionamiento.EstDireccionamiento === 1 &&
                 <CheckboxInput
@@ -87,7 +90,7 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                     onClick={() => openModal(direccionamiento)}
                 >Entrega</button>
             }
-            {direccionamiento.EstProgramacion === 2 &&
+            {direccionamiento.IDEntrega &&
                 <button
                     className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(direccionamiento)}

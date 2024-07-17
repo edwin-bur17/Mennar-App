@@ -44,7 +44,7 @@ const ModalDelivery = () => {
                                         <IoClose size={32} />
                                     </button>
                                 </div>
-                                {currentDireccionamiento.IDEntrega ? <InvoiceForm /> : <DeliveryForm />}
+                                {currentDireccionamiento.IDEntrega ? <InvoiceForm /> : <DeliveryForm />}                                 {/* <InvoiceForm /> */}
                             </DialogPanel>
                         </TransitionChild>
                     </div>

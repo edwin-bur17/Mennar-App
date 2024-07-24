@@ -7,7 +7,7 @@ import Spinner from './Spinner'
 
 const ProgrammingAlert = () => {
     const [isProgramming, setIsProgramming] = useState(false)
-    const { selected, setSelected, updateDataAfterProgramming } = useSearchForm()
+    const { selected, setSelected, updateData } = useSearchForm()
    
     // Programar direccionamientos 
     const programming = useCallback(async () => {
@@ -17,7 +17,7 @@ const ProgrammingAlert = () => {
             const res = await axios.put("/api/direccionamiento/programar", { direccionamientos: selected })
             if (res.status === 200) {
                 await new Promise(resolve => setTimeout(resolve, 1500))
-                await updateDataAfterProgramming()
+                await updateData()
                 setSelected([])
                 showAlert(res.data.message)
             } else {
@@ -29,7 +29,7 @@ const ProgrammingAlert = () => {
         } finally {
             setIsProgramming(false)
         }
-    }, [selected, setSelected, updateDataAfterProgramming])
+    }, [selected, setSelected, updateData])
 
     return (
         <div className="sticky top-0 z-10 flex justify-between items-center bg-slate-100 text-gray-950 p-3 mt-8 rounded-md transition-all duration-500 ease-in-out">

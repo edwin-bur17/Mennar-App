@@ -1,4 +1,4 @@
-import { Dialog, DialogPanel, DialogBackdrop, Transition, TransitionChild, DialogTitle } from '@headlessui/react'
+import { Dialog, DialogPanel, DialogBackdrop, Transition, TransitionChild } from '@headlessui/react'
 import { Fragment } from 'react'
 import DeliveryForm from './forms/DeliveryForm'
 import InvoiceForm from './forms/InvoiceForm';
@@ -36,7 +36,7 @@ const ModalDelivery = () => {
                             <DialogPanel className="w-full max-w-2xl transform overflow-hidden rounded-xl bg-white p-5 transition-all">
                                 <div className="flex justify-between align-middle mb-2">
                                     <h3 className="text-2xl font-medium">
-                                        {currentDireccionamiento.IDEntrega ? "Facturación" : "Entrega"}
+                                        {currentDireccionamiento.IdEntrega ? "Facturación" : "Entrega"}
                                     </h3>
                                     <button
                                         onClick={closeModal}
@@ -44,7 +44,7 @@ const ModalDelivery = () => {
                                         <IoClose size={32} />
                                     </button>
                                 </div>
-                                {currentDireccionamiento.IDEntrega ? <InvoiceForm /> : <DeliveryForm />}                                 {/* <InvoiceForm /> */}
+                                {currentDireccionamiento.IdEntrega ? <InvoiceForm /> : <DeliveryForm />}                                 {/* <InvoiceForm /> */}
                             </DialogPanel>
                         </TransitionChild>
                     </div>

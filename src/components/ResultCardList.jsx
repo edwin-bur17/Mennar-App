@@ -6,10 +6,11 @@ import ProgrammingAlert from "./ProgrammingAlert";
 import CheckboxInput from "./CheckboxInput";
 import SearchSumary from "./SearchSumary";
 import Modal from "./delivery/Modal"
+import Pagination from "./Pagination";
 
 const ResultCardList = () => {
     const {
-        data,
+        paginatedData,
         loading,
         isSearch,
         handleCheckboxChange,
@@ -17,23 +18,29 @@ const ResultCardList = () => {
         selected,
         searchModule,
         isModalOpen,
+        completeDireccionamientos,
+        fetchCompleteDireccionamiento,
+        currentPage,
+        setPage,
+        totalItems,
+        itemsPerPage
     } = useSearchForm()
     const { currentModule } = useModule()
     // Mostrar la data de acuerdo al módulo actual
     const showData = isSearch && (currentModule === searchModule)
 
     // Direcionamientos activos
-    const activeDireccionamientos = data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1).length > 0
+    const activeDireccionamientos = paginatedData.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1).length > 0
 
     // todos los direccionamientos activos están seleccionados
-    const isCheckedAllAssets = selected.length === data.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1).length
+    const isCheckedAllAssets = selected.length === paginatedData.filter((direccionamiento) => direccionamiento.EstDireccionamiento === 1).length
 
     return (
         <section>
             {loading ? (
                 <Loading />
             ) : showData ? (
-                data.length > 0 ? (
+                paginatedData.length > 0 ? (
                     <>
                         <SearchSumary />
                         {selected.length > 0 && (
@@ -45,22 +52,29 @@ const ResultCardList = () => {
                                     checked={isCheckedAllAssets}
                                     onCheckboxChange={handleSelectAllAssets}
                                     selectAll
-                                    data={data} />
+                                    data={paginatedData} />
                                 <label className="text-white ms-4">
                                     {isCheckedAllAssets ? "Deseleccionar todos los direccionamientos activos" : "Seleccionar todos los direccionamientos activos"}
                                 </label>
                             </div>
                         )}
-                        <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-5">
-                            {data.map((direccionamiento) => (
+                        <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 mt-5">
+                            {paginatedData.map((direccionamiento) => (
                                 <DireccionamientoCard
                                     key={direccionamiento.ID}
                                     direccionamiento={direccionamiento}
+                                    completeData={completeDireccionamientos[direccionamiento.ID]}
+                                    fetchCompleteData={() => fetchCompleteDireccionamiento(direccionamiento)}
                                     selected={selected.some(item => item.ID === direccionamiento.ID)}
                                     handleCheckboxChange={handleCheckboxChange}
                                 />
                             ))}
                         </article>
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={Math.ceil(totalItems / itemsPerPage)}
+                            onPageChange={setPage}
+                        />
                         {isModalOpen &&
                             <Modal />
                         }

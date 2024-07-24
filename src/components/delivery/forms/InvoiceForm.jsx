@@ -6,8 +6,8 @@ import totalInvoiceValue from "@/utils/totalInvoiceValue";
 import showAlert from "@/services/alertSweet";
 
 export const InvoiceForm = () => {
-  const { closeModal, currentDireccionamiento, updateDataAfterProgramming } = useSearchForm()
-  const { NoPrescripcion, TipoTec, ConTec, TipoIDPaciente, NoIDPaciente, NoEntrega, CodSerTecAEntregar, NoSubEntrega, NoIDEPS, CodEPS } = currentDireccionamiento
+  const { closeModal, currentDireccionamiento, updateData } = useSearchForm()
+  const { NoPrescripcion, TipoTec, ConTec, TipoIDPaciente, NoIDPaciente, NoEntrega, CodSerTecAEntregar, NoSubEntrega, NoIDEPS, CodEPS, CantidadEntregada } = currentDireccionamiento
   const [invoiceData, setInvoiceData] = useState({ // json de la facturación
     NoPrescripcion: NoPrescripcion,
     TipoTec: TipoTec,
@@ -20,7 +20,7 @@ export const InvoiceForm = () => {
     NoIDEPS: NoIDEPS,
     CodEPS: CodEPS,
     CodSerTecAEntregado: CodSerTecAEntregar,
-    CantUnMinDis: "",
+    CantUnMinDis: CantidadEntregada,
     ValorUnitFacturado: "",
     ValorTotFacturado: "0",
     CuotaModer: "",
@@ -35,7 +35,8 @@ export const InvoiceForm = () => {
   useEffect(() => { // Manejo del onChange del cálculo de ValorTotFacturado
     setInvoiceData(prevData => ({
       ...prevData,
-      ValorTotFacturado: totalInvoiceValue(prevData.CantUnMinDis,
+      ValorTotFacturado: totalInvoiceValue(
+        prevData.CantUnMinDis,
         prevData.ValorUnitFacturado,
         prevData.CuotaModer,
         prevData.Copago)
@@ -58,6 +59,7 @@ export const InvoiceForm = () => {
       setAlert("Todos los campos son obligatorios para hacer la entrega")
       return
     }
+    console.log(invoiceData)
     try {
       const res = await axios.put("/api/direccionamiento/facturar", { invoiceData })
       console.log(res.data.message)
@@ -75,7 +77,7 @@ export const InvoiceForm = () => {
     { label: "Número de prescripción:", id: "NoPrescripcion", type: "text", value: NoPrescripcion, readOnly: true },
     { label: "Número de entrega:", id: "NoEntrega", type: "text", value: NoEntrega, readOnly: true },
     { label: "Número de factura:", id: "NoFactura", type: "number", value: invoiceData.NoFactura, placeholder: "Digita el número de la factura" },
-    { label: "Cantidad mínima dispensada:", id: "CantUnMinDis", type: "number", value: invoiceData.CantUnMinDis, placeholder: "Digita la cant mínima dispensada" },
+    { label: "Cantidad mínima dispensada:", id: "CantUnMinDis", type: "number", value: invoiceData.CantUnMinDis, readOnly: true },
     { label: "Valor unitario facturado:", id: "ValorUnitFacturado", type: "number", value: invoiceData.ValorUnitFacturado, placeholder: "Digita el valor unitario" },
     { label: "Cuota moderada:", id: "CuotaModer", type: "number", value: invoiceData.CuotaModer, placeholder: "Digita el valor de la cuota moderada" },
     { label: "Copago:", id: "Copago", type: "number", value: invoiceData.Copago, placeholder: "Digita el valor del copago" },
@@ -83,7 +85,7 @@ export const InvoiceForm = () => {
   ]
   return (
     <form onSubmit={handleOnSubmit} >
-      <p>ID Entrega: {currentDireccionamiento.IDEntrega}</p>
+      <p>ID Entrega: {currentDireccionamiento.IdEntrega}</p>
       {alert && <Alert message={alert} />}
       <div className="grid grid-cols-2 gap-2">
         {invoiceFields.map((field, index) => (

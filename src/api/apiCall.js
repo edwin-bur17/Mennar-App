@@ -36,19 +36,27 @@ export const apiCall = () => {
     const fecthAdditionalData = async (noPrescription, Id) => {
         try {
             const token = await getQueryToken()
-            let url = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${noPrescription}`
-            const res = await axios(url)
-            let direccionamientoData = res.data
-            let index = direccionamientoData.findIndex(item => item.ID === Id)
-            if (index !== -1) {
-                const { NoSubEntrega, NoIDEPS, CodEPS } = direccionamientoData[index];
-                return { NoSubEntrega, NoIDEPS, CodEPS };
-            } else {
-                throw new Error("No se encontró el objeto con el ID especificado")
+
+            // Consulta al módulo de direccionamientos
+            const urlDireccionamiento = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${noPrescription}`
+            const resDireccionamiento = await axios(urlDireccionamiento)
+            const direccionamientoData = resDireccionamiento.data.find(d => d.ID === Id)
+
+            // Consulta al módulo de entrega
+            const urlEntrega = `${process.env.NEXT_PUBLIC_API_URL}/EntregaXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${noPrescription}`
+            const resEntrega = await axios(urlEntrega)
+            const entregaData = resEntrega.data.find(e => e.ID === Id)
+
+            return {
+                NoSubEntrega: direccionamientoData?.NoSubEntrega,
+                NoIDEPS: direccionamientoData?.NoIDEPS,
+                CodEPS: direccionamientoData?.CodEPS,
+                IdEntrega: entregaData?.IDEntrega,
+                CantidadEntregada: entregaData?.CantTotEntregada
             }
         } catch (error) {
-            console.error("Error al obtener la data adicional, desde useApiCall.js: ", error)
-            return "Error al obtener la data adicional por número de prescripción"
+            console.error("Error al obtener datos adicionales:", error)
+            throw error
         }
     }
     return { fetchByDate, fecthByPrescriptionNumber, fecthAdditionalData }

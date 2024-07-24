@@ -9,8 +9,8 @@ const Progress = ({ direccionamiento }) => {
             <Badge title="Direccionado" isCompleted={isDireccionado} />
             <Badge title="Programado" isCompleted={isProgramado} />
             <Badge title="Entrega" isCompleted={isEntregado} />
-            <Badge title="Reporte" isCompleted={hasReporte} />
             <Badge title="Facturación" isCompleted={hasReporte} />
+            <Badge title="Reporte" isCompleted={hasReporte} />
         </div>
     )
 }

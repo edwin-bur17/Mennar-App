@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import { useModule } from "@/context/moduleContext"
 import { useSearchForm } from "@/context/searchFormContext"
 import estadoDireccionamiento from "@/utils/estadoDireccionamiento"
@@ -6,16 +7,35 @@ import technologyType from "@/utils/technologyType"
 import CheckboxInput from "../CheckboxInput"
 import { CardField, Progress } from "./ui/ui"
 
-function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange }) {
+function DireccionamientoCard({
+    direccionamiento,
+    completeData,
+    fetchCompleteData,
+    selected,
+    handleCheckboxChange
+}) {
     const { openModal } = useSearchForm()
     const { currentModule } = useModule()
     const isDireccionamiento = currentModule === "direccionamientos"
     const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-red-100" : "bg-slate-300"
 
+    const [isExpanded, setIsExpanded] = useState(false)
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (isExpanded && !completeData && !loading) {
+            setLoading(true)
+            fetchCompleteData().finally(() => setLoading(false))
+        }
+    }, [isExpanded, completeData, fetchCompleteData])
+
+    // onChange del botón de expandir 
+    const toggleExpand = () => { setIsExpanded(!isExpanded) }
+
     return (
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
             <Progress direccionamiento={direccionamiento} />
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-6 gap-1">
                 <CardField title="ID" content={direccionamiento.ID} />
                 <CardField
                     title={isDireccionamiento ? "ID direccionamiento" : "ID Programación:"}
@@ -55,28 +75,48 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                         ? estadoDireccionamiento(direccionamiento.EstDireccionamiento)
                         : estadoDireccionamiento(direccionamiento.EstProgramacion)}
                 />
-                {direccionamiento.IDEntrega && (
-                    <>
-                        <CardField
-                            title="Id de la entrega"
-                            content={direccionamiento.IDEntrega}
-                        />
-                        <CardField
-                            title="Número subentrega"
-                            content={direccionamiento.NoSubEntrega}
-                        />
-                        <CardField
-                            title="Id EPS"
-                            content={direccionamiento.NoIDEPS}
-                        />
-                        <CardField
-                            title="Código EPS"
-                            content={direccionamiento.CodEPS}
-                        />
-                    </>
-
-                )}
+                {direccionamiento.EstProgramacion === 2 &&
+                    <button onClick={toggleExpand} className="mt-2 text-blue-600 hover:underline">
+                        {isExpanded ? 'Ocultar detalles' : 'Mostrar más detalles para facturar'}
+                    </button>
+                }
             </div>
+            {isExpanded && (
+                <div className="mt-2">
+                    {loading ? (
+                        <p>Cargando datos adicionales...</p>
+                    ) : completeData ? (
+                        <div className="grid grid-cols-6 gap-1">
+                            <CardField
+                                title="Número subentrega"
+                                content={completeData.NoSubEntrega}
+                            />
+                            <CardField
+                                title="Id EPS"
+                                content={completeData.NoIDEPS}
+                            />
+                            <CardField
+                                title="Código EPS"
+                                content={completeData.CodEPS}
+                            />
+                            {completeData.IdEntrega && (
+                                <>
+                                    <CardField
+                                        title="Id de la entrega"
+                                        content={completeData.IdEntrega}
+                                    />
+                                    <CardField
+                                        title="Cantidad entregada"
+                                        content={completeData.CantidadEntregada}
+                                    />
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <p>No se pudieron cargar los datos adicionales</p>
+                    )}
+                </div>
+            )}
             {direccionamiento.EstDireccionamiento === 1 &&
                 <CheckboxInput
                     checked={selected}
@@ -90,10 +130,10 @@ function DireccionamientoCard({ direccionamiento, selected, handleCheckboxChange
                     onClick={() => openModal(direccionamiento)}
                 >Entrega</button>
             }
-            {direccionamiento.IDEntrega &&
+            {completeData && completeData.IdEntrega &&
                 <button
                     className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
-                    onClick={() => openModal(direccionamiento)}
+                    onClick={() => openModal(completeData)}
                 >Facturación</button>
             }
         </div>

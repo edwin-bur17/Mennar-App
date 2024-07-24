@@ -1,6 +1,6 @@
 "use client"
 import { useModule } from "./moduleContext"
-import { createContext, useContext, useReducer, useCallback } from "react"
+import { createContext, useContext, useReducer, useCallback, useMemo } from "react"
 import { apiCall } from "@/api/apiCall"
 import showAlert from "@/services/alertSweet"
 import { useOnChangeCheckbox } from "@/hooks/useOnChangeCheckbox"
@@ -22,12 +22,16 @@ const initialState = {
         loading: false,
         isSearch: false,
         searchParams: {},
-        searchModule: null
+        searchModule: null,
+        totalItems: 0
     },
     modalDelivery: {
         isModalOpen: false,
         currentDireccionamiento: null
-    }
+    },
+    completeDireccionamientos: {},
+    currentPage: 1,
+    itemsPerPage: 10
 }
 
 function reducer(state, action) {
@@ -38,6 +42,10 @@ function reducer(state, action) {
             return { ...state, formData: initialState.formData };
         case "SET_SEARCH_RESULTS": // 
             return { ...state, searchResults: { ...state.searchResults, ...action.payload } };
+        case "UPDATE_COMPLETE_DIRECCIONAMIENTO":
+            return { ...state, completeDireccionamientos: { ...state.completeDireccionamientos, [action.payload.ID]: action.payload } }
+        case "SET_PAGE":
+            return { ...state, currentPage: action.payload }
         case "OPEN_MODAL":
             return { ...state, modalDelivery: { isModalOpen: true, currentDireccionamiento: action.payload } }
         case "CLOSE_MODAL":
@@ -49,7 +57,7 @@ function reducer(state, action) {
 
 export const SearchFormProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { fecthByPrescriptionNumber, fetchByDate } = apiCall()
+    const { fecthByPrescriptionNumber, fetchByDate, fecthAdditionalData } = apiCall()
     const { selected, setSelected, handleCheckboxChange, handleSelectAllAssets } = useOnChangeCheckbox()
     const { currentModule } = useModule()
 
@@ -66,6 +74,16 @@ export const SearchFormProvider = ({ children }) => {
     // Actualizar los estados del resultado de la búsqueda
     const setSearchResults = useCallback((results) => {
         dispatch({ type: 'SET_SEARCH_RESULTS', payload: results });
+    }, [])
+
+    // Actualizar el direccionamiento con la data faltante para facturar
+    const updateCompleteDireccionamiento = useCallback((direccionamiento) => {
+        dispatch({ type: 'UPDATE_COMPLETE_DIRECCIONAMIENTO', payload: direccionamiento })
+    }, [])
+
+    // Actualizar la página actual
+    const setPage = useCallback((page) => {
+        dispatch({ type: 'SET_PAGE', payload: page })
     }, [])
 
     // Validar los campos del formulario
@@ -87,6 +105,30 @@ export const SearchFormProvider = ({ children }) => {
         dispatch({ type: "CLOSE_MODAL" })
     }
 
+    // Completar el direccionamiento con la data faltante
+    const fetchCompleteDireccionamiento = useCallback(async (direccionamiento) => {
+        try {
+            const additionalData = await fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID)
+            const completeDireccionamiento = { ...direccionamiento, ...additionalData }
+            updateCompleteDireccionamiento(completeDireccionamiento)
+            return completeDireccionamiento
+        } catch (error) {
+            console.error("Error al obtener datos completos del direccionamiento:", error)
+            return direccionamiento
+        }
+    }, [fecthAdditionalData, updateCompleteDireccionamiento])
+
+    // Abrir la modal de facturación (automáticamente) luego de hacer una entrega exitosa
+    const openModalInvoice = useCallback(async (direccionamiento) => {
+        try {
+            const completeData = await fetchCompleteDireccionamiento(direccionamiento)
+            dispatch({ type: "OPEN_MODAL", payload: completeData })
+        } catch (error) {
+            console.error("Error al abrir la modal de facturación con la data adicional luego de hacer una entrega: ", error)
+            showAlert("Error al cargar los datos para la facturación", "error")
+        }
+    }, [fetchCompleteDireccionamiento])
+    
     // Envío del formulario
     const handleSubmit = useCallback(async (e, type) => {
         e.preventDefault()
@@ -126,13 +168,13 @@ export const SearchFormProvider = ({ children }) => {
         try {
             setSearchResults({ loading: true, isSearch: true, data: [], searchParams, searchModule: currentModule });
             setSelected([])
-
+            setPage(1) // Reiniciar a la primera página luego de hacer una nueva búsquedaa
             if (typeof fetchFunction !== "function") { // Validar si es una función 
                 throw new Error(`fetchFunction no es una función válida para el tipo: ${type}`)
             }
             const res = await fetchFunction()
             if (res && typeof res === "object") {
-                setSearchResults({ data: res, loading: false })
+                setSearchResults({ data: res, loading: false, totalItems: res.length, isSearch: true, searchParams, searchModule: currentModule })
                 resetForm()
             } else {
                 setSearchResults({ loading: false })
@@ -144,12 +186,10 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: false })
         }
 
-    }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults])
+    }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults, state.totalItems])
 
-    // Actualizar la data despues de programar los direccionamientos
-    const updateDataAfterProgramming = useCallback(async (direccionamientoId, additionalData) => {
-        console.log(direccionamientoId)
-        console.log(additionalData)
+    // Actualizar la data 
+    const updateData = useCallback(async () => {
         const { searchParams } = state.searchResults
         let fetchFunction
 
@@ -169,11 +209,7 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: true })
             const freshData = await fetchFunction();
             if (freshData && typeof freshData === "object") {
-                // Aquí se agrega el campo de IdEntrega al direccionamiento actual
-                const updatedData = freshData.map(item =>
-                    item.ID === direccionamientoId ? { ...item, ...additionalData } : item
-                )
-                setSearchResults({ data: updatedData, loading: false })
+                setSearchResults({ data: freshData, loading: false })
             } else {
                 setSearchResults({ loading: false })
                 showAlert("Error al actualizar los datos", "error");
@@ -181,11 +217,19 @@ export const SearchFormProvider = ({ children }) => {
         } catch (error) {
             console.error("Error al actualizar los datos después de la programación:", error);
             setSearchResults({ loading: false });
-            showAlert("Error al actualizar los datos despues de programarlos", "error");
+            showAlert("Error al actualizar la data", "error");
         }
     }, [state.searchResults, setSearchResults])
 
+    // Paginación
+    const paginatedData = useMemo(() => {
+        const { data } = state.searchResults
+        const startIndex = (state.currentPage - 1) * state.itemsPerPage
+        return data.slice(startIndex, startIndex + state.itemsPerPage)
+    }, [state.searchResults.data, state.currentPage, state.itemsPerPage])
+
     const value = {
+        ...state,
         ...state.formData,
         ...state.searchResults,
         ...state.modalDelivery,
@@ -195,9 +239,13 @@ export const SearchFormProvider = ({ children }) => {
         setSelected,
         handleSelectAllAssets,
         handleCheckboxChange,
-        updateDataAfterProgramming,
+        updateData,
         openModal,
         closeModal,
+        paginatedData,
+        fetchCompleteDireccionamiento,
+        setPage,
+        openModalInvoice
     }
 
     return (

@@ -4,6 +4,7 @@ import { useSearchForm } from "@/context/searchFormContext"
 import estadoDireccionamiento from "@/utils/estadoDireccionamiento"
 import { formatDate } from "@/utils/formatDate"
 import technologyType from "@/utils/technologyType"
+import { getNameProduct, getNameEps } from "@/utils/getName"
 import CheckboxInput from "../CheckboxInput"
 import { CardField, Progress } from "./ui/ui"
 
@@ -63,8 +64,12 @@ function DireccionamientoCard({
                 />
                 <CardField
                     title="Servicio a entregar"
-                    content={direccionamiento.CodSerTecAEntregar}
+                    content={`${direccionamiento.CodSerTecAEntregar} - ${getNameProduct(direccionamiento.CodSerTecAEntregar)}`}
                 />
+                {/* <CardField
+                    title="Eps"
+                    content={`${direccionamiento.CodEPS} - ${getNameEps(direccionamiento.CodEPS)}`}
+                /> */}
                 <CardField
                     title={isDireccionamiento ? "Fecha del direccionamiento" : "Fecha de programación"}
                     content={isDireccionamiento ? formatDate(direccionamiento.FecDireccionamiento) : formatDate(direccionamiento.FecProgramacion)}
@@ -96,8 +101,8 @@ function DireccionamientoCard({
                                 content={completeData.NoIDEPS}
                             />
                             <CardField
-                                title="Código EPS"
-                                content={completeData.CodEPS}
+                                title="EPS"
+                                content={`${completeData.CodEPS} - ${getNameEps(completeData.CodEPS)}`}
                             />
                             {completeData.IdEntrega && (
                                 <>

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSearchForm } from "@/context/searchFormContext";
 import { Input, Button, Alert } from "./ui/ui"
 import totalInvoiceValue from "@/utils/totalInvoiceValue";
+import { formatCOP, unformatCOP } from "@/utils/formatCOP";
 import showAlert from "@/services/alertSweet";
 
 export const InvoiceForm = () => {
@@ -28,6 +29,10 @@ export const InvoiceForm = () => {
   })
   const [alert, setAlert] = useState("")
 
+  const formatMonetaryField = (value) => { // Formatear a formato moneda - COP
+    return ["ValorUnitFacturado", "CuotaModer", "Copago", "ValorTotFacturado"].includes(value) ? formatCOP(invoiceData[value]) : invoiceData[value];
+  };
+
   const validateFields = () => { // Validar los campos 
     return Object.values(invoiceData).every(value => value !== "" && value !== null && value !== undefined);
   };
@@ -45,9 +50,10 @@ export const InvoiceForm = () => {
 
   const handleOnChange = (e) => { // Manejo del onChange de los inputs
     const { id, value } = e.target
+    let newValue = ["ValorUnitFacturado", "CuotaModer", "Copago"].includes(id) ? unformatCOP(value) : value
     setInvoiceData(prevData => ({
       ...prevData,
-      [id]: value,
+      [id]: newValue,
       ...(id === "CuotaModer" && value !== "" ? { Copago: "0" } : {}),
       ...(id === "Copago" && value !== "" ? { CuotaModer: "0" } : {})
     }))
@@ -78,20 +84,21 @@ export const InvoiceForm = () => {
     { label: "Número de entrega:", id: "NoEntrega", type: "text", value: NoEntrega, readOnly: true },
     { label: "Número de factura:", id: "NoFactura", type: "number", value: invoiceData.NoFactura, placeholder: "Digita el número de la factura" },
     { label: "Cantidad mínima dispensada:", id: "CantUnMinDis", type: "number", value: invoiceData.CantUnMinDis, readOnly: true },
-    { label: "Valor unitario facturado:", id: "ValorUnitFacturado", type: "number", value: invoiceData.ValorUnitFacturado, placeholder: "Digita el valor unitario" },
-    { label: "Cuota moderada:", id: "CuotaModer", type: "number", value: invoiceData.CuotaModer, placeholder: "Digita el valor de la cuota moderada" },
-    { label: "Copago:", id: "Copago", type: "number", value: invoiceData.Copago, placeholder: "Digita el valor del copago" },
-    { label: "Valor total facturado:", id: "ValorTotFacturado", type: "number", value: invoiceData.ValorTotFacturado, readOnly: true },
+    { label: "Valor unitario facturado:", id: "ValorUnitFacturado", type: "text", value: invoiceData.ValorUnitFacturado, placeholder: "Digita el valor unitario" },
+    { label: "Cuota moderada:", id: "CuotaModer", type: "text", value: invoiceData.CuotaModer, placeholder: "Digita el valor de la cuota moderada" },
+    { label: "Copago:", id: "Copago", type: "text", value: invoiceData.Copago, placeholder: "Digita el valor del copago" },
+    { label: "Valor total facturado:", id: "ValorTotFacturado", type: "text", value: invoiceData.ValorTotFacturado, readOnly: true },
   ]
   return (
     <form onSubmit={handleOnSubmit} >
       <p>ID Entrega: {currentDireccionamiento.IdEntrega}</p>
       {alert && <Alert message={alert} />}
       <div className="grid grid-cols-2 gap-2">
-        {invoiceFields.map((field, index) => (
+        {invoiceFields.map((field) => (
           <Input
             key={field.id}
             {...field}
+            value={formatMonetaryField(field.id)}
             onChange={handleOnChange}
             className="w-full py-2 px-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
           />

@@ -2,6 +2,7 @@ import { useSearchForm } from "@/context/searchFormContext"
 import axios from "axios"
 import { useState } from "react"
 import { typeOptions } from "@/utils/documentTypeOptions"
+import { getNameProduct } from "@/utils/getName"
 import showAlert from "@/services/alertSweet"
 import { Button, Alert, Input } from "./ui/ui"
 const DeliveryForm = () => {
@@ -78,7 +79,7 @@ const DeliveryForm = () => {
     }
 
     const formFields = [ //Campos del formulario
-        { label: "Código servicio a entregar:", id: "CodSerTecAEntregar", type: "text", value: CodSerTecAEntregar, readOnly: true },
+        { label: "Código servicio a entregar:", id: "CodSerTecAEntregar", type: "text", value: `${CodSerTecAEntregar} - ${getNameProduct(CodSerTecAEntregar)}`, readOnly: true },
         { label: "Cantidad Total a entregar:", id: "CantTotAEntregar", type: "text", value: CantTotAEntregar, readOnly: true },
         { label: "Cantidad entregada:", id: "CantTotEntregada", type: "number", value: formData.CantTotEntregada, placeholder: "Digita la cantidad entregada", max: CantTotAEntregar },
         { label: "Fecha de Entrega:", id: "FecEntrega", type: "date", value: formData.FecEntrega },

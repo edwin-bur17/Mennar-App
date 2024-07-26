@@ -1,7 +1,7 @@
 "use client"
 import { useSearchForm } from "@/context/searchFormContext";
 import SearchForm from "./SearchForm";
-import { documentTypeOptions } from "@/utils/documentTypeOptions";
+import { documentTypeOptions } from "@/utils";
 import ResultCardList from "./ResultCardList";
 
 const SearchFormContainer = () => {

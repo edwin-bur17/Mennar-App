@@ -1,8 +1,7 @@
 import { useSearchForm } from "@/context/searchFormContext"
 import axios from "axios"
 import { useState } from "react"
-import { typeOptions } from "@/utils/documentTypeOptions"
-import { getNameProduct } from "@/utils/getName"
+import { getNameProduct, typeOptions } from "@/utils"
 import showAlert from "@/services/alertSweet"
 import { Button, Alert, Input } from "./ui/ui"
 const DeliveryForm = () => {

@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchForm } from "@/context/searchFormContext";
 import { Input, Button, Alert } from "./ui/ui"
-import totalInvoiceValue from "@/utils/totalInvoiceValue";
-import { formatCOP, unformatCOP } from "@/utils/formatCOP";
+import { totalInvoiceValue, formatCOP, unformatCOP } from "@/utils"
 import showAlert from "@/services/alertSweet";
 
 export const InvoiceForm = () => {

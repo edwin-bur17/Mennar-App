@@ -3,7 +3,7 @@ import { useState } from "react"
 import { usePathname, useRouter } from "next/navigation";
 import SidebarItem from "./SidebarItem"
 import { HiMiniChevronDoubleLeft, HiMiniChevronDoubleRight } from "react-icons/hi2";
-import { sidebarItems } from "@/utils/sidebarItems";
+import { sidebarItems } from "@/utils";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true)

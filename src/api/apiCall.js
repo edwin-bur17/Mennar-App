@@ -2,7 +2,7 @@ import axios from "axios";
 import getQueryToken from "@/services/queryToken";
 import getDateRangeData from "@/services/fecthdate/getDateRangeData";
 import { useModule } from "@/context/moduleContext";
-import { getEndpoint } from "@/utils/getEndPoint";
+import { getEndPoint } from "@/utils/index.js"
 
 export const apiCall = () => {
     const { currentModule } = useModule()
@@ -23,7 +23,7 @@ export const apiCall = () => {
     const fecthByPrescriptionNumber = async (prescriptionNumber) => {
         try {
             const token = await getQueryToken()
-            let url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porPrescripcion")}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
+            let url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndPoint(currentModule, "porPrescripcion")}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             const res = await axios(url)
             return res.data
         } catch (error) {

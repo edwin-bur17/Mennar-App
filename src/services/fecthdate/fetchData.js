@@ -1,12 +1,12 @@
-import { getEndpoint } from "@/utils/getEndPoint";
+import { getEndPoint } from "@/utils/index.js"
 import axios from "axios";
 
 export async function fetchData(formattedDate, queryToken, documentType, documentNumber, currentModule, signal) {
     let url;
     if (documentType && documentNumber) {
-        url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porPacienteFecha")}/${process.env.NEXT_PUBLIC_NIT}/${formattedDate}/${queryToken}/${documentType}/${documentNumber}`;
+        url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndPoint(currentModule, "porPacienteFecha")}/${process.env.NEXT_PUBLIC_NIT}/${formattedDate}/${queryToken}/${documentType}/${documentNumber}`;
     } else {
-        url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndpoint(currentModule, "porFecha")}/${process.env.NEXT_PUBLIC_NIT}/${queryToken}/${formattedDate}`;
+        url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndPoint(currentModule, "porFecha")}/${process.env.NEXT_PUBLIC_NIT}/${queryToken}/${formattedDate}`;
     }
 
     try {

@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react"
 import { useModule } from "@/context/moduleContext"
 import { useSearchForm } from "@/context/searchFormContext"
-import estadoDireccionamiento from "@/utils/estadoDireccionamiento"
-import { formatDate } from "@/utils/formatDate"
-import technologyType from "@/utils/technologyType"
-import { getNameProduct, getNameEps } from "@/utils/getName"
+import { estadoDireccionamiento, formatDate, technologyType, getNameProduct, getNameEps } from "@/utils"
 import CheckboxInput from "../CheckboxInput"
 import { CardField, Progress } from "./ui/ui"
 

@@ -1,5 +1,5 @@
-
-export default function totalInvoiceValue(CantUnMinDis, ValorUnitFacturado, CuotaModer, Copago) {
+// Calcular el valor total faturado (invoiceform)
+export function totalInvoiceValue(CantUnMinDis, ValorUnitFacturado, CuotaModer, Copago) {
     const cantUnMinDis = Number(CantUnMinDis) || 0
     const valorUnitFacturado = Number(ValorUnitFacturado) || 0
     const cuotaModer = Number(CuotaModer) || 0

@@ -1,5 +1,5 @@
 import { useModule } from "@/context/moduleContext"
-export default function estadoDireccionamiento(estado) {
+export function estadoDireccionamiento(estado) {
     const {currentModule} = useModule()
 
     switch (estado) {

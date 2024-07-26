@@ -1,4 +1,4 @@
-export default function technologyType(type) {
+export function technologyType(type) {
     switch (type) {
         case "D":
             return "Dispositivo médico"  

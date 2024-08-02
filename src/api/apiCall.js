@@ -52,7 +52,9 @@ export const apiCall = () => {
                 NoIDEPS: direccionamientoData?.NoIDEPS,
                 CodEPS: direccionamientoData?.CodEPS,
                 IdEntrega: entregaData?.IDEntrega,
-                CantidadEntregada: entregaData?.CantTotEntregada
+                CantidadEntregada: entregaData?.CantTotEntregada,
+                FecEntrega: entregaData?.FecEntrega,
+                EstEntrega: entregaData?.EstEntrega
             }
         } catch (error) {
             console.error("Error al obtener datos adicionales:", error)

@@ -32,7 +32,7 @@ function DireccionamientoCard({
 
     return (
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
-            <Progress direccionamiento={direccionamiento} />
+            <Progress direccionamiento={direccionamiento}/>
             <div className="grid grid-cols-6 gap-1">
                 <CardField title="ID" content={direccionamiento.ID} />
                 <CardField
@@ -47,14 +47,18 @@ function DireccionamientoCard({
                     title="Identificación Paciente"
                     content={`${direccionamiento.TipoIDPaciente} - ${direccionamiento.NoIDPaciente}`}
                 />
-                <CardField
-                    title="Fecha máxima de entrega"
-                    content={formatDate(direccionamiento.FecMaxEnt)}
-                />
-                <CardField
-                    title="Cantidad total a entregar"
-                    content={direccionamiento.CantTotAEntregar}
-                />
+                {direccionamiento.EstProgramacion === 1 &&
+                    <>
+                        <CardField
+                            title="Fecha máxima de entrega"
+                            content={formatDate(direccionamiento.FecMaxEnt)}
+                        />
+                        <CardField
+                            title="Cantidad total a entregar"
+                            content={direccionamiento.CantTotAEntregar}
+                        />
+                    </>
+                }
                 <CardField
                     title="Servicio o tecnológia"
                     content={technologyType(direccionamiento.TipoTec)}
@@ -90,10 +94,6 @@ function DireccionamientoCard({
                     ) : completeData ? (
                         <div className="grid grid-cols-6 gap-1">
                             <CardField
-                                title="Número subentrega"
-                                content={completeData.NoSubEntrega}
-                            />
-                            <CardField
                                 title="Id EPS"
                                 content={completeData.NoIDEPS}
                             />
@@ -110,6 +110,14 @@ function DireccionamientoCard({
                                     <CardField
                                         title="Cantidad entregada"
                                         content={completeData.CantidadEntregada}
+                                    />
+                                    <CardField
+                                        title="Estado de la entrega"
+                                        content={completeData.EstEntrega}
+                                    />
+                                    <CardField
+                                        title="Fecha de la entrega"
+                                        content={formatDate(completeData.FecEntrega)}
                                     />
                                 </>
                             )}
@@ -132,7 +140,7 @@ function DireccionamientoCard({
                     onClick={() => openModal(direccionamiento)}
                 >Entrega</button>
             }
-            {completeData && completeData.IdEntrega &&
+            {completeData && completeData.EstEntrega === 1 &&
                 <button
                     className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(completeData)}

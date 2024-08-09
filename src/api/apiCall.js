@@ -11,7 +11,7 @@ export const apiCall = () => {
     const fetchByDate = async (startDate, endDate, documentType, documentNumber) => {
         try {
             const token = await getQueryToken()
-            const res = await getDateRangeData(startDate, endDate, token, documentType, documentNumber, currentModule)
+            let res = await getDateRangeData(startDate, endDate, token, documentType, documentNumber, currentModule)
             return res
         } catch (error) {
             console.error("Error al obtener el direcccionamiento por fecha, desde useApiCall.js: ", error)
@@ -20,11 +20,13 @@ export const apiCall = () => {
     }
 
     // Llamado a la api para buscar direccionamiento por número de prescripción
-    const fecthByPrescriptionNumber = async (prescriptionNumber) => {
+    const fecthByPrescriptionNumber = async (prescriptionNumber, apiModule) => {
         try {
             const token = await getQueryToken()
-            let url = `${process.env.NEXT_PUBLIC_API_URL}/${getEndPoint(currentModule, "porPrescripcion")}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
-            const res = await axios(url)
+            let endpoint = getEndPoint(apiModule, "porPrescripcion")
+            let url = `${process.env.NEXT_PUBLIC_API_URL}/${endpoint}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
+            let res = await axios(url)
+            console.log(res.data)
             return res.data
         } catch (error) {
             console.error("Error al obtener el direcccionamiento por número de prescripción, desde useApiCall.js: ", error)
@@ -33,19 +35,18 @@ export const apiCall = () => {
     }
 
     // Agregar data adicional luego de hacer una entrega
-    const fecthAdditionalData = async (noPrescription, Id) => {
+    const fecthAdditionalData = async (prescriptionNumber, Id) => {
         try {
             const token = await getQueryToken()
-
             // Consulta al módulo de direccionamientos
-            const urlDireccionamiento = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${noPrescription}`
-            const resDireccionamiento = await axios(urlDireccionamiento)
-            const direccionamientoData = resDireccionamiento.data.find(d => d.ID === Id)
+            let urlDireccionamiento = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
+            let resDireccionamiento = await axios(urlDireccionamiento)
+            let direccionamientoData = resDireccionamiento.data.find(d => d.ID === Id)
 
             // Consulta al módulo de entrega
-            const urlEntrega = `${process.env.NEXT_PUBLIC_API_URL}/EntregaXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${noPrescription}`
-            const resEntrega = await axios(urlEntrega)
-            const entregaData = resEntrega.data.find(e => e.ID === Id)
+            let urlEntrega = `${process.env.NEXT_PUBLIC_API_URL}/EntregaXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
+            let resEntrega = await axios(urlEntrega)
+            let entregaData = resEntrega.data.find(e => e.ID === Id)
 
             return {
                 NoSubEntrega: direccionamientoData?.NoSubEntrega,
@@ -61,5 +62,19 @@ export const apiCall = () => {
             throw error
         }
     }
-    return { fetchByDate, fecthByPrescriptionNumber, fecthAdditionalData }
+
+    // Agregar los datos de la facturación al direccionamiento
+    const fetchInvoiceData = async (prescriptionNumber) => {
+        try {
+            const token = await getQueryToken()
+            let url = `${process.env.NEXT_PUBLIC_API_FAC_URL}/FacturacionXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
+            let res = await axios(url)
+            console.log(res.data)
+            return res.data
+        } catch (error) {
+            console.error("Error al intentar obtener los datos de una facturación", error)
+            throw Error
+        }
+    }
+    return { fetchByDate, fecthByPrescriptionNumber, fecthAdditionalData, fetchInvoiceData }
 }

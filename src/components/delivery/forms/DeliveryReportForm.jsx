@@ -1,13 +1,14 @@
 import { useState } from "react"
 import axios from "axios"
+import { useSearchForm } from "@/context/searchFormContext"
 import showAlert from "@/services/alertSweet"
 import { formatCOP } from "@/utils"
 import { Input, Button } from "./ui/ui"
 
-const DeliveryReportForm = ({ currentDireccionamiento, valorEntregado }) => {
-    const { ID } = currentDireccionamiento
+const DeliveryReportForm = ({ direccionamiento, valorEntregado }) => {
+    const { updateData } = useSearchForm()
     const deliveryReportData = {
-        ID: ID,
+        ID: direccionamiento.ID,
         EstadoEntrega: 0,
         CausaNoEntrega: 0,
         ValorEntregado: valorEntregado
@@ -21,6 +22,7 @@ const DeliveryReportForm = ({ currentDireccionamiento, valorEntregado }) => {
             const res = await axios.put("/api/direccionamiento/reporte", { deliveryReportData })
             console.log(res.data.message)
             showAlert(res.data.message, "success")
+            await updateData()
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 console.log(error.response.data.details)
@@ -28,9 +30,9 @@ const DeliveryReportForm = ({ currentDireccionamiento, valorEntregado }) => {
             } else {
                 console.error("Error en la solicitud (reporte entrega de un direccionamiento):", error.response?.data || error.message);
             }
-        }finally {
+        } finally {
             setIsLoading(false)
-          }
+        }
     }
 
     const deliveryReportFields = [
@@ -42,7 +44,6 @@ const DeliveryReportForm = ({ currentDireccionamiento, valorEntregado }) => {
 
     return (
         <form onSubmit={handleOnSubmit}>
-            <h3 className="text-center text-lg">Reporte entrega</h3>
             <div className="grid grid-cols-2 gap-2">
                 {deliveryReportFields.map((field) => (
                     <Input

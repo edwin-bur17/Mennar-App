@@ -31,7 +31,9 @@ const initialState = {
     },
     completeDireccionamientos: {},
     currentPage: 1,
-    itemsPerPage: 10
+    itemsPerPage: 10,
+    invoiceStatus: {},
+    deliveryReportStatus: {}
 }
 
 function reducer(state, action) {
@@ -44,6 +46,10 @@ function reducer(state, action) {
             return { ...state, searchResults: { ...state.searchResults, ...action.payload } };
         case "UPDATE_COMPLETE_DIRECCIONAMIENTO":
             return { ...state, completeDireccionamientos: { ...state.completeDireccionamientos, [action.payload.ID]: action.payload } }
+        case "UPDATE_INVOICE_STATUS":
+            return { ...state, invoiceStatus: { ...state.invoiceStatus, ...action.payload } }
+        case "UPDATE_DELIVERY_REPORT_STATUS":
+            return { ...state, deliveryReportStatus: { ...state.deliveryReportStatus, ...action.payload } }
         case "SET_PAGE":
             return { ...state, currentPage: action.payload }
         case "OPEN_MODAL":
@@ -57,7 +63,7 @@ function reducer(state, action) {
 
 export const SearchFormProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { fecthByPrescriptionNumber, fetchByDate, fecthAdditionalData } = apiCall()
+    const { fecthByPrescriptionNumber, fetchByDate, fecthAdditionalData, fetchInvoiceData } = apiCall()
     const { selected, setSelected, handleCheckboxChange, handleSelectAllAssets } = useOnChangeCheckbox()
     const { currentModule } = useModule()
 
@@ -74,16 +80,6 @@ export const SearchFormProvider = ({ children }) => {
     // Actualizar los estados del resultado de la búsqueda
     const setSearchResults = useCallback((results) => {
         dispatch({ type: 'SET_SEARCH_RESULTS', payload: results });
-    }, [])
-
-    // Actualizar el direccionamiento con la data faltante para facturar
-    const updateCompleteDireccionamiento = useCallback((direccionamiento) => {
-        dispatch({ type: 'UPDATE_COMPLETE_DIRECCIONAMIENTO', payload: direccionamiento })
-    }, [])
-
-    // Actualizar la página actual
-    const setPage = useCallback((page) => {
-        dispatch({ type: 'SET_PAGE', payload: page })
     }, [])
 
     // Validar los campos del formulario
@@ -108,15 +104,23 @@ export const SearchFormProvider = ({ children }) => {
     // Completar el direccionamiento con la data faltante
     const fetchCompleteDireccionamiento = useCallback(async (direccionamiento) => {
         try {
-            const additionalData = await fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID)
-            const completeDireccionamiento = { ...direccionamiento, ...additionalData }
-            updateCompleteDireccionamiento(completeDireccionamiento)
-            return completeDireccionamiento
+            const [additionalData, invoiceData] = await Promise.all([
+                fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID),
+                fetchInvoiceData(direccionamiento.NoPrescripcion),
+            ])
+            const invoice = invoiceData.find((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
+            const completeDireccionamiento = {
+                ...direccionamiento,
+                ...additionalData,
+                ValorTotFacturado: invoice ? invoice.ValorTotFacturado : null,
+                FecFacturacion: invoice ? invoice.FecFacturacion : null
+            }
+            dispatch({ type: 'UPDATE_COMPLETE_DIRECCIONAMIENTO', payload: completeDireccionamiento })
         } catch (error) {
             console.error("Error al obtener datos completos del direccionamiento:", error)
             return direccionamiento
         }
-    }, [fecthAdditionalData, updateCompleteDireccionamiento])
+    }, [fecthAdditionalData, fetchInvoiceData, dispatch])
 
     // Abrir la modal de facturación (automáticamente) luego de hacer una entrega exitosa
     const openModalInvoice = useCallback(async (direccionamiento) => {
@@ -128,7 +132,44 @@ export const SearchFormProvider = ({ children }) => {
             showAlert("Error al cargar los datos para la facturación", "error")
         }
     }, [fetchCompleteDireccionamiento])
-    
+
+    // Verificar el estado de la facturación y reporte entrega para la data de la paginación actual
+    const checkStatus = useCallback(async (direccionamientos) => {
+        await Promise.all(direccionamientos.map(async (direccionamiento) => {
+            try {
+                const [invoiceData, deliveryReportData] = await Promise.all([
+                    fetchInvoiceData(direccionamiento.NoPrescripcion, direccionamiento.CodSerTecAEntregar),
+                    fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "reporteEntrega"),
+                ]);
+                let invoice = invoiceData.find((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar);
+                console.log(invoice)
+                let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID);
+                console.log(deliveryReport)
+                dispatch({
+                    type: "UPDATE_INVOICE_STATUS",
+                    payload: { [direccionamiento.ID]: invoice && invoice.NoEntrega === direccionamiento.NoEntrega ? { IDFacturacion: invoice.IDFacturacion } : null, },
+                })
+                dispatch({
+                    type: "UPDATE_DELIVERY_REPORT_STATUS",
+                    payload: { [direccionamiento.ID]: deliveryReport && deliveryReport.NoEntrega === direccionamiento.NoEntrega ? { IDReporteEntrega: deliveryReport.IDReporteEntrega } : null, },
+                })
+            } catch (error) {
+                console.error(`Error al obtener el estado de facturación para el direccionamiento: ${direccionamiento.NoPrescripcion}`, error);
+                dispatch({ type: "UPDATE_INVOICE_STATUS", payload: { [direccionamiento.ID]: null }, });
+                dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS", payload: { [direccionamiento.ID]: null }, });
+            }
+        }));
+    }, [fetchInvoiceData, fecthByPrescriptionNumber])
+
+    // Actualizar la página actual - estado de la facturación en la paginación actual
+    const setPage = useCallback((page) => {
+        dispatch({ type: 'SET_PAGE', payload: page })
+        const startIndex = (page - 1) * state.itemsPerPage
+        const endIndex = startIndex + state.itemsPerPage
+        const currentPageData = state.searchResults.data.slice(startIndex, endIndex)
+        checkStatus(currentPageData)
+    }, [state.itemsPerPage, state.searchResults.data, checkStatus])
+
     // Envío del formulario
     const handleSubmit = useCallback(async (e, type) => {
         e.preventDefault()
@@ -153,7 +194,7 @@ export const SearchFormProvider = ({ children }) => {
             case "prescriptionNumber":
                 isValid = validateFields(["prescriptionNumber"])
                 searchParams = { prescriptionNumber }
-                fetchFunction = () => fecthByPrescriptionNumber(prescriptionNumber)
+                fetchFunction = () => fecthByPrescriptionNumber(prescriptionNumber, currentModule)
                 break;
             default:
                 console.log("Tipo de búsqueda no reconocido: ", type)
@@ -175,6 +216,10 @@ export const SearchFormProvider = ({ children }) => {
             const res = await fetchFunction()
             if (res && typeof res === "object") {
                 setSearchResults({ data: res, loading: false, totalItems: res.length, isSearch: true, searchParams, searchModule: currentModule })
+                if (currentModule === "entrega") {
+                    const firstPage = res.slice(0, state.itemsPerPage)
+                    checkStatus(firstPage)
+                }
                 resetForm()
             } else {
                 setSearchResults({ loading: false })
@@ -186,7 +231,7 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: false })
         }
 
-    }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults, state.totalItems])
+    }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults, state.totalItems,])
 
     // Actualizar la data 
     const updateData = useCallback(async () => {
@@ -245,7 +290,7 @@ export const SearchFormProvider = ({ children }) => {
         paginatedData,
         fetchCompleteDireccionamiento,
         setPage,
-        openModalInvoice
+        openModalInvoice,
     }
 
     return (

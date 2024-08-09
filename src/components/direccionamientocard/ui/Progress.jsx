@@ -1,16 +1,17 @@
 import Badge from "./Badge"
-const Progress = ({ direccionamiento }) => {
+const Progress = ({ direccionamiento, invoiceStatus, deliveryReportStatus }) => {
     const isDireccionado = direccionamiento.ID; // Estado direccionado
-    const isProgramado = direccionamiento.IDProgramacion || direccionamiento.EstDireccionamiento === 2;
-    const isEntregado = direccionamiento.EstProgramacion === 2;
-    const hasReporte = direccionamiento.IdReporteEntrega;
+    const isProgramming = direccionamiento.IDProgramacion || direccionamiento.EstDireccionamiento === 2;
+    const isDelivery = direccionamiento.EstProgramacion === 2;
+    const hasInvoice = invoiceStatus[direccionamiento.ID];
+    const hasReport = deliveryReportStatus[direccionamiento.ID];
     return (
         <div className="flex justify-between mb-3">
             <Badge title="Direccionado" isCompleted={isDireccionado} />
-            <Badge title="Programado" isCompleted={isProgramado} />
-            <Badge title="Entrega" isCompleted={isEntregado} />
-            <Badge title="Facturación" isCompleted={hasReporte} />
-            <Badge title="Reporte" isCompleted={hasReporte} />
+            <Badge title="Programado" isCompleted={isProgramming} />
+            <Badge title="Entrega" isCompleted={isDelivery} />
+            <Badge title="Facturación" isCompleted={hasInvoice} />
+            <Badge title="Reporte" isCompleted={hasReport} />
         </div>
     )
 }

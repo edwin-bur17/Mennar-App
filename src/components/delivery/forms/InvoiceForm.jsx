@@ -31,6 +31,8 @@ export const InvoiceForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isDeliveryReport, setIsDeliveryReport] = useState(false)
 
+  console.log(currentDireccionamiento)
+
   const formatMonetaryField = (value) => { // Formatear a formato moneda - COP
     return ["ValorUnitFacturado", "CuotaModer", "Copago", "ValorTotFacturado"].includes(value) ? formatCOP(invoiceData[value]) : invoiceData[value];
   };
@@ -89,7 +91,7 @@ export const InvoiceForm = () => {
   const invoiceFields = [ // Campos del formulario
     { label: "Número de prescripción:", id: "NoPrescripcion", type: "text", value: NoPrescripcion, readOnly: true },
     { label: "Número de entrega:", id: "NoEntrega", type: "text", value: NoEntrega, readOnly: true },
-    { label: "Número de factura:", id: "NoFactura", type: "number", value: invoiceData.NoFactura, placeholder: "Digita el número de la factura" },
+    { label: "Número de factura:", id: "NoFactura", type: "text", value: invoiceData.NoFactura, placeholder: "Digita el número de la factura" },
     { label: "Cantidad mínima dispensada:", id: "CantUnMinDis", type: "number", value: invoiceData.CantUnMinDis, readOnly: true },
     { label: "Valor unitario facturado:", id: "ValorUnitFacturado", type: "text", value: invoiceData.ValorUnitFacturado, placeholder: "Digita el valor unitario" },
     { label: "Cuota moderada:", id: "CuotaModer", type: "text", value: invoiceData.CuotaModer, placeholder: "Digita el valor de la cuota moderada" },
@@ -99,7 +101,7 @@ export const InvoiceForm = () => {
   return (
     <>
       {isDeliveryReport ? (
-        <DeliveryReportForm currentDireccionamiento={currentDireccionamiento} valorEntregado={invoiceData.ValorTotFacturado} />
+        <DeliveryReportForm direccionamiento={{ ...currentDireccionamiento, IDFacturacion: true }} valorEntregado={invoiceData.ValorTotFacturado} />
       ) : (
         <form onSubmit={handleOnSubmit} >
           <p>ID Entrega: {currentDireccionamiento.IdEntrega}</p>

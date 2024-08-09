@@ -1,7 +1,7 @@
 import { fetchData } from "./fetchData"
 import { getDatesArray } from "./getDatesArray"
 
-export default async function getDateRangeData(startDateStr, endDateStr, queryToken, documentType = null, documentNumber = null, currentModule) {
+export default async function getDateRangeData(startDateStr, endDateStr, queryToken, documentType = null, documentNumber = null, apiModule) {
     // Convertir las fechas de string a un objeto Date
     let startDate = new Date(startDateStr)
     let endDate = new Date(endDateStr)
@@ -14,7 +14,7 @@ export default async function getDateRangeData(startDateStr, endDateStr, queryTo
   
     // Manejo de errores y consulta a la api
     try {
-        const responses = await Promise.all(dates.map(date => fetchData(date, queryToken, documentType, documentNumber, currentModule, controller.signal)));
+        const responses = await Promise.all(dates.map(date => fetchData(date, queryToken, documentType, documentNumber, apiModule, controller.signal)));
         return responses.flat().filter(response => response !== null);
     } catch (error) {
         console.error("Error al obtener datos del rango de fechas (desde getDateRangeData.js):", error);

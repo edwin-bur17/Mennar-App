@@ -8,5 +8,8 @@ export const API_ENDPOINTS = {
         porFecha: 'ProgramacionXFecha',
         porPacienteFecha: 'ProgramacionXPacienteFecha',
         porPrescripcion: 'ProgramacionXPrescripcion'
+    },
+    reporteEntrega:{
+        porPrescripcion: "ReporteEntregaXPrescripcion"
     }
 }

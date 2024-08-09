@@ -1,4 +1,5 @@
-export function formatDate(dateStr) { // Formatear fecha
+export function formatDate(dateStr = "1900-01-01") { // Formatear fecha
+   
     const [datepart, timepart] = dateStr.split(' ');
     const [year, month, day] = datepart.split('-').map(Number);
     const date = new Date(Date.UTC(year, month - 1, day));
@@ -36,5 +37,5 @@ export function formatDate(dateStr) { // Formatear fecha
     }
     const minutes = date.getUTCMinutes().toString().padStart(2, "0")
     hours = hours.toString().padStart(2, "0")
-    return `${dia} de ${mes} del ${año} a las ${hours}:${minutes} ${period}`
+    return `${dia} de ${mes} del ${año} - ${hours}:${minutes} ${period}`
 }

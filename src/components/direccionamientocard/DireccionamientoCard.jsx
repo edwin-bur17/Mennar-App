@@ -12,7 +12,7 @@ function DireccionamientoCard({
     selected,
     handleCheckboxChange
 }) {
-    const { openModal } = useSearchForm()
+    const { openModal, invoiceStatus, deliveryReportStatus } = useSearchForm()
     const { currentModule } = useModule()
     const isDireccionamiento = currentModule === "direccionamientos"
     const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-red-100" : "bg-slate-300"
@@ -32,7 +32,7 @@ function DireccionamientoCard({
 
     return (
         <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
-            <Progress direccionamiento={direccionamiento}/>
+            <Progress direccionamiento={direccionamiento} invoiceStatus={invoiceStatus} deliveryReportStatus={deliveryReportStatus}/>
             <div className="grid grid-cols-6 gap-1">
                 <CardField title="ID" content={direccionamiento.ID} />
                 <CardField
@@ -42,6 +42,10 @@ function DireccionamientoCard({
                 <CardField
                     title="Número de prescripción"
                     content={direccionamiento.NoPrescripcion}
+                />
+                <CardField
+                    title="Número de entrega"
+                    content={direccionamiento.NoEntrega}
                 />
                 <CardField
                     title="Identificación Paciente"
@@ -67,10 +71,6 @@ function DireccionamientoCard({
                     title="Servicio a entregar"
                     content={`${direccionamiento.CodSerTecAEntregar} - ${getNameProduct(direccionamiento.CodSerTecAEntregar)}`}
                 />
-                {/* <CardField
-                    title="Eps"
-                    content={`${direccionamiento.CodEPS} - ${getNameEps(direccionamiento.CodEPS)}`}
-                /> */}
                 <CardField
                     title={isDireccionamiento ? "Fecha del direccionamiento" : "Fecha de programación"}
                     content={isDireccionamiento ? formatDate(direccionamiento.FecDireccionamiento) : formatDate(direccionamiento.FecProgramacion)}
@@ -81,11 +81,9 @@ function DireccionamientoCard({
                         ? estadoDireccionamiento(direccionamiento.EstDireccionamiento)
                         : estadoDireccionamiento(direccionamiento.EstProgramacion)}
                 />
-                {direccionamiento.EstProgramacion === 2 &&
-                    <button onClick={toggleExpand} className="mt-2 text-blue-600 hover:underline">
-                        {isExpanded ? 'Ocultar detalles' : 'Mostrar más detalles para facturar'}
-                    </button>
-                }
+                <button onClick={toggleExpand} className="text-blue-600 hover:underline">
+                    {isExpanded ? 'Ocultar detalles' : 'Más detalles '}
+                </button>
             </div>
             {isExpanded && (
                 <div className="mt-2">
@@ -93,10 +91,6 @@ function DireccionamientoCard({
                         <p>Cargando datos adicionales...</p>
                     ) : completeData ? (
                         <div className="grid grid-cols-6 gap-1">
-                            <CardField
-                                title="Id EPS"
-                                content={completeData.NoIDEPS}
-                            />
                             <CardField
                                 title="EPS"
                                 content={`${completeData.CodEPS} - ${getNameEps(completeData.CodEPS)}`}
@@ -112,12 +106,12 @@ function DireccionamientoCard({
                                         content={completeData.CantidadEntregada}
                                     />
                                     <CardField
-                                        title="Estado de la entrega"
-                                        content={completeData.EstEntrega}
-                                    />
-                                    <CardField
                                         title="Fecha de la entrega"
                                         content={formatDate(completeData.FecEntrega)}
+                                    />
+                                    <CardField
+                                        title="Fecha de facturación"
+                                        content={formatDate(completeData.FecFacturacion)}
                                     />
                                 </>
                             )}
@@ -134,18 +128,31 @@ function DireccionamientoCard({
                     direccionamiento={direccionamiento}
                 />
             }
-            {direccionamiento.EstProgramacion === 1 &&
+            {direccionamiento.EstProgramacion === 1 && !invoiceStatus[direccionamiento.ID] &&
                 <button
                     className="bg-sky-600 text-white hover:bg-sky-500 rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(direccionamiento)}
-                >Entrega</button>
+                >
+                    Entrega
+                </button>
             }
-            {completeData && completeData.EstEntrega === 1 &&
+            {completeData && completeData.EstEntrega === 1 && !invoiceStatus[direccionamiento.ID] &&
                 <button
                     className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(completeData)}
-                >Facturación</button>
+                >
+                    Facturación
+                </button>
             }
+            {completeData && invoiceStatus[direccionamiento.ID] && !deliveryReportStatus[direccionamiento.ID] &&
+                <button
+                    className="bg-yellow-600 text-white hover:bg-yellow-500 rounded-md mt-2 py-2 px-3"
+                    onClick={() => openModal({ ...completeData, ...invoiceStatus[direccionamiento.ID] })}
+                >
+                    Reporte Entrega
+                </button>
+            }
+            {deliveryReportStatus[direccionamiento.ID] && <p>Este direccionamiento ya fue reportado </p>}
         </div>
     )
 }

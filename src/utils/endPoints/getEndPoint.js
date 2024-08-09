@@ -1,6 +1,6 @@
 import { API_ENDPOINTS } from "./apiEndPoints";
 
 // Buscar el edpoint de acuerdo al módulo (en el que navega actualmente el usuario)
-export function getEndPoint(currentModule, type) {
-    return API_ENDPOINTS[currentModule]?.[type] || API_ENDPOINTS.direccionamientos[type];
+export function getEndPoint(apiModule, type) {
+    return API_ENDPOINTS[apiModule]?.[type] || API_ENDPOINTS.direccionamientos[type];
 } 

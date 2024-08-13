@@ -1,5 +1,9 @@
-export function formatDate(dateStr = "1900-01-01") { // Formatear fecha
+export function formatDate(dateStr) { // Formatear fecha
    
+    if(!dateStr){
+        dateStr = "1900-01-01 00:00"
+    }
+
     const [datepart, timepart] = dateStr.split(' ');
     const [year, month, day] = datepart.split('-').map(Number);
     const date = new Date(Date.UTC(year, month - 1, day));

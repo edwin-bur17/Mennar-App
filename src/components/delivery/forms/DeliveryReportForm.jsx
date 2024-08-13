@@ -6,7 +6,7 @@ import { formatCOP } from "@/utils"
 import { Input, Button } from "./ui/ui"
 
 const DeliveryReportForm = ({ direccionamiento, valorEntregado }) => {
-    const { updateData } = useSearchForm()
+    const { updateData, closeModal } = useSearchForm()
     const deliveryReportData = {
         ID: direccionamiento.ID,
         EstadoEntrega: 0,
@@ -16,19 +16,18 @@ const DeliveryReportForm = ({ direccionamiento, valorEntregado }) => {
     const [isLoading, setIsLoading] = useState(false)
     const handleOnSubmit = async (e) => {
         e.preventDefault()
-        console.log(deliveryReportData)
         try {
             setIsLoading(true)
             const res = await axios.put("/api/direccionamiento/reporte", { deliveryReportData })
-            console.log(res.data.message)
-            showAlert(res.data.message, "success")
+            await new Promise(resolve => setTimeout(resolve, 1300))
             await updateData()
+            closeModal()
+            showAlert(res.data.message, "success")
         } catch (error) {
             if (error.response && error.response.status === 422) {
-                console.log(error.response.data.details)
                 showAlert(error.response.data.details, "error")
             } else {
-                console.error("Error en la solicitud (reporte entrega de un direccionamiento):", error.response?.data || error.message);
+                console.log("Error en la solicitud (reporte entrega de un direccionamiento):", error.response?.data || error.message);
             }
         } finally {
             setIsLoading(false)
@@ -36,8 +35,8 @@ const DeliveryReportForm = ({ direccionamiento, valorEntregado }) => {
     }
 
     const deliveryReportFields = [
-        { label: "Id entrega", id: "ID", type: "text", value: deliveryReportData.ID, readOnly: true },
-        { label: "Estado Entrega", id: "EstadoEntrega", type: "text", value: deliveryReportData.EstadoEntrega, readOnly: true },
+        { label: "Id", id: "ID", type: "text", value: deliveryReportData.ID, readOnly: true },
+        { label: "Estado entrega", id: "EstadoEntrega", type: "text", value: deliveryReportData.EstadoEntrega, readOnly: true },
         { label: "Causa no entrega", id: "CausaNoEntrega", type: "text", value: deliveryReportData.CausaNoEntrega, readOnly: true },
         { label: "Valor entregado", id: "ValorEntregado", type: "text", value: formatCOP(deliveryReportData.ValorEntregado), readOnly: true }
     ]

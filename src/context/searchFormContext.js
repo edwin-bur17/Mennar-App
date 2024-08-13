@@ -33,7 +33,8 @@ const initialState = {
     currentPage: 1,
     itemsPerPage: 10,
     invoiceStatus: {},
-    deliveryReportStatus: {}
+    deliveryReportStatus: {},
+    
 }
 
 function reducer(state, action) {
@@ -124,14 +125,18 @@ export const SearchFormProvider = ({ children }) => {
 
     // Abrir la modal de facturación (automáticamente) luego de hacer una entrega exitosa
     const openModalInvoice = useCallback(async (direccionamiento) => {
+        console.log(direccionamiento)
         try {
-            const completeData = await fetchCompleteDireccionamiento(direccionamiento)
+            let additionalData = await fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID)
+            console.log(additionalData)
+            let completeData = { ...direccionamiento, ...additionalData }
+            console.log(completeData)
             dispatch({ type: "OPEN_MODAL", payload: completeData })
         } catch (error) {
             console.error("Error al abrir la modal de facturación con la data adicional luego de hacer una entrega: ", error)
             showAlert("Error al cargar los datos para la facturación", "error")
         }
-    }, [fetchCompleteDireccionamiento])
+    }, [fecthAdditionalData])
 
     // Verificar el estado de la facturación y reporte entrega para la data de la paginación actual
     const checkStatus = useCallback(async (direccionamientos) => {
@@ -141,17 +146,20 @@ export const SearchFormProvider = ({ children }) => {
                     fetchInvoiceData(direccionamiento.NoPrescripcion, direccionamiento.CodSerTecAEntregar),
                     fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "reporteEntrega"),
                 ]);
-                let invoice = invoiceData.find((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar);
-                console.log(invoice)
+                let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar);
                 let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID);
-                console.log(deliveryReport)
+
+                // Iterar sobre el array invoice y obtén el ID de facturación para cada objeto que cumpla con la condición
+                const invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
+                const IDFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
+
                 dispatch({
                     type: "UPDATE_INVOICE_STATUS",
-                    payload: { [direccionamiento.ID]: invoice && invoice.NoEntrega === direccionamiento.NoEntrega ? { IDFacturacion: invoice.IDFacturacion } : null, },
+                    payload: { [direccionamiento.ID]: IDFacturacion ? { IDFacturacion } : null },
                 })
                 dispatch({
                     type: "UPDATE_DELIVERY_REPORT_STATUS",
-                    payload: { [direccionamiento.ID]: deliveryReport && deliveryReport.NoEntrega === direccionamiento.NoEntrega ? { IDReporteEntrega: deliveryReport.IDReporteEntrega } : null, },
+                    payload: { [direccionamiento.ID]: deliveryReport ? { IDReporteEntrega: deliveryReport.IDReporteEntrega } : null, },
                 })
             } catch (error) {
                 console.error(`Error al obtener el estado de facturación para el direccionamiento: ${direccionamiento.NoPrescripcion}`, error);
@@ -239,7 +247,7 @@ export const SearchFormProvider = ({ children }) => {
         let fetchFunction
 
         if (searchParams.prescriptionNumber) {
-            fetchFunction = () => fecthByPrescriptionNumber(searchParams.prescriptionNumber)
+            fetchFunction = () => fecthByPrescriptionNumber(searchParams.prescriptionNumber, currentModule)
         } else if (searchParams.documentType && searchParams.documentNumber) {
             fetchFunction = () => fetchByDate(searchParams.startDate, searchParams.endDate, searchParams.documentType, searchParams.documentNumber);
         } else {
@@ -253,8 +261,13 @@ export const SearchFormProvider = ({ children }) => {
         try {
             setSearchResults({ loading: true })
             const freshData = await fetchFunction();
+            console.log(freshData)
             if (freshData && typeof freshData === "object") {
                 setSearchResults({ data: freshData, loading: false })
+                if (currentModule === "entrega") {
+                    const firstPage = freshData.slice(0, state.itemsPerPage)
+                    checkStatus(firstPage)
+                }
             } else {
                 setSearchResults({ loading: false })
                 showAlert("Error al actualizar los datos", "error");
@@ -264,7 +277,7 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: false });
             showAlert("Error al actualizar la data", "error");
         }
-    }, [state.searchResults, setSearchResults])
+    }, [state.searchResults, setSearchResults, state.totalItems])
 
     // Paginación
     const paginatedData = useMemo(() => {

@@ -7,7 +7,7 @@ import { totalInvoiceValue, formatCOP, unformatCOP } from "@/utils"
 import showAlert from "@/services/alertSweet";
 
 export const InvoiceForm = () => {
-  const { closeModal, currentDireccionamiento, updateData } = useSearchForm()
+  const { currentDireccionamiento, updateData } = useSearchForm()
   const { NoPrescripcion, TipoTec, ConTec, TipoIDPaciente, NoIDPaciente, NoEntrega, CodSerTecAEntregar, NoSubEntrega, NoIDEPS, CodEPS, CantidadEntregada } = currentDireccionamiento
   const [invoiceData, setInvoiceData] = useState({ // json de la facturación
     NoPrescripcion: NoPrescripcion,
@@ -30,8 +30,6 @@ export const InvoiceForm = () => {
   const [alert, setAlert] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isDeliveryReport, setIsDeliveryReport] = useState(false)
-
-  console.log(currentDireccionamiento)
 
   const formatMonetaryField = (value) => { // Formatear a formato moneda - COP
     return ["ValorUnitFacturado", "CuotaModer", "Copago", "ValorTotFacturado"].includes(value) ? formatCOP(invoiceData[value]) : invoiceData[value];
@@ -69,17 +67,15 @@ export const InvoiceForm = () => {
       setAlert("Todos los campos son obligatorios para hacer la entrega")
       return
     }
-    console.log(invoiceData)
     try {
       setIsLoading(true)
       const res = await axios.put("/api/direccionamiento/facturar", { invoiceData })
-      console.log(res.data.message)
+      await updateData()
       showAlert(res.data.message, "success")
       setIsDeliveryReport(true)
     } catch (error) {
       if (error.response && error.response.status === 422) {
-        setAlert(error.response.data.details )
-        console.log(error.response.data.message)
+        setAlert(error.response.data.details)
       } else {
         console.error("Error en la solicitud (facturar un direccionamiento):", error.response?.data || error.message);
       }
@@ -101,10 +97,11 @@ export const InvoiceForm = () => {
   return (
     <>
       {isDeliveryReport ? (
-        <DeliveryReportForm direccionamiento={{ ...currentDireccionamiento, IDFacturacion: true }} valorEntregado={invoiceData.ValorTotFacturado} />
+        <DeliveryReportForm
+          direccionamiento={{ ...currentDireccionamiento, IDFacturacion: true }}
+          valorEntregado={invoiceData.ValorTotFacturado} />
       ) : (
         <form onSubmit={handleOnSubmit} >
-          <p>ID Entrega: {currentDireccionamiento.IdEntrega}</p>
           {alert && <Alert message={alert} />}
           <div className="grid grid-cols-2 gap-2">
             {invoiceFields.map((field) => (

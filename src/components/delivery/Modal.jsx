@@ -7,29 +7,31 @@ import { IoClose } from "react-icons/io5";
 import { useSearchForm } from '@/context/searchFormContext'
 
 const ModalDelivery = () => {
-    const { closeModal, isModalOpen, currentDireccionamiento } = useSearchForm()
+    const { closeModal, isModalOpen, formStep } = useSearchForm()
 
     const renderForm = () => {
-        if (!currentDireccionamiento.IdEntrega) {
-            return <DeliveryForm />;
-        } else if (currentDireccionamiento.IdEntrega && !currentDireccionamiento.IDFacturacion) {
-            return <InvoiceForm />;
-        } else if (currentDireccionamiento.IDFacturacion) {
-            return <DeliveryReportForm direccionamiento={currentDireccionamiento} valorEntregado={currentDireccionamiento.ValorTotFacturado} />;
-        } else {
-            return null
+        switch (formStep) {
+            case "delivery":
+                return <DeliveryForm />
+            case "invoice":
+                return <InvoiceForm />
+            case "report":
+                return <DeliveryReportForm />
+            default:
+                return null;
         }
     }
 
     const getModalTitle = () => {
-        if (!currentDireccionamiento.IdEntrega) {
-            return "Entrega";
-        } else if (currentDireccionamiento.IdEntrega && !currentDireccionamiento.IDFacturacion) {
-            return "Facturación";
-        } else if (currentDireccionamiento.IDFacturacion) {
-            return "Reporte de Entrega";
-        } else {
-            return null
+        switch (formStep) {
+            case "delivery":
+                return "Entrega"
+            case "invoice":
+                return "Facturación"
+            case "report":
+                return "Reporte de Entrega"
+            default:
+                return null
         }
     }
     return (

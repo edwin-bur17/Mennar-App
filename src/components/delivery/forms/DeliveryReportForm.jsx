@@ -5,21 +5,22 @@ import showAlert from "@/services/alertSweet"
 import { formatCOP } from "@/utils"
 import { Input, Button } from "./ui/ui"
 
-const DeliveryReportForm = ({ direccionamiento, valorEntregado }) => {
-    const { updateData, closeModal } = useSearchForm()
+const DeliveryReportForm = () => {
+    const { currentDireccionamiento, updateData, closeModal } = useSearchForm()
     const deliveryReportData = {
-        ID: direccionamiento.ID,
+        ID: currentDireccionamiento.ID,
         EstadoEntrega: 0,
         CausaNoEntrega: 0,
-        ValorEntregado: valorEntregado
+        ValorEntregado: currentDireccionamiento.ValorTotFacturado
     }
     const [isLoading, setIsLoading] = useState(false)
+
     const handleOnSubmit = async (e) => {
         e.preventDefault()
         try {
             setIsLoading(true)
             const res = await axios.put("/api/direccionamiento/reporte", { deliveryReportData })
-            await new Promise(resolve => setTimeout(resolve, 1300))
+            await new Promise(resolve => setTimeout(resolve, 1200))
             await updateData()
             closeModal()
             showAlert(res.data.message, "success")

@@ -98,10 +98,6 @@ function DireccionamientoCard({
                             {completeData.IdEntrega && (
                                 <>
                                     <CardField
-                                        title="Id de la entrega"
-                                        content={completeData.IdEntrega}
-                                    />
-                                    <CardField
                                         title="Cantidad entregada"
                                         content={completeData.CantidadEntregada}
                                     />
@@ -131,7 +127,7 @@ function DireccionamientoCard({
             {direccionamiento.EstProgramacion === 1 && !invoiceStatus[direccionamiento.ID] &&
                 <button
                     className="bg-sky-600 text-white hover:bg-sky-500 rounded-md mt-2 py-2 px-3"
-                    onClick={() => openModal(direccionamiento)}
+                    onClick={() => openModal(direccionamiento, "delivery")}
                 >
                     Entrega
                 </button>
@@ -139,7 +135,7 @@ function DireccionamientoCard({
             {completeData && completeData.EstEntrega === 1 && !invoiceStatus[direccionamiento.ID] &&
                 <button
                     className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
-                    onClick={() => openModal(completeData)}
+                    onClick={() => openModal(completeData, "invoice")}
                 >
                     Facturación
                 </button>
@@ -147,12 +143,12 @@ function DireccionamientoCard({
             {completeData && invoiceStatus[direccionamiento.ID] && !deliveryReportStatus[direccionamiento.ID] &&
                 <button
                     className="bg-yellow-600 text-white hover:bg-yellow-500 rounded-md mt-2 py-2 px-3"
-                    onClick={() => openModal({ ...completeData, ...invoiceStatus[direccionamiento.ID] })}
+                    onClick={() => openModal({ ...completeData, ...invoiceStatus[direccionamiento.ID] }, "report")}
                 >
                     Reporte Entrega
                 </button>
             }
-            {deliveryReportStatus[direccionamiento.ID] && <p>Este direccionamiento ya fue reportado </p>}
+            {deliveryReportStatus[direccionamiento.ID] && <span className="bg-green-700 rounded-lg text-white p-2">Ciclo del direccionamiento completado </span>}
         </div>
     )
 }

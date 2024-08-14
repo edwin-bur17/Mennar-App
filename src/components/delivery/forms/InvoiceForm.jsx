@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchForm } from "@/context/searchFormContext";
 import { Input, Button, Alert } from "./ui/ui"
-import DeliveryReportForm from "./DeliveryReportForm";
 import { totalInvoiceValue, formatCOP, unformatCOP } from "@/utils"
 import showAlert from "@/services/alertSweet";
 
 export const InvoiceForm = () => {
-  const { currentDireccionamiento, updateData } = useSearchForm()
+  const { currentDireccionamiento, updateData, openModalReport, closeModal } = useSearchForm()
   const { NoPrescripcion, TipoTec, ConTec, TipoIDPaciente, NoIDPaciente, NoEntrega, CodSerTecAEntregar, NoSubEntrega, NoIDEPS, CodEPS, CantidadEntregada } = currentDireccionamiento
   const [invoiceData, setInvoiceData] = useState({ // json de la facturación
     NoPrescripcion: NoPrescripcion,
@@ -29,7 +28,6 @@ export const InvoiceForm = () => {
   })
   const [alert, setAlert] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [isDeliveryReport, setIsDeliveryReport] = useState(false)
 
   const formatMonetaryField = (value) => { // Formatear a formato moneda - COP
     return ["ValorUnitFacturado", "CuotaModer", "Copago", "ValorTotFacturado"].includes(value) ? formatCOP(invoiceData[value]) : invoiceData[value];
@@ -70,9 +68,11 @@ export const InvoiceForm = () => {
     try {
       setIsLoading(true)
       const res = await axios.put("/api/direccionamiento/facturar", { invoiceData })
+      await new Promise(resolve => setTimeout(resolve, 1200))
       await updateData()
+      closeModal()
       showAlert(res.data.message, "success")
-      setIsDeliveryReport(true)
+      openModalReport(currentDireccionamiento)
     } catch (error) {
       if (error.response && error.response.status === 422) {
         setAlert(error.response.data.details)
@@ -95,30 +95,21 @@ export const InvoiceForm = () => {
     { label: "Valor total facturado:", id: "ValorTotFacturado", type: "text", value: invoiceData.ValorTotFacturado, readOnly: true },
   ]
   return (
-    <>
-      {isDeliveryReport ? (
-        <DeliveryReportForm
-          direccionamiento={{ ...currentDireccionamiento, IDFacturacion: true }}
-          valorEntregado={invoiceData.ValorTotFacturado} />
-      ) : (
-        <form onSubmit={handleOnSubmit} >
-          {alert && <Alert message={alert} />}
-          <div className="grid grid-cols-2 gap-2">
-            {invoiceFields.map((field) => (
-              <Input
-                key={field.id}
-                {...field}
-                value={formatMonetaryField(field.id)}
-                onChange={handleOnChange}
-                className="w-full py-2 px-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-              />
-            ))}
-          </div>
-          <Button isLoading={isLoading} title="Facturar" />
-        </form>
-      )
-      }
-    </>
+    <form onSubmit={handleOnSubmit} >
+      {alert && <Alert message={alert} />}
+      <div className="grid grid-cols-2 gap-2">
+        {invoiceFields.map((field) => (
+          <Input
+            key={field.id}
+            {...field}
+            value={formatMonetaryField(field.id)}
+            onChange={handleOnChange}
+            className="w-full py-2 px-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+          />
+        ))}
+      </div>
+      <Button isLoading={isLoading} title="Facturar" />
+    </form>
   )
 }
 

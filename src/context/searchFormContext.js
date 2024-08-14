@@ -34,7 +34,7 @@ const initialState = {
     itemsPerPage: 10,
     invoiceStatus: {},
     deliveryReportStatus: {},
-    
+    formStep: "delivery"
 }
 
 function reducer(state, action) {
@@ -53,6 +53,8 @@ function reducer(state, action) {
             return { ...state, deliveryReportStatus: { ...state.deliveryReportStatus, ...action.payload } }
         case "SET_PAGE":
             return { ...state, currentPage: action.payload }
+        case "SET_FORM_STEP":
+            return { ...state, formStep: action.payload }
         case "OPEN_MODAL":
             return { ...state, modalDelivery: { isModalOpen: true, currentDireccionamiento: action.payload } }
         case "CLOSE_MODAL":
@@ -88,14 +90,20 @@ export const SearchFormProvider = ({ children }) => {
         return fields.every(field => state.formData[field] !== "")
     }, [state.formData])
 
+    // Paso de los formularios
+    const setFormStep = useCallback((step) => {
+        dispatch({ type: "SET_FORM_STEP", payload: step })
+    }, [])
+
     // Abrir modal entrega
-    const openModal = (direccionamiento) => {
+    const openModal = useCallback((direccionamiento, step = "delivery") => {
         if (direccionamiento && typeof direccionamiento === "object") {
             dispatch({ type: "OPEN_MODAL", payload: direccionamiento })
+            dispatch({ type: "SET_FORM_STEP", payload: step })
         } else {
             console.error("Intento de abrir la modal inválido", direccionamiento)
         }
-    }
+    }, [])
 
     // Cerrar modal entrega
     const closeModal = () => {
@@ -109,12 +117,18 @@ export const SearchFormProvider = ({ children }) => {
                 fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID),
                 fetchInvoiceData(direccionamiento.NoPrescripcion),
             ])
-            const invoice = invoiceData.find((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
+            // Filtrar los direccionamientos que cumplan la condición (servicio entregado)
+            const invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
+            // Iterar sobre el array invoice y obtener el ValorTotFacturado y FecFacturacion  de facturación 
+            const invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
+            const ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
+            const FecFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecFacturacion : null
+
             const completeDireccionamiento = {
                 ...direccionamiento,
                 ...additionalData,
-                ValorTotFacturado: invoice ? invoice.ValorTotFacturado : null,
-                FecFacturacion: invoice ? invoice.FecFacturacion : null
+                ValorTotFacturado: ValorTotFacturado,
+                FecFacturacion: FecFacturacion
             }
             dispatch({ type: 'UPDATE_COMPLETE_DIRECCIONAMIENTO', payload: completeDireccionamiento })
         } catch (error) {
@@ -125,18 +139,32 @@ export const SearchFormProvider = ({ children }) => {
 
     // Abrir la modal de facturación (automáticamente) luego de hacer una entrega exitosa
     const openModalInvoice = useCallback(async (direccionamiento) => {
-        console.log(direccionamiento)
         try {
             let additionalData = await fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID)
-            console.log(additionalData)
             let completeData = { ...direccionamiento, ...additionalData }
-            console.log(completeData)
-            dispatch({ type: "OPEN_MODAL", payload: completeData })
+            openModal(completeData, "invoice")
         } catch (error) {
             console.error("Error al abrir la modal de facturación con la data adicional luego de hacer una entrega: ", error)
             showAlert("Error al cargar los datos para la facturación", "error")
         }
     }, [fecthAdditionalData])
+
+    // Abrir la modal de reporte entrega (automáticamente) luego de hacer una facturación exitosa
+    const openModalReport = useCallback(async (direccionamiento) => {
+        try {
+            let invoiceData = await fetchInvoiceData(direccionamiento.NoPrescripcion)
+            // Filtrar los direccionamientos que cumplan la condición (servicio entregado)
+            let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
+            // Iterar sobre el array invoice y obtener el ValorTotFacturado  del direccionamiento
+            let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
+            let ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
+            let completeDireccionamiento = { ...direccionamiento, ValorTotFacturado: ValorTotFacturado }
+            openModal(completeDireccionamiento, "report")
+        } catch (error) {
+            console.error("Error al abrir la modal de facturación con la data adicional luego de hacer una entrega: ", error)
+            showAlert("Error al cargar los datos para la facturación", "error")
+        }
+    }, [fetchInvoiceData])
 
     // Verificar el estado de la facturación y reporte entrega para la data de la paginación actual
     const checkStatus = useCallback(async (direccionamientos) => {
@@ -152,7 +180,6 @@ export const SearchFormProvider = ({ children }) => {
                 // Iterar sobre el array invoice y obtén el ID de facturación para cada objeto que cumpla con la condición
                 const invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
                 const IDFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
-
                 dispatch({
                     type: "UPDATE_INVOICE_STATUS",
                     payload: { [direccionamiento.ID]: IDFacturacion ? { IDFacturacion } : null },
@@ -182,11 +209,9 @@ export const SearchFormProvider = ({ children }) => {
     const handleSubmit = useCallback(async (e, type) => {
         e.preventDefault()
         const { startDate, endDate, documentType, documentNumber, prescriptionNumber } = state.formData;
-
         let isValid = false
         let searchParams = {}
         let fetchFunction;
-
         switch (type) {
             case "dateRange":
                 isValid = validateFields(["startDate", "endDate"])
@@ -208,12 +233,10 @@ export const SearchFormProvider = ({ children }) => {
                 console.log("Tipo de búsqueda no reconocido: ", type)
                 return
         }
-
         if (!isValid) { // Validación de los campos
             showAlert("Todos los campos son obligatorios", "error")
             return
         }
-
         try {
             setSearchResults({ loading: true, isSearch: true, data: [], searchParams, searchModule: currentModule });
             setSelected([])
@@ -245,7 +268,6 @@ export const SearchFormProvider = ({ children }) => {
     const updateData = useCallback(async () => {
         const { searchParams } = state.searchResults
         let fetchFunction
-
         if (searchParams.prescriptionNumber) {
             fetchFunction = () => fecthByPrescriptionNumber(searchParams.prescriptionNumber, currentModule)
         } else if (searchParams.documentType && searchParams.documentNumber) {
@@ -253,20 +275,17 @@ export const SearchFormProvider = ({ children }) => {
         } else {
             fetchFunction = () => fetchByDate(searchParams.startDate, searchParams.endDate);
         }
-
         if (typeof fetchFunction !== "function") { // Validar si es una función 
             throw new Error(`fetchFunction no es una función válida`)
         }
-
         try {
             setSearchResults({ loading: true })
             const freshData = await fetchFunction();
-            console.log(freshData)
             if (freshData && typeof freshData === "object") {
                 setSearchResults({ data: freshData, loading: false })
-                if (currentModule === "entrega") {
+                if (currentModule === "entrega") { // chekear el estado del direccionamiento 
                     const firstPage = freshData.slice(0, state.itemsPerPage)
-                    checkStatus(firstPage)
+                    await checkStatus(firstPage)
                 }
             } else {
                 setSearchResults({ loading: false })
@@ -277,7 +296,7 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: false });
             showAlert("Error al actualizar la data", "error");
         }
-    }, [state.searchResults, setSearchResults, state.totalItems])
+    }, [state.searchResults, setSearchResults, state.totalItems, state.formStep, currentModule])
 
     // Paginación
     const paginatedData = useMemo(() => {
@@ -304,6 +323,8 @@ export const SearchFormProvider = ({ children }) => {
         fetchCompleteDireccionamiento,
         setPage,
         openModalInvoice,
+        openModalReport,
+        setFormStep
     }
 
     return (

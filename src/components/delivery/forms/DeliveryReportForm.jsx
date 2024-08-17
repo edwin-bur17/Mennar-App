@@ -1,17 +1,19 @@
 import { useState } from "react"
 import axios from "axios"
 import { useSearchForm } from "@/context/searchFormContext"
+import { useModal } from "@/context/modalContext"
 import showAlert from "@/services/alertSweet"
 import { formatCOP } from "@/utils"
 import { Input, Button } from "./ui/ui"
 
 const DeliveryReportForm = () => {
-    const { currentDireccionamiento, updateData, closeModal } = useSearchForm()
+    const { updateData } = useSearchForm()
+    const { closeModal, currentData } = useModal()
     const deliveryReportData = {
-        ID: currentDireccionamiento.ID,
+        ID: currentData.ID,
         EstadoEntrega: 0,
         CausaNoEntrega: 0,
-        ValorEntregado: currentDireccionamiento.ValorTotFacturado
+        ValorEntregado: currentData.ValorTotFacturado
     }
     const [isLoading, setIsLoading] = useState(false)
 

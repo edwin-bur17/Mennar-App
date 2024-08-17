@@ -1,5 +1,7 @@
 import { useSearchForm } from "@/context/searchFormContext";
 import { useModule } from "@/context/moduleContext";
+import { usePagination } from "@/context/paginationContext";
+import { useModal } from "@/context/modalContext";
 import DireccionamientoCard from "./direccionamientocard/DireccionamientoCard";
 import Loading from "./Loading";
 import ProgrammingAlert from "./ProgrammingAlert";
@@ -17,14 +19,13 @@ const ResultCardList = () => {
         handleSelectAllAssets,
         selected,
         searchModule,
-        isModalOpen,
         completeDireccionamientos,
         fetchCompleteDireccionamiento,
-        currentPage,
         setPage,
         totalItems,
-        itemsPerPage
     } = useSearchForm()
+    const {isOpen} = useModal()
+    const {itemsPerPage, currentPage} = usePagination()
     const { currentModule } = useModule()
     // Mostrar la data de acuerdo al módulo actual
     const showData = isSearch && (currentModule === searchModule)
@@ -75,7 +76,7 @@ const ResultCardList = () => {
                             totalPages={Math.ceil(totalItems / itemsPerPage)}
                             onPageChange={setPage}
                         />
-                        {isModalOpen &&
+                        {isOpen &&
                             <Modal />
                         }
                     </>

@@ -1,12 +1,14 @@
 import { useSearchForm } from "@/context/searchFormContext"
+import { useModal } from "@/context/modalContext"
 import axios from "axios"
 import { useState } from "react"
 import { getNameProduct, typeOptions } from "@/utils"
 import showAlert from "@/services/alertSweet"
 import { Button, Alert, Input } from "./ui/ui"
 const DeliveryForm = () => {
-    const { closeModal, currentDireccionamiento, updateData, openModalInvoice } = useSearchForm()
-    const { ID, CodSerTecAEntregar, CantTotAEntregar } = currentDireccionamiento
+    const { updateData } = useSearchForm()
+    const { closeModal, currentData, openModalInvoice } = useModal()
+    const { ID, CodSerTecAEntregar, CantTotAEntregar } = currentData
     const [formData, setFormData] = useState({
         ID: ID,
         CodSerTecEntregado: CodSerTecAEntregar,
@@ -64,7 +66,7 @@ const DeliveryForm = () => {
             await updateData()
             closeModal()
             showAlert(res.data.message, "success")
-            await openModalInvoice(currentDireccionamiento)
+            await openModalInvoice(currentData)
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 showAlert("Error al hacer la entrega, revisa la alerta", "error")

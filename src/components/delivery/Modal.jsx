@@ -4,13 +4,12 @@ import DeliveryForm from './forms/DeliveryForm'
 import InvoiceForm from './forms/InvoiceForm';
 import DeliveryReportForm from './forms/DeliveryReportForm';
 import { IoClose } from "react-icons/io5";
-import { useSearchForm } from '@/context/searchFormContext'
-
+import { useModal } from "@/context/modalContext";
 const ModalDelivery = () => {
-    const { closeModal, isModalOpen, formStep } = useSearchForm()
+    const { closeModal, isOpen, step } = useModal()
 
     const renderForm = () => {
-        switch (formStep) {
+        switch (step) {
             case "delivery":
                 return <DeliveryForm />
             case "invoice":
@@ -23,7 +22,7 @@ const ModalDelivery = () => {
     }
 
     const getModalTitle = () => {
-        switch (formStep) {
+        switch (step) {
             case "delivery":
                 return "Entrega"
             case "invoice":
@@ -35,7 +34,7 @@ const ModalDelivery = () => {
         }
     }
     return (
-        <Transition show={isModalOpen} as={Fragment}>
+        <Transition show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={closeModal}>
                 <TransitionChild
                     as={Fragment}

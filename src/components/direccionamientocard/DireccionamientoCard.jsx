@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useModule } from "@/context/moduleContext"
 import { useSearchForm } from "@/context/searchFormContext"
+import { useModal } from "@/context/modalContext"
 import { estadoDireccionamiento, formatDate, technologyType, getNameProduct, getNameEps } from "@/utils"
 import CheckboxInput from "../CheckboxInput"
 import { CardField, Progress } from "./ui/ui"
@@ -12,7 +13,8 @@ function DireccionamientoCard({
     selected,
     handleCheckboxChange
 }) {
-    const { openModal, invoiceStatus, deliveryReportStatus } = useSearchForm()
+    const { invoiceStatus, deliveryReportStatus } = useSearchForm()
+    const { openModal } = useModal()
     const { currentModule } = useModule()
     const isDireccionamiento = currentModule === "direccionamientos"
     const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-red-100" : "bg-slate-300"

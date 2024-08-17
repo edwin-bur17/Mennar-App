@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchForm } from "@/context/searchFormContext";
+import { useModal } from "@/context/modalContext";
 import { Input, Button, Alert } from "./ui/ui"
 import { totalInvoiceValue, formatCOP, unformatCOP } from "@/utils"
 import showAlert from "@/services/alertSweet";
 
 export const InvoiceForm = () => {
-  const { currentDireccionamiento, updateData, openModalReport, closeModal } = useSearchForm()
-  const { NoPrescripcion, TipoTec, ConTec, TipoIDPaciente, NoIDPaciente, NoEntrega, CodSerTecAEntregar, NoSubEntrega, NoIDEPS, CodEPS, CantidadEntregada } = currentDireccionamiento
+  const { updateData } = useSearchForm()
+  const { closeModal, currentData, openModalReport } = useModal()
+  const { NoPrescripcion, TipoTec, ConTec, TipoIDPaciente, NoIDPaciente, NoEntrega, CodSerTecAEntregar, NoSubEntrega, NoIDEPS, CodEPS, CantidadEntregada } = currentData
   const [invoiceData, setInvoiceData] = useState({ // json de la facturación
     NoPrescripcion: NoPrescripcion,
     TipoTec: TipoTec,
@@ -72,7 +74,7 @@ export const InvoiceForm = () => {
       await updateData()
       closeModal()
       showAlert(res.data.message, "success")
-      openModalReport(currentDireccionamiento)
+      openModalReport(currentData)
     } catch (error) {
       if (error.response && error.response.status === 422) {
         setAlert(error.response.data.details)

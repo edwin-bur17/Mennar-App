@@ -4,6 +4,7 @@ import { createContext, useContext, useReducer, useCallback, useMemo } from "rea
 import { apiCall } from "@/api/apiCall"
 import showAlert from "@/services/alertSweet"
 import { useOnChangeCheckbox } from "@/hooks/useOnChangeCheckbox"
+import { usePagination } from "./paginationContext"
 
 // Crear el context 
 const SearchFormContext = createContext()
@@ -25,16 +26,9 @@ const initialState = {
         searchModule: null,
         totalItems: 0
     },
-    modalDelivery: {
-        isModalOpen: false,
-        currentDireccionamiento: null
-    },
     completeDireccionamientos: {},
-    currentPage: 1,
-    itemsPerPage: 10,
     invoiceStatus: {},
     deliveryReportStatus: {},
-    formStep: "delivery"
 }
 
 function reducer(state, action) {
@@ -51,14 +45,6 @@ function reducer(state, action) {
             return { ...state, invoiceStatus: { ...state.invoiceStatus, ...action.payload } }
         case "UPDATE_DELIVERY_REPORT_STATUS":
             return { ...state, deliveryReportStatus: { ...state.deliveryReportStatus, ...action.payload } }
-        case "SET_PAGE":
-            return { ...state, currentPage: action.payload }
-        case "SET_FORM_STEP":
-            return { ...state, formStep: action.payload }
-        case "OPEN_MODAL":
-            return { ...state, modalDelivery: { isModalOpen: true, currentDireccionamiento: action.payload } }
-        case "CLOSE_MODAL":
-            return { ...state, modalDelivery: { isModalOpen: false, currentDireccionamiento: null } }
         default:
             return state
     }
@@ -69,6 +55,7 @@ export const SearchFormProvider = ({ children }) => {
     const { fecthByPrescriptionNumber, fetchByDate, fecthAdditionalData, fetchInvoiceData } = apiCall()
     const { selected, setSelected, handleCheckboxChange, handleSelectAllAssets } = useOnChangeCheckbox()
     const { currentModule } = useModule()
+    const { currentPage, itemsPerPage, setPage: setPaginationPage, getPaginatedData } = usePagination();
 
     // Actualizar (los valores) de los inputs del formulario
     const updateForm = useCallback((field, value) => {
@@ -89,26 +76,6 @@ export const SearchFormProvider = ({ children }) => {
     const validateFields = useCallback((fields) => {
         return fields.every(field => state.formData[field] !== "")
     }, [state.formData])
-
-    // Paso de los formularios
-    const setFormStep = useCallback((step) => {
-        dispatch({ type: "SET_FORM_STEP", payload: step })
-    }, [])
-
-    // Abrir modal entrega
-    const openModal = useCallback((direccionamiento, step = "delivery") => {
-        if (direccionamiento && typeof direccionamiento === "object") {
-            dispatch({ type: "OPEN_MODAL", payload: direccionamiento })
-            dispatch({ type: "SET_FORM_STEP", payload: step })
-        } else {
-            console.error("Intento de abrir la modal inválido", direccionamiento)
-        }
-    }, [])
-
-    // Cerrar modal entrega
-    const closeModal = () => {
-        dispatch({ type: "CLOSE_MODAL" })
-    }
 
     // Completar el direccionamiento con la data faltante
     const fetchCompleteDireccionamiento = useCallback(async (direccionamiento) => {
@@ -136,35 +103,6 @@ export const SearchFormProvider = ({ children }) => {
             return direccionamiento
         }
     }, [fecthAdditionalData, fetchInvoiceData, dispatch])
-
-    // Abrir la modal de facturación (automáticamente) luego de hacer una entrega exitosa
-    const openModalInvoice = useCallback(async (direccionamiento) => {
-        try {
-            let additionalData = await fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID)
-            let completeData = { ...direccionamiento, ...additionalData }
-            openModal(completeData, "invoice")
-        } catch (error) {
-            console.error("Error al abrir la modal de facturación con la data adicional luego de hacer una entrega: ", error)
-            showAlert("Error al cargar los datos para la facturación", "error")
-        }
-    }, [fecthAdditionalData])
-
-    // Abrir la modal de reporte entrega (automáticamente) luego de hacer una facturación exitosa
-    const openModalReport = useCallback(async (direccionamiento) => {
-        try {
-            let invoiceData = await fetchInvoiceData(direccionamiento.NoPrescripcion)
-            // Filtrar los direccionamientos que cumplan la condición (servicio entregado)
-            let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
-            // Iterar sobre el array invoice y obtener el ValorTotFacturado  del direccionamiento
-            let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
-            let ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
-            let completeDireccionamiento = { ...direccionamiento, ValorTotFacturado: ValorTotFacturado }
-            openModal(completeDireccionamiento, "report")
-        } catch (error) {
-            console.error("Error al abrir la modal de facturación con la data adicional luego de hacer una entrega: ", error)
-            showAlert("Error al cargar los datos para la facturación", "error")
-        }
-    }, [fetchInvoiceData])
 
     // Verificar el estado de la facturación y reporte entrega para la data de la paginación actual
     const checkStatus = useCallback(async (direccionamientos) => {
@@ -196,14 +134,13 @@ export const SearchFormProvider = ({ children }) => {
         }));
     }, [fetchInvoiceData, fecthByPrescriptionNumber])
 
-    // Actualizar la página actual - estado de la facturación en la paginación actual
+    // Actualizar la página actual - estado de la facturación y reporte entrega en la paginación actual
     const setPage = useCallback((page) => {
-        dispatch({ type: 'SET_PAGE', payload: page })
-        const startIndex = (page - 1) * state.itemsPerPage
-        const endIndex = startIndex + state.itemsPerPage
-        const currentPageData = state.searchResults.data.slice(startIndex, endIndex)
-        checkStatus(currentPageData)
-    }, [state.itemsPerPage, state.searchResults.data, checkStatus])
+        setPaginationPage(page, () => {
+            const paginatedData = getPaginatedData(state.searchResults.data)
+            checkStatus(paginatedData)
+        })
+    }, [setPaginationPage, getPaginatedData, state.searchResults.data, checkStatus])
 
     // Envío del formulario
     const handleSubmit = useCallback(async (e, type) => {
@@ -248,8 +185,8 @@ export const SearchFormProvider = ({ children }) => {
             if (res && typeof res === "object") {
                 setSearchResults({ data: res, loading: false, totalItems: res.length, isSearch: true, searchParams, searchModule: currentModule })
                 if (currentModule === "entrega") {
-                    const firstPage = res.slice(0, state.itemsPerPage)
-                    checkStatus(firstPage)
+                    const firstPage = getPaginatedData(res)
+                    await checkStatus(firstPage)
                 }
                 resetForm()
             } else {
@@ -284,7 +221,7 @@ export const SearchFormProvider = ({ children }) => {
             if (freshData && typeof freshData === "object") {
                 setSearchResults({ data: freshData, loading: false })
                 if (currentModule === "entrega") { // chekear el estado del direccionamiento 
-                    const firstPage = freshData.slice(0, state.itemsPerPage)
+                    const firstPage = getPaginatedData(freshData)
                     await checkStatus(firstPage)
                 }
             } else {
@@ -296,20 +233,19 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: false });
             showAlert("Error al actualizar la data", "error");
         }
-    }, [state.searchResults, setSearchResults, state.totalItems, state.formStep, currentModule])
+    }, [state.searchResults, setSearchResults, currentModule])
 
     // Paginación
     const paginatedData = useMemo(() => {
         const { data } = state.searchResults
-        const startIndex = (state.currentPage - 1) * state.itemsPerPage
-        return data.slice(startIndex, startIndex + state.itemsPerPage)
-    }, [state.searchResults.data, state.currentPage, state.itemsPerPage])
+        const startIndex = (currentPage - 1) * itemsPerPage
+        return data.slice(startIndex, startIndex + itemsPerPage)
+    }, [state.searchResults.data, currentPage, itemsPerPage])
 
-    const value = {
+    const value = useMemo(() => ({
         ...state,
         ...state.formData,
         ...state.searchResults,
-        ...state.modalDelivery,
         updateForm,
         handleSubmit,
         selected,
@@ -317,21 +253,12 @@ export const SearchFormProvider = ({ children }) => {
         handleSelectAllAssets,
         handleCheckboxChange,
         updateData,
-        openModal,
-        closeModal,
         paginatedData,
         fetchCompleteDireccionamiento,
         setPage,
-        openModalInvoice,
-        openModalReport,
-        setFormStep
-    }
-
-    return (
-        <SearchFormContext.Provider value={value}>
-            {children}
-        </SearchFormContext.Provider>
-    )
+    }), [state, updateForm, handleSubmit, selected, setSelected, handleSelectAllAssets, handleCheckboxChange, updateData, paginatedData, fetchCompleteDireccionamiento, setPage]) 
+        
+    return ( <SearchFormContext.Provider value={value}> {children} </SearchFormContext.Provider> )
 }
 export const useSearchForm = () => {
     const context = useContext(SearchFormContext)

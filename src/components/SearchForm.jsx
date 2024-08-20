@@ -1,4 +1,5 @@
-function SearchForm({ title, fields, onSubmit, onChange, rangeStart, rangeEnd }) {
+import { TbReportSearch } from "react-icons/tb";
+function SearchForm({ title, fields, onSubmit, onChange }) {
     // Manejar el cambio en los inputs
     const handleChange = (e) => {
         const { id, value } = e.target
@@ -6,15 +7,14 @@ function SearchForm({ title, fields, onSubmit, onChange, rangeStart, rangeEnd })
     }
     return (
         <div>
-            <h3 className="text-white text-center font-bold">{title}</h3>
-            <form onSubmit={onSubmit} className="bg-slate-300 p-3 mt-2 rounded-xl text-gray-950">
-                {rangeStart && rangeEnd && <p className="bg-green-400 text-base p-2 mb-2 rounded-lg">Rango de búsqueda: desde {rangeStart} - hasta {rangeEnd}</p>}
+            <h3 className="text-white font-semi-bold">{title}</h3>
+            <form onSubmit={onSubmit} className="flex flex-row bg-slate-100 p-3 mt-1 rounded-lg text-gray-950">
                 {fields.map((field, index) => (
-                    <div key={index} className="flex justify-between">
-                        <label htmlFor={field.id} className="font-medium me-3">{field.label}</label>
+                    <div key={index} className="pr-2">
+                        <label htmlFor={field.id} className="block font-medium">{field.label}</label>
                         {field.type === "select" ? (
                             <select
-                                className="bg-slate-100 px-4 py-2 mb-2 rounded-lg w-64"
+                                className="w-full p-1.5 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                                 id={field.id}
                                 value={field.value}
                                 onChange={handleChange}
@@ -28,20 +28,18 @@ function SearchForm({ title, fields, onSubmit, onChange, rangeStart, rangeEnd })
                             </select>
                         ) : (
                             <input
-                                className="bg-slate-100 px-4 py-2 mb-2 rounded-lg"
+                                className="w-full p-1.5 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                                 type={field.type}
                                 id={field.id}
+                                placeholder={field.placeholder}
                                 value={field.value}
                                 onChange={handleChange}
                             />
                         )}
                     </div>
                 ))}
-                <button type="submit" className="bg-sky-600 hover:bg-sky-500 text-white px-3 py-2 mt-3 rounded-lg cursor-pointer transition-colors flex items-center justify-center">
-                    <span>Consultar</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 ml-2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
+                <button type="submit" className="bg-sky-600 hover:bg-sky-500 text-white px-1.5 h-9 mt-6 rounded-lg cursor-pointer transition-colors flex items-center justify-center">
+                    <TbReportSearch size={25}/>
                 </button>
             </form>
         </div>

@@ -26,12 +26,12 @@ const SearchFormContainer = () => {
     // Formulario búsqueda por paciente mediante un rango de fecha
     const fieldsDatePatient = [
         { id: 'documentType', label: 'Tipo de documento:', type: 'select', value: documentType, options: documentTypeOptions, },
-        { id: 'documentNumber', label: 'Número de documento:', type: 'number', value: documentNumber, },
+        { id: 'documentNumber', label: 'Número de documento:', type: 'number', placeholder: "Digita aquí el número", value: documentNumber, },
     ];
 
     // Formulario búsqueda por número de prescripción
     const fieldsPrescriptionNumber = [
-        { id: 'prescriptionNumber', label: 'Número de prescripción:', type: 'number', value: prescriptionNumber, },
+        { id: 'prescriptionNumber', label: 'Número de prescripción:', type: 'number', placeholder: "Digita aquí el número", value: prescriptionNumber, },
     ];
 
     return (
@@ -48,8 +48,6 @@ const SearchFormContainer = () => {
                     fields={fieldsDatePatient}
                     onSubmit={(e) => handleSubmit(e, "datePatient")}
                     onChange={updateForm}
-                    rangeStart={startDate}
-                    rangeEnd={endDate}
                 />
                 <SearchForm
                     title="Por número de prescripción"

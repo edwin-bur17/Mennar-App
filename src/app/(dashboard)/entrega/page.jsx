@@ -6,7 +6,7 @@ export const metadata = {
 const DeliveryPage = () => {
   return (
     <section>
-        <h1 className="text-center text-white text-2xl font-bold mb-4">Página de entrega </h1>
+        <h1 className="text-center text-white text-2xl font-bold">ENTREGA - FACTURACIÓN - REPORTE ENTREGA </h1>
         <SearchFormContainer />
     </section>
   )

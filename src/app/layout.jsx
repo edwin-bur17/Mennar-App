@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
               <SearchFormProvider>
                 <div className="flex h-screen overflow-hidden">
                   <Sidebar />
-                  <main className="flex-1 overflow-y-auto p-5 transition-all duration-300 bg-gray-700 my-5 mr-5 rounded-lg">
+                  <main className="flex-1 overflow-y-auto p-3 transition-all duration-300 bg-gray-700 my-5 mr-5 rounded-lg">
                     {children}
                   </main>
                 </div>

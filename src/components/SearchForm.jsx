@@ -8,7 +8,7 @@ function SearchForm({ title, fields, onSubmit, onChange }) {
     return (
         <div>
             <h3 className="text-white font-semi-bold">{title}</h3>
-            <form onSubmit={onSubmit} className="flex flex-row bg-slate-100 p-3 mt-1 rounded-lg text-gray-950">
+            <form onSubmit={onSubmit} className="flex flex-row bg-slate p-3 mt-1 rounded-lg text-black-default">
                 {fields.map((field, index) => (
                     <div key={index} className="pr-2">
                         <label htmlFor={field.id} className="block font-medium">{field.label}</label>
@@ -38,7 +38,7 @@ function SearchForm({ title, fields, onSubmit, onChange }) {
                         )}
                     </div>
                 ))}
-                <button type="submit" className="bg-sky-600 hover:bg-sky-500 text-white px-1.5 h-9 mt-6 rounded-lg cursor-pointer transition-colors flex items-center justify-center">
+                <button type="submit" className="bg-sky-default hover:bg-sky-500 text-white px-1.5 h-9 mt-6 rounded-lg cursor-pointer transition-colors flex items-center justify-center">
                     <TbReportSearch size={25}/>
                 </button>
             </form>

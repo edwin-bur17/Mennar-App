@@ -12,7 +12,7 @@ const CheckboxInput = ({ checked, onCheckboxChange, selectAll = false, data, dir
             type="checkbox"
             checked={checked}
             onChange={handleOnChange}
-            className="accent-green-600 h-4 w-4 cursor-pointer"
+            className="accent-success-default h-4 w-4 cursor-pointer"
         />
     )
 }

@@ -11,7 +11,7 @@ const Input = ({
     className,
     placeholder }) => (
     <div className={`mb-4 ${colSpan}`}>
-        <label htmlFor={id} className="block mb-1 text-base font-medium text-gray-700">
+        <label htmlFor={id} className="block mb-1 text-base font-medium text-black-default">
             {label}
         </label>
         {type === "select" ? (

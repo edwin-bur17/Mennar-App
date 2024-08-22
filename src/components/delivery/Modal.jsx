@@ -45,7 +45,7 @@ const ModalDelivery = () => {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <DialogBackdrop className="fixed inset-0 bg-black/50" />
+                    <DialogBackdrop className="fixed inset-0 bg-black-50" />
                 </TransitionChild>
 
                 <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -66,7 +66,7 @@ const ModalDelivery = () => {
                                     </h3>
                                     <button
                                         onClick={closeModal}
-                                        className="absolute right-0 cursor-pointer text-red-500 hover:bg-red-500 hover:text-white rounded-full transition-colors"
+                                        className="absolute right-0 cursor-pointer text-danger-default hover:bg-danger-default hover:text-white rounded-full transition-colors"
                                     >
                                         <IoClose size={32} />
                                     </button>

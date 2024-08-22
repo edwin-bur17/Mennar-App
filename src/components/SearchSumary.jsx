@@ -19,7 +19,7 @@ const SearchSumary = () => {
     return (
         <div className="flex items-center mt-4">
             <button
-                className="bg-sky-500 rounded-lg p-2 me-3"
+                className="bg-sky-default hover:bg-sky-500 rounded-lg p-2 me-3"
                 onClick={handleToggleVisibility}>
                 {isVisible ? <AiOutlineEyeInvisible size={25} /> : <AiOutlineEye size={25} />}
             </button>
@@ -28,10 +28,10 @@ const SearchSumary = () => {
             >
                 <div className="bg-white flex justify-around items-center p-2 h-full">
                     <h3>Resumen de la búsqueda</h3>
-                    <span>Total: {total}</span>
-                    <span className="text-red-500">Anulados: {cancelled}</span>
-                    <span>Activos: {assets}</span>
-                    <span className="text-green-600">{currentModule === "direccionamientos" ? "Programados:" : "Procesados:"} {programmed}</span>
+                    <span className="text-black-default">Total: {total}</span>
+                    <span className="text-danger-default">Anulados: {cancelled}</span>
+                    <span className="text-black-default">Activos: {assets}</span>
+                    <span className="text-success-default">{currentModule === "direccionamientos" ? "Programados:" : "Procesados:"} {programmed}</span>
                 </div>
             </div>
         </div>

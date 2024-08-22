@@ -17,7 +17,7 @@ function DireccionamientoCard({
     const { openModal } = useModal()
     const { currentModule } = useModule()
     const isDireccionamiento = currentModule === "direccionamientos"
-    const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-red-100" : "bg-slate-300"
+    const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-card-null" : "bg-card-default"
 
     const [isExpanded, setIsExpanded] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -33,7 +33,7 @@ function DireccionamientoCard({
     const toggleExpand = () => { setIsExpanded(!isExpanded) }
 
     return (
-        <div className={` ${bg} p-5 rounded-lg text-gray-950`}>
+        <div className={` ${bg} p-5 rounded-lg text-black-default`}>
             <Progress direccionamiento={direccionamiento} invoiceStatus={invoiceStatus} deliveryReportStatus={deliveryReportStatus}/>
             <div className="grid grid-cols-6 gap-1">
                 <CardField title="ID" content={direccionamiento.ID} />
@@ -83,7 +83,7 @@ function DireccionamientoCard({
                         ? estadoDireccionamiento(direccionamiento.EstDireccionamiento)
                         : estadoDireccionamiento(direccionamiento.EstProgramacion)}
                 />
-                <button onClick={toggleExpand} className="text-blue-600 hover:underline">
+                <button onClick={toggleExpand} className="text-sky-default hover:underline">
                     {isExpanded ? 'Ocultar detalles' : 'Más detalles '}
                 </button>
             </div>
@@ -128,7 +128,7 @@ function DireccionamientoCard({
             }
             {direccionamiento.EstProgramacion === 1 && !invoiceStatus[direccionamiento.ID] &&
                 <button
-                    className="bg-sky-600 text-white hover:bg-sky-500 rounded-md mt-2 py-2 px-3"
+                    className="bg-sky-default text-white hover:bg-sky-500 rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(direccionamiento, "delivery")}
                 >
                     Entrega
@@ -136,7 +136,7 @@ function DireccionamientoCard({
             }
             {completeData && completeData.EstEntrega === 1 && !invoiceStatus[direccionamiento.ID] &&
                 <button
-                    className="bg-green-600 text-white hover:bg-green-500 rounded-md mt-2 py-2 px-3"
+                    className="bg-success-default text-white hover:bg-success-hover rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal(completeData, "invoice")}
                 >
                     Facturación
@@ -144,13 +144,13 @@ function DireccionamientoCard({
             }
             {completeData && invoiceStatus[direccionamiento.ID] && !deliveryReportStatus[direccionamiento.ID] &&
                 <button
-                    className="bg-yellow-600 text-white hover:bg-yellow-500 rounded-md mt-2 py-2 px-3"
+                    className="bg-warning-default text-white hover:bg-warning-hover rounded-md mt-2 py-2 px-3"
                     onClick={() => openModal({ ...completeData, ...invoiceStatus[direccionamiento.ID] }, "report")}
                 >
                     Reporte Entrega
                 </button>
             }
-            {deliveryReportStatus[direccionamiento.ID] && <span className="bg-green-700 rounded-lg text-white p-2">Ciclo del direccionamiento completado </span>}
+            {deliveryReportStatus[direccionamiento.ID] && <span className="bg-success-700 rounded-lg text-white p-2">Ciclo del direccionamiento completado </span>}
         </div>
     )
 }

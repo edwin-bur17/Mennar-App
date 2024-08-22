@@ -32,10 +32,10 @@ const ProgrammingAlert = () => {
     }, [selected, setSelected, updateData])
 
     return (
-        <div className="sticky top-0 z-10 flex justify-between items-center bg-slate-100 text-gray-950 p-3 mt-8 rounded-md transition-all duration-500 ease-in-out">
+        <div className="sticky top-0 z-10 flex justify-between items-center bg-slate text-black-default p-3 mt-8 rounded-md transition-all duration-500 ease-in-out">
             <p>{selected.length} {selected.length === 1 ? "Direccionamiento seleccionado" : "Direccionamientos seleccionados"}</p>
             <button
-                className={`${isProgramming ? "bg-green-400" : "bg-green-600 hover:bg-green-500"} text-white transition-all duration-500 ease-in-out rounded-md px-3 py-2`}
+                className={`${isProgramming ? "bg-success-400" : "bg-success-default hover:bg-success-hover"} text-white transition-all duration-500 ease-in-out rounded-md px-3 py-2`}
                 onClick={programming}
                 disabled={isProgramming}
             >

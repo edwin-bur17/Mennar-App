@@ -19,10 +19,10 @@ const Sidebar = () => {
   const handleNavigation = (path) => {router.push(path)}
 
   return (
-    <aside className={`sticky top-0 h-screen bg-gray-900 text-white transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'} overflow-y-auto`}>
+    <aside className={`sticky top-0 h-screen bg-primary text-white transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'} overflow-y-auto`}>
       <header className={`p-4 ${isOpen ? "text-right" : "text-center"}`}>
-        {isOpen ?  <HiMiniChevronDoubleLeft onClick={toggleSidebar} className="cursor-pointer hover:bg-gray-700 rounded text-2xl inline-block" /> : 
-        <HiMiniChevronDoubleRight onClick={toggleSidebar} className="cursor-pointer hover:bg-gray-700 rounded text-2xl inline-block" />}
+        {isOpen ?  <HiMiniChevronDoubleLeft onClick={toggleSidebar} className="cursor-pointer hover:bg-secondary rounded text-2xl inline-block" /> : 
+        <HiMiniChevronDoubleRight onClick={toggleSidebar} className="cursor-pointer hover:bg-secondary rounded text-2xl inline-block" />}
         {/* <HiMenuAlt3 onClick={toggleSidebar} className="cursor-pointer hover:bg-gray-700 rounded text-2xl inline-block" /> */}
       </header>
       <nav>

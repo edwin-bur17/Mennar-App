@@ -9,9 +9,9 @@ const Progress = ({ direccionamiento, invoiceStatus, deliveryReportStatus }) => 
         <div className="flex justify-between mb-3">
             <Badge title="Direccionado" isCompleted={isDireccionado} />
             <Badge title="Programado" isCompleted={isProgramming} />
-            <Badge title="Entrega" isCompleted={isDelivery} />
-            <Badge title="Facturación" isCompleted={hasInvoice} />
-            <Badge title="Reporte" isCompleted={hasReport} />
+            <Badge title="Entregado" isCompleted={isDelivery} />
+            <Badge title="Facturado" isCompleted={hasInvoice} />
+            <Badge title="Reporte de entrega" isCompleted={hasReport} />
         </div>
     )
 }

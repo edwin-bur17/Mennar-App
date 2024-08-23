@@ -136,11 +136,11 @@ export const SearchFormProvider = ({ children }) => {
 
     // Actualizar la página actual - estado de la facturación y reporte entrega en la paginación actual
     const setPage = useCallback((page) => {
-        setPaginationPage(page, () => {
-            const paginatedData = getPaginatedData(state.searchResults.data)
-            checkStatus(paginatedData)
-        })
-    }, [setPaginationPage, getPaginatedData, state.searchResults.data, checkStatus])
+        setPaginationPage(page, (newPage) => {
+            const paginatedData = getPaginatedData(state.searchResults.data, newPage);
+            checkStatus(paginatedData);
+        });
+    }, [setPaginationPage, getPaginatedData, state.searchResults.data, checkStatus]);
 
     // Envío del formulario
     const handleSubmit = useCallback(async (e, type) => {

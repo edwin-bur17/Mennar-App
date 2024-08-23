@@ -9,15 +9,19 @@ export const PaginationProvider = ({ children }) => {
 
     // Número de página
     const setPage = useCallback((page, callback) => {
-        setCurrentPage(page)
-        if (callback) callback(page)
-    }, [])
+        setCurrentPage(prevPage => {
+            if (callback) {
+                setTimeout(() => callback(page), 0);
+            }
+            return page;
+        });
+    }, []);
 
     // Paginación (data) actual
-    const getPaginatedData = useCallback((data) => {
-        const startIndex = (currentPage - 1) * itemsPerPage
-        return data.slice(startIndex, startIndex + itemsPerPage)
-    }, [currentPage, itemsPerPage])
+    const getPaginatedData = useCallback((data, page = currentPage) => {
+        const startIndex = (page - 1) * itemsPerPage;
+        return data.slice(startIndex, startIndex + itemsPerPage);
+    }, [itemsPerPage]);
 
     const value = {currentPage, itemsPerPage, setPage, getPaginatedData}
 

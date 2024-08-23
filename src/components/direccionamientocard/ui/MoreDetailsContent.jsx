@@ -19,10 +19,12 @@ const MoreDetailsContent = ({ loading, completeData }) => {
                         title="Fecha de la entrega"
                         content={formatDate(completeData.FecEntrega)}
                     />
-                    <CardField
-                        title="Fecha de facturación"
-                        content={formatDate(completeData.FecFacturacion)}
-                    />
+                    {completeData.FecFacturacion && (
+                        <CardField
+                            title="Fecha de facturación"
+                            content={formatDate(completeData.FecFacturacion)}
+                        />
+                    )}
                 </>
             )}
         </div>

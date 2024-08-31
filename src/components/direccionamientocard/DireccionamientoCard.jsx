@@ -1,32 +1,12 @@
 import { useState, useEffect } from "react";
 import { useModule } from "@/context/moduleContext";
 import { useSearchForm } from "@/context/searchFormContext";
-import { useModal } from "@/context/modalContext";
-import {
-  estadoDireccionamiento,
-  formatDate,
-  technologyType,
-  getNameProduct,
-  getNameEps,
-} from "@/utils";
+import { estadoDireccionamiento, formatDate, technologyType, getNameProduct } from "@/utils";
 import CheckboxInput from "../CheckboxInput";
-import {
-  CardField,
-  Progress,
-  MoreDetailsContent,
-  ActionsButtons,
-  ActionButton,
-} from "./ui/ui";
+import { CardField, Progress, MoreDetailsContent, ActionButton, ActionsButtonsGroup } from "./ui/ui";
 
-function DireccionamientoCard({
-  direccionamiento,
-  completeData,
-  fetchCompleteData,
-  selected,
-  handleCheckboxChange,
-}) {
+function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteData, selected, handleCheckboxChange }) {
   const { invoiceStatus, deliveryReportStatus } = useSearchForm();
-  const { openModal } = useModal();
   const { currentModule } = useModule();
   const isDireccionamiento = currentModule === "direccionamientos";
   const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-card-null" : "bg-card-default";
@@ -52,14 +32,14 @@ function DireccionamientoCard({
     { title: "Número de prescripción", content: direccionamiento.NoPrescripcion, },
     { title: "Número de entrega", content: direccionamiento.NoEntrega },
     {
-      title: "Identificación Paciente", 
+      title: "Identificación Paciente",
       content: `${direccionamiento.TipoIDPaciente} - ${direccionamiento.NoIDPaciente}`,
     },
     ...(direccionamiento.EstProgramacion === 1
       ? [
-          { title: "Fecha máxima de entrega", content: formatDate(direccionamiento.FecMaxEnt), },
-          { title: "Cantidad total a entregar", content: direccionamiento.CantTotAEntregar, },
-        ]
+        { title: "Fecha máxima de entrega", content: formatDate(direccionamiento.FecMaxEnt), },
+        { title: "Cantidad total a entregar", content: direccionamiento.CantTotAEntregar, },
+      ]
       : []),
     { title: "Servicio o tecnología", content: technologyType(direccionamiento.TipoTec), },
     {
@@ -111,33 +91,7 @@ function DireccionamientoCard({
           direccionamiento={direccionamiento}
         />
       )}
-      {direccionamiento.EstProgramacion === 1 && !invoiceStatus[direccionamiento.ID] && (
-          <ActionButton
-            onClick={() => openModal(direccionamiento, "delivery")}
-            text="Entrega"
-            style="bg-sky-default hover:bg-sky-500 text-white"
-          />
-        )}
-      {completeData && completeData.EstEntrega === 1 && !invoiceStatus[direccionamiento.ID] && (
-          <ActionButton
-            onClick={() => openModal(completeData, "invoice")}
-            text="Facturación"
-            style="bg-success-default hover:bg-success-hover text-white"
-          />
-        )}
-      {completeData &&
-        invoiceStatus[direccionamiento.ID] && !deliveryReportStatus[direccionamiento.ID] && (
-          <ActionButton
-            onClick={() => openModal( { ...completeData, ...invoiceStatus[direccionamiento.ID] }, "report" )}
-            text="Reporte Entrega"
-            style="bg-warning-default hover:bg-warning-hover text-white"
-          />
-        )}
-      {deliveryReportStatus[direccionamiento.ID] && (
-        <span className="bg-success-700 rounded-lg text-white p-2">
-          Ciclo del direccionamiento completado
-        </span>
-      )}
+      <ActionsButtonsGroup direccionamiento={direccionamiento} completeData={completeData} />
     </div>
   );
 }

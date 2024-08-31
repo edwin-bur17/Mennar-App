@@ -80,29 +80,44 @@ export const SearchFormProvider = ({ children }) => {
     // Completar el direccionamiento con la data faltante
     const fetchCompleteDireccionamiento = useCallback(async (direccionamiento) => {
         try {
-            const [additionalData, invoiceData] = await Promise.all([
+            const [additionalData, invoiceData, deliveryReportData, programmingData] = await Promise.all([
                 fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID),
                 fetchInvoiceData(direccionamiento.NoPrescripcion),
+                fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "reporteEntrega"),
+                fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "entrega"),
             ])
             // Filtrar los direccionamientos que cumplan la condición (servicio entregado)
-            const invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
+            let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
             // Iterar sobre el array invoice y obtener el ValorTotFacturado y FecFacturacion  de facturación 
-            const invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
-            const ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
-            const FecFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecFacturacion : null
+            let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
+            let ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
+            let FecFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecFacturacion : null
+            let IdFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
+            // Obtener el id reporte de entrega
+            let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID)
+            let IDReporteEntrega = deliveryReport ? deliveryReport.IDReporteEntrega : null
+            // Obtener el id de la programación
+            console.log(programmingData)
+            let programming = programmingData.find((item) => item.ID === direccionamiento.ID)
+            console.log(programming)
+            let IDProgramacion = programming ? programming.IDProgramacion : null
+            console.log(IDProgramacion)
 
             const completeDireccionamiento = {
                 ...direccionamiento,
                 ...additionalData,
                 ValorTotFacturado: ValorTotFacturado,
-                FecFacturacion: FecFacturacion
+                FecFacturacion: FecFacturacion,
+                IdFacturacion: IdFacturacion,
+                IdReporteEntrega: IDReporteEntrega,
+                IdProgramacion: IDProgramacion
             }
             dispatch({ type: 'UPDATE_COMPLETE_DIRECCIONAMIENTO', payload: completeDireccionamiento })
         } catch (error) {
             console.error("Error al obtener datos completos del direccionamiento:", error)
             return direccionamiento
         }
-    }, [fecthAdditionalData, fetchInvoiceData, dispatch])
+    }, [fecthAdditionalData, fetchInvoiceData, dispatch, fecthByPrescriptionNumber])
 
     // Verificar el estado de la facturación y reporte entrega para la data de la paginación actual
     const checkStatus = useCallback(async (direccionamientos) => {
@@ -127,7 +142,7 @@ export const SearchFormProvider = ({ children }) => {
                     payload: { [direccionamiento.ID]: deliveryReport ? { IDReporteEntrega: deliveryReport.IDReporteEntrega } : null, },
                 })
             } catch (error) {
-                console.error(`Error al obtener el estado de facturación para el direccionamiento: ${direccionamiento.NoPrescripcion}`, error);
+                console.error(`Error al obtener el estado de (facturación y reporte entrega) para el direccionamiento: ${direccionamiento.NoPrescripcion}`, error);
                 dispatch({ type: "UPDATE_INVOICE_STATUS", payload: { [direccionamiento.ID]: null }, });
                 dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS", payload: { [direccionamiento.ID]: null }, });
             }
@@ -184,9 +199,13 @@ export const SearchFormProvider = ({ children }) => {
             const res = await fetchFunction()
             if (res && typeof res === "object") {
                 setSearchResults({ data: res, loading: false, totalItems: res.length, isSearch: true, searchParams, searchModule: currentModule })
-                if (currentModule === "entrega") {
-                    const firstPage = getPaginatedData(res)
-                    await checkStatus(firstPage)
+                const firstPage = getPaginatedData(res)
+                switch (currentModule) {
+                    case "entrega":
+                        await checkStatus(firstPage)
+                        break
+                    default:
+                        break;
                 }
                 resetForm()
             } else {
@@ -220,9 +239,13 @@ export const SearchFormProvider = ({ children }) => {
             const freshData = await fetchFunction();
             if (freshData && typeof freshData === "object") {
                 setSearchResults({ data: freshData, loading: false })
-                if (currentModule === "entrega") { // chekear el estado del direccionamiento 
-                    const firstPage = getPaginatedData(freshData)
-                    await checkStatus(firstPage)
+                const firstPage = getPaginatedData(freshData)
+                switch (currentModule) {
+                    case "entrega":
+                        await checkStatus(firstPage)
+                        break
+                    default:
+                        break;
                 }
             } else {
                 setSearchResults({ loading: false })
@@ -256,9 +279,9 @@ export const SearchFormProvider = ({ children }) => {
         paginatedData,
         fetchCompleteDireccionamiento,
         setPage,
-    }), [state, updateForm, handleSubmit, selected, setSelected, handleSelectAllAssets, handleCheckboxChange, updateData, paginatedData, fetchCompleteDireccionamiento, setPage]) 
-        
-    return ( <SearchFormContext.Provider value={value}> {children} </SearchFormContext.Provider> )
+    }), [state, updateForm, handleSubmit, selected, setSelected, handleSelectAllAssets, handleCheckboxChange, updateData, paginatedData, fetchCompleteDireccionamiento, setPage])
+
+    return (<SearchFormContext.Provider value={value}> {children} </SearchFormContext.Provider>)
 }
 export const useSearchForm = () => {
     const context = useContext(SearchFormContext)

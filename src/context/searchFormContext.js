@@ -29,6 +29,9 @@ const initialState = {
     completeDireccionamientos: {},
     invoiceStatus: {},
     deliveryReportStatus: {},
+    deliveryNull: {},
+    invoiceStatusNull: {},
+    deliveryReportStatusNull: {},
 }
 
 function reducer(state, action) {
@@ -43,8 +46,14 @@ function reducer(state, action) {
             return { ...state, completeDireccionamientos: { ...state.completeDireccionamientos, [action.payload.ID]: action.payload } }
         case "UPDATE_INVOICE_STATUS":
             return { ...state, invoiceStatus: { ...state.invoiceStatus, ...action.payload } }
+        case "UPDATE_INVOICE_STATUS_NULL":
+            return { ...state, invoiceStatusNull: { ...state.invoiceStatusNull, ...action.payload } }
         case "UPDATE_DELIVERY_REPORT_STATUS":
             return { ...state, deliveryReportStatus: { ...state.deliveryReportStatus, ...action.payload } }
+        case "UPDATE_DELIVERY_REPORT_STATUS_NULL": 
+        return { ...state, deliveryReportStatusNull: { ...state.deliveryReportStatusNull, ...action.payload } }
+        case "UPDATE_DELIVERY_NULL":
+            return { ...state, deliveryNull: { ...state.deliveryNull, ...action.payload } }
         default:
             return state
     }
@@ -88,20 +97,20 @@ export const SearchFormProvider = ({ children }) => {
             ])
             // Filtrar los direccionamientos que cumplan la condición (servicio entregado)
             let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
-            // Iterar sobre el array invoice y obtener el ValorTotFacturado y FecFacturacion  de facturación 
+            // Iterar sobre el array invoice y obtener los valores deseados de facturación 
             let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
             let ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
             let FecFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecFacturacion : null
             let IdFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
+            let FecAnulacionFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecAnulacion : null
             // Obtener el id reporte de entrega
             let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID)
             let IDReporteEntrega = deliveryReport ? deliveryReport.IDReporteEntrega : null
+            let FecAnulacionReporte = deliveryReport ? deliveryReport.EstRepEntrega : null
+
             // Obtener el id de la programación
-            console.log(programmingData)
             let programming = programmingData.find((item) => item.ID === direccionamiento.ID)
-            console.log(programming)
             let IDProgramacion = programming ? programming.IDProgramacion : null
-            console.log(IDProgramacion)
 
             const completeDireccionamiento = {
                 ...direccionamiento,
@@ -110,7 +119,9 @@ export const SearchFormProvider = ({ children }) => {
                 FecFacturacion: FecFacturacion,
                 IdFacturacion: IdFacturacion,
                 IdReporteEntrega: IDReporteEntrega,
-                IdProgramacion: IDProgramacion
+                IdProgramacion: IDProgramacion,
+                FecAnulacionFacturacion: FecAnulacionFacturacion,
+                FecAnulacionReporte: FecAnulacionReporte
             }
             dispatch({ type: 'UPDATE_COMPLETE_DIRECCIONAMIENTO', payload: completeDireccionamiento })
         } catch (error) {
@@ -122,29 +133,49 @@ export const SearchFormProvider = ({ children }) => {
     // Verificar el estado de la facturación y reporte entrega para la data de la paginación actual
     const checkStatus = useCallback(async (direccionamientos) => {
         await Promise.all(direccionamientos.map(async (direccionamiento) => {
-            try {
-                const [invoiceData, deliveryReportData] = await Promise.all([
+            try { // Hacer las peticiones a la api para saber los diferentes estados del direccionamiento
+                const [invoiceData, deliveryReportData, deliveryData] = await Promise.all([
                     fetchInvoiceData(direccionamiento.NoPrescripcion, direccionamiento.CodSerTecAEntregar),
                     fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "reporteEntrega"),
+                    fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "entregaTrue")
                 ]);
+                
+                // Buscar y filtrar los datos de acuerdo a cada direccionamiento
                 let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar);
                 let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID);
+                let delivery = deliveryData.find((item) => item.ID === direccionamiento.ID);
 
                 // Iterar sobre el array invoice y obtén el ID de facturación para cada objeto que cumpla con la condición
-                const invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
-                const IDFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
+                let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
+                let IDFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
+                let EstFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.EstFacturacion : null
                 dispatch({
                     type: "UPDATE_INVOICE_STATUS",
                     payload: { [direccionamiento.ID]: IDFacturacion ? { IDFacturacion } : null },
                 })
                 dispatch({
+                    type: "UPDATE_INVOICE_STATUS_NULL",
+                    payload: { [direccionamiento.ID]: EstFacturacion ? { EstFacturacion } : null },
+                })
+                dispatch({
                     type: "UPDATE_DELIVERY_REPORT_STATUS",
                     payload: { [direccionamiento.ID]: deliveryReport ? { IDReporteEntrega: deliveryReport.IDReporteEntrega } : null, },
                 })
+                dispatch({
+                    type: "UPDATE_DELIVERY_REPORT_STATUS_NULL",
+                    payload: { [direccionamiento.ID]: deliveryReport ? { EstRepEntrega: deliveryReport.EstRepEntrega } : null, },
+                })
+                dispatch({
+                    type: "UPDATE_DELIVERY_NULL",
+                    payload: { [direccionamiento.ID]: delivery ? { EstEntrega: delivery.EstEntrega } : null }
+                })
             } catch (error) {
                 console.error(`Error al obtener el estado de (facturación y reporte entrega) para el direccionamiento: ${direccionamiento.NoPrescripcion}`, error);
-                dispatch({ type: "UPDATE_INVOICE_STATUS", payload: { [direccionamiento.ID]: null }, });
-                dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS", payload: { [direccionamiento.ID]: null }, });
+                dispatch({ type: "UPDATE_INVOICE_STATUS", payload: { [direccionamiento.ID]: null } })
+                dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS", payload: { [direccionamiento.ID]: null } })
+                dispatch({ type: "UPDATE_DELIVERY_NULL", payload: { [direccionamiento.ID]: null }})
+                dispatch({ type: "UPDATE_INVOICE_STATUS_NULL", payload: { [direccionamiento.ID]: null } })
+                dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS_NULL", payload: { [direccionamiento.ID]: null } })
             }
         }));
     }, [fetchInvoiceData, fecthByPrescriptionNumber])
@@ -200,13 +231,7 @@ export const SearchFormProvider = ({ children }) => {
             if (res && typeof res === "object") {
                 setSearchResults({ data: res, loading: false, totalItems: res.length, isSearch: true, searchParams, searchModule: currentModule })
                 const firstPage = getPaginatedData(res)
-                switch (currentModule) {
-                    case "entrega":
-                        await checkStatus(firstPage)
-                        break
-                    default:
-                        break;
-                }
+                await checkStatus(firstPage)
                 resetForm()
             } else {
                 setSearchResults({ loading: false })
@@ -223,6 +248,7 @@ export const SearchFormProvider = ({ children }) => {
     // Actualizar la data 
     const updateData = useCallback(async () => {
         const { searchParams } = state.searchResults
+        console.log(searchParams)
         let fetchFunction
         if (searchParams.prescriptionNumber) {
             fetchFunction = () => fecthByPrescriptionNumber(searchParams.prescriptionNumber, currentModule)
@@ -240,13 +266,7 @@ export const SearchFormProvider = ({ children }) => {
             if (freshData && typeof freshData === "object") {
                 setSearchResults({ data: freshData, loading: false })
                 const firstPage = getPaginatedData(freshData)
-                switch (currentModule) {
-                    case "entrega":
-                        await checkStatus(firstPage)
-                        break
-                    default:
-                        break;
-                }
+                await checkStatus(firstPage)
             } else {
                 setSearchResults({ loading: false })
                 showAlert("Error al actualizar los datos", "error");

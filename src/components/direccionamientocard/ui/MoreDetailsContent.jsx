@@ -25,6 +25,12 @@ const MoreDetailsContent = ({ loading, completeData }) => {
                             content={formatDate(completeData.FecFacturacion)}
                         />
                     )}
+                    {/* {completeData.FecAnulacionReporte && (
+                        <CardField
+                        title="Fecha de anulación reporte"
+                        content={formatDate(completeData.FecAnulacionReporte)}
+                    />
+                    )} */}
                 </>
             )}
         </div>

@@ -6,7 +6,7 @@ import { useSearchForm } from "@/context/searchFormContext"
 
 const OverrideButton = ({ type, id, text }) => {
     const { updateData } = useSearchForm()
-    console.log(type, id)
+    // console.log(type, id)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
 
@@ -15,7 +15,7 @@ const OverrideButton = ({ type, id, text }) => {
         // Mostrar alerta de confirmación
         const result = await Swal.fire({
             title: "¿Estás seguro?",
-            text: `¿Deseas anular este direccionamiento?`,
+            text: `¿Deseas anular este direccionamiento? ${id}`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
@@ -28,10 +28,10 @@ const OverrideButton = ({ type, id, text }) => {
             setLoading(true);
             try {
                 const res = await axios.put("/api/direccionamiento/anular", { type, id });
-                console.log(res.data)
+                console.log(res.data.Mensaje)
                 await new Promise(resolve => setTimeout(resolve, 1500))
                 await updateData()
-                showAlert(res.data, "success");
+                showAlert(res.data.Mensaje, "success");
             } catch (error) {
                 if (error.response && error.response.status === 422) {
                     showAlert(error.response.data.details, "error")

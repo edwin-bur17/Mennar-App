@@ -6,10 +6,15 @@ import CheckboxInput from "../CheckboxInput";
 import { CardField, Progress, MoreDetailsContent, ActionButton, ActionsButtonsGroup } from "./ui/ui";
 
 function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteData, selected, handleCheckboxChange }) {
-  const { invoiceStatus, deliveryReportStatus } = useSearchForm();
-  const { currentModule } = useModule();
+  const { invoiceStatus, deliveryReportStatus, deliveryNull, invoiceStatusNull, deliveryReportStatusNull } = useSearchForm();
+  const { currentModule } = useModule()
   const isDireccionamiento = currentModule === "direccionamientos";
-  const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 ? "bg-card-null" : "bg-card-default";
+
+  // Bg para la card dependiendo si está anulada o no
+  const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 || 
+  invoiceStatusNull[direccionamiento.ID]?.EstFacturacion === 0 || 
+  deliveryReportStatusNull[direccionamiento.ID]?.EstRepEntrega === 0 || 
+  deliveryNull[direccionamiento.ID]?.EstEntrega === 0 ? "bg-card-null" : "bg-card-default";
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -62,6 +67,11 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
         ? estadoDireccionamiento(direccionamiento.EstDireccionamiento)
         : estadoDireccionamiento(direccionamiento.EstProgramacion),
     },
+    // direccionamiento.EstProgramacion === 0 || direccionamiento.EstDireccionamiento === 0 ? 
+    // {
+    //   title: "Fecha anulación dir o prog",
+    //   content: formatDate(direccionamiento.FecAnulacion) 
+    // } : null
   ];
 
   return (
@@ -82,7 +92,7 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
         />
       </div>
       {isExpanded && (
-        <MoreDetailsContent loading={loading} completeData={completeData} />
+        <MoreDetailsContent direccionamiento={direccionamiento} loading={loading} completeData={completeData} />
       )}
       {direccionamiento.EstDireccionamiento === 1 && (
         <CheckboxInput
@@ -91,7 +101,7 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
           direccionamiento={direccionamiento}
         />
       )}
-      <ActionsButtonsGroup direccionamiento={direccionamiento} completeData={completeData} />
+      <ActionsButtonsGroup direccionamiento={direccionamiento} completeData={completeData} isDireccionamiento={isDireccionamiento}/>
     </div>
   );
 }

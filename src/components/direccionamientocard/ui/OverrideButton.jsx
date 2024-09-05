@@ -28,7 +28,7 @@ const OverrideButton = ({ type, id, text }) => {
             setLoading(true);
             try {
                 const res = await axios.put("/api/direccionamiento/anular", { type, id });
-                console.log(res.data.Mensaje)
+                console.log(res)
                 await new Promise(resolve => setTimeout(resolve, 1500))
                 await updateData()
                 showAlert(res.data.Mensaje, "success");
@@ -38,7 +38,7 @@ const OverrideButton = ({ type, id, text }) => {
                 } else {
                     console.log("Error en la solicitud (reporte entrega de un direccionamiento):", error.response?.data || error.message);
                 }
-                console.error("Error al intentar anular un direccionamiento", error)
+                console.log("Error al intentar anular un direccionamiento", error)
             } finally {
                 setLoading(false);
             }

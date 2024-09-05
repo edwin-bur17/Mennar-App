@@ -27,6 +27,7 @@ const initialState = {
         totalItems: 0
     },
     completeDireccionamientos: {},
+    deliveryStatus: {},
     invoiceStatus: {},
     deliveryReportStatus: {},
     deliveryNull: {},
@@ -42,18 +43,20 @@ function reducer(state, action) {
             return { ...state, formData: initialState.formData };
         case "SET_SEARCH_RESULTS": // 
             return { ...state, searchResults: { ...state.searchResults, ...action.payload } };
-        case "UPDATE_COMPLETE_DIRECCIONAMIENTO":
+        case "UPDATE_COMPLETE_DIRECCIONAMIENTO": // Completar el direccionamiento 
             return { ...state, completeDireccionamientos: { ...state.completeDireccionamientos, [action.payload.ID]: action.payload } }
-        case "UPDATE_INVOICE_STATUS":
+        case "UPDATE_DELIVERY_STATUS": // Verificar estado del direccionamiento: entregado
+            return { ...state, deliveryStatus: { ...state.deliveryStatus, ...action.payload } }
+        case "UPDATE_INVOICE_STATUS": // Verificar estado del direccionamiento: facturado
             return { ...state, invoiceStatus: { ...state.invoiceStatus, ...action.payload } }
-        case "UPDATE_INVOICE_STATUS_NULL":
-            return { ...state, invoiceStatusNull: { ...state.invoiceStatusNull, ...action.payload } }
-        case "UPDATE_DELIVERY_REPORT_STATUS":
+        case "UPDATE_DELIVERY_REPORT_STATUS": // Verificar estado del direccionamiento: reportada la entrega
             return { ...state, deliveryReportStatus: { ...state.deliveryReportStatus, ...action.payload } }
-        case "UPDATE_DELIVERY_REPORT_STATUS_NULL": 
-        return { ...state, deliveryReportStatusNull: { ...state.deliveryReportStatusNull, ...action.payload } }
-        case "UPDATE_DELIVERY_NULL":
+        case "UPDATE_DELIVERY_NULL": // Verificar estado del direccionamiento: anulada una entrega
             return { ...state, deliveryNull: { ...state.deliveryNull, ...action.payload } }
+        case "UPDATE_INVOICE_STATUS_NULL":// Verificar estado del direccionamiento: anulada una facturación
+            return { ...state, invoiceStatusNull: { ...state.invoiceStatusNull, ...action.payload } }
+        case "UPDATE_DELIVERY_REPORT_STATUS_NULL": // Verificar estado del direccionamiento: anulado un reporte entrega
+            return { ...state, deliveryReportStatusNull: { ...state.deliveryReportStatusNull, ...action.payload } }
         default:
             return state
     }
@@ -130,7 +133,7 @@ export const SearchFormProvider = ({ children }) => {
         }
     }, [fecthAdditionalData, fetchInvoiceData, dispatch, fecthByPrescriptionNumber])
 
-    // Verificar el estado de la facturación y reporte entrega para la data de la paginación actual
+    // Verificar el estado de los direccionamientos listados en la data de la paginación actual
     const checkStatus = useCallback(async (direccionamientos) => {
         await Promise.all(direccionamientos.map(async (direccionamiento) => {
             try { // Hacer las peticiones a la api para saber los diferentes estados del direccionamiento
@@ -139,45 +142,51 @@ export const SearchFormProvider = ({ children }) => {
                     fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "reporteEntrega"),
                     fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "entregaTrue")
                 ]);
-                
+
                 // Buscar y filtrar los datos de acuerdo a cada direccionamiento
                 let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar);
                 let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID);
                 let delivery = deliveryData.find((item) => item.ID === direccionamiento.ID);
 
-                // Iterar sobre el array invoice y obtén el ID de facturación para cada objeto que cumpla con la condición
+                // Iterar sobre el array invoice y obtener los datos de la facturación 
                 let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
                 let IDFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
                 let EstFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.EstFacturacion : null
+
+                dispatch({
+                    type: "UPDATE_DELIVERY_STATUS",
+                    payload: { [direccionamiento.ID]: delivery ? { IDEntrega: delivery.IDEntrega} : null }
+                })
                 dispatch({
                     type: "UPDATE_INVOICE_STATUS",
                     payload: { [direccionamiento.ID]: IDFacturacion ? { IDFacturacion } : null },
-                })
-                dispatch({
-                    type: "UPDATE_INVOICE_STATUS_NULL",
-                    payload: { [direccionamiento.ID]: EstFacturacion ? { EstFacturacion } : null },
                 })
                 dispatch({
                     type: "UPDATE_DELIVERY_REPORT_STATUS",
                     payload: { [direccionamiento.ID]: deliveryReport ? { IDReporteEntrega: deliveryReport.IDReporteEntrega } : null, },
                 })
                 dispatch({
-                    type: "UPDATE_DELIVERY_REPORT_STATUS_NULL",
-                    payload: { [direccionamiento.ID]: deliveryReport ? { EstRepEntrega: deliveryReport.EstRepEntrega } : null, },
-                })
-                dispatch({
                     type: "UPDATE_DELIVERY_NULL",
                     payload: { [direccionamiento.ID]: delivery ? { EstEntrega: delivery.EstEntrega } : null }
                 })
+                dispatch({
+                    type: "UPDATE_INVOICE_STATUS_NULL",
+                    payload: { [direccionamiento.ID]: EstFacturacion ? { EstFacturacion } : null },
+                })
+                dispatch({
+                    type: "UPDATE_DELIVERY_REPORT_STATUS_NULL",
+                    payload: { [direccionamiento.ID]: deliveryReport ? { EstRepEntrega: deliveryReport.EstRepEntrega } : null, },
+                }) 
             } catch (error) {
                 console.error(`Error al obtener el estado de (facturación y reporte entrega) para el direccionamiento: ${direccionamiento.NoPrescripcion}`, error);
                 dispatch({ type: "UPDATE_INVOICE_STATUS", payload: { [direccionamiento.ID]: null } })
                 dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS", payload: { [direccionamiento.ID]: null } })
-                dispatch({ type: "UPDATE_DELIVERY_NULL", payload: { [direccionamiento.ID]: null }})
+                dispatch({ type: "UPDATE_DELIVERY_NULL", payload: { [direccionamiento.ID]: null } })
                 dispatch({ type: "UPDATE_INVOICE_STATUS_NULL", payload: { [direccionamiento.ID]: null } })
                 dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS_NULL", payload: { [direccionamiento.ID]: null } })
+                dispatch({ type: "UPDATE_DELIVERY_STATUS", payload: { [direccionamiento.ID]: null } })
             }
-        }));
+        }))
     }, [fetchInvoiceData, fecthByPrescriptionNumber])
 
     // Actualizar la página actual - estado de la facturación y reporte entrega en la paginación actual

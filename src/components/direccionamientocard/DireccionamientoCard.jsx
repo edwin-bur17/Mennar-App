@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useModule } from "@/context/moduleContext";
 import { useSearchForm } from "@/context/searchFormContext";
-import { estadoDireccionamiento, formatDate, technologyType, getNameProduct } from "@/utils";
+import { formatDate, technologyType, getNameProduct } from "@/utils";
 import CheckboxInput from "../CheckboxInput";
 import { CardField, Progress, MoreDetailsContent, ActionButton, ActionsButtonsGroup } from "./ui/ui";
 
 function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteData, selected, handleCheckboxChange }) {
-  const { invoiceStatus, deliveryReportStatus, deliveryNull, invoiceStatusNull, deliveryReportStatusNull } = useSearchForm();
+  const { deliveryStatus, invoiceStatus, deliveryReportStatus, deliveryNull, invoiceStatusNull, deliveryReportStatusNull } = useSearchForm();
   const { currentModule } = useModule()
   const isDireccionamiento = currentModule === "direccionamientos";
 
@@ -28,12 +28,6 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
 
   const cardFields = [
     { title: "ID", content: direccionamiento.ID },
-    {
-      title: isDireccionamiento ? "ID direccionamiento" : "ID Programación:",
-      content: isDireccionamiento
-        ? direccionamiento.IDDireccionamiento
-        : direccionamiento.IDProgramacion,
-    },
     { title: "Número de prescripción", content: direccionamiento.NoPrescripcion, },
     { title: "Número de entrega", content: direccionamiento.NoEntrega },
     {
@@ -61,23 +55,13 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
         ? formatDate(direccionamiento.FecDireccionamiento)
         : formatDate(direccionamiento.FecProgramacion),
     },
-    {
-      title: "Estado actual",
-      content: isDireccionamiento
-        ? estadoDireccionamiento(direccionamiento.EstDireccionamiento)
-        : estadoDireccionamiento(direccionamiento.EstProgramacion),
-    },
-    // direccionamiento.EstProgramacion === 0 || direccionamiento.EstDireccionamiento === 0 ? 
-    // {
-    //   title: "Fecha anulación dir o prog",
-    //   content: formatDate(direccionamiento.FecAnulacion) 
-    // } : null
   ];
 
   return (
     <div className={` ${bg} p-5 rounded-lg text-black-default`}>
       <Progress
         direccionamiento={direccionamiento}
+        deliveryStatus={deliveryStatus}
         invoiceStatus={invoiceStatus}
         deliveryReportStatus={deliveryReportStatus}
       />

@@ -16,7 +16,7 @@ export const API_ENDPOINTS = {
     },
     reporteEntrega: {
         porPrescripcion: "ReporteEntregaXPrescripcion",
-        anularReporte: "AnularReporteEntrega"
+        anularReporteEntrega: "AnularReporteEntrega"
     },
     facturacion: {
         anularFacturacion: "FacturacionAnular"

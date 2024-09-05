@@ -10,7 +10,7 @@ export async function PUT(request) {
     const queryToken = cookieStore.get("queryToken")
     
     let endPoint = getOverrideEndPoint(type)  // Obtener el endpoint adecuado
-    if (!endPoint) return NextResponse.json({ message: "Tipo de anulación inválida" }, { status: 400 })
+    if (!endPoint) return NextResponse.json({ message: "Tipo de anulación inválida (revisar los endpoints)" }, { status: 400 })
 
     // Obtener la base url
     let baseUrl = type === "facturacion" ? process.env.NEXT_PUBLIC_API_FAC_URL : process.env.NEXT_PUBLIC_API_URL

@@ -1,8 +1,8 @@
 import Badge from "./Badge"
-const Progress = ({ direccionamiento, invoiceStatus, deliveryReportStatus }) => {
+const Progress = ({ direccionamiento, deliveryStatus, invoiceStatus, deliveryReportStatus }) => {
     const isDireccionado = direccionamiento.ID; // Estado direccionado
     const isProgramming = direccionamiento.IDProgramacion || direccionamiento.EstDireccionamiento === 2;
-    const isDelivery = direccionamiento.EstProgramacion === 2 || invoiceStatus[direccionamiento.ID] || deliveryReportStatus[direccionamiento.ID];
+    const isDelivery = deliveryStatus[direccionamiento.ID]
     const hasInvoice = invoiceStatus[direccionamiento.ID];
     const hasReport = deliveryReportStatus[direccionamiento.ID];
     return (

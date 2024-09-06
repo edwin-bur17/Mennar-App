@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
 import { useModule } from "@/context/moduleContext";
-import { useSearchForm } from "@/context/searchFormContext";
 import { formatDate, technologyType, getNameProduct } from "@/utils";
 import CheckboxInput from "../CheckboxInput";
 import { CardField, Progress, MoreDetailsContent, ActionButton, ActionsButtonsGroup } from "./ui/ui";
 
 function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteData, selected, handleCheckboxChange }) {
-  const { deliveryStatus, invoiceStatus, deliveryReportStatus, deliveryNull, invoiceStatusNull, deliveryReportStatusNull } = useSearchForm();
   const { currentModule } = useModule()
   const isDireccionamiento = currentModule === "direccionamientos";
 
   // Bg para la card dependiendo si está anulada o no
-  const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0 || 
-  invoiceStatusNull[direccionamiento.ID]?.EstFacturacion === 0 || 
-  deliveryReportStatusNull[direccionamiento.ID]?.EstRepEntrega === 0 || 
-  deliveryNull[direccionamiento.ID]?.EstEntrega === 0 ? "bg-card-null" : "bg-card-default";
+  const bg = direccionamiento.EstDireccionamiento || direccionamiento.EstProgramacion === 0  ? "bg-card-null" : "bg-card-default";
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,6 +23,7 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
 
   const cardFields = [
     { title: "ID", content: direccionamiento.ID },
+    { title: "Est programación", content: direccionamiento.EstProgramacion },
     { title: "Número de prescripción", content: direccionamiento.NoPrescripcion, },
     { title: "Número de entrega", content: direccionamiento.NoEntrega },
     {
@@ -59,12 +55,7 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
 
   return (
     <div className={` ${bg} p-5 rounded-lg text-black-default`}>
-      <Progress
-        direccionamiento={direccionamiento}
-        deliveryStatus={deliveryStatus}
-        invoiceStatus={invoiceStatus}
-        deliveryReportStatus={deliveryReportStatus}
-      />
+      <Progress direccionamiento={direccionamiento} />
       <div className="grid grid-cols-6 gap-1">
         {cardFields.map((field, index) => (
           <CardField key={index} {...field} />

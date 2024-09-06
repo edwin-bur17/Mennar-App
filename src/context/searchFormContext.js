@@ -30,9 +30,6 @@ const initialState = {
     deliveryStatus: {},
     invoiceStatus: {},
     deliveryReportStatus: {},
-    deliveryNull: {},
-    invoiceStatusNull: {},
-    deliveryReportStatusNull: {},
 }
 
 function reducer(state, action) {
@@ -51,12 +48,6 @@ function reducer(state, action) {
             return { ...state, invoiceStatus: { ...state.invoiceStatus, ...action.payload } }
         case "UPDATE_DELIVERY_REPORT_STATUS": // Verificar estado del direccionamiento: reportada la entrega
             return { ...state, deliveryReportStatus: { ...state.deliveryReportStatus, ...action.payload } }
-        case "UPDATE_DELIVERY_NULL": // Verificar estado del direccionamiento: anulada una entrega
-            return { ...state, deliveryNull: { ...state.deliveryNull, ...action.payload } }
-        case "UPDATE_INVOICE_STATUS_NULL":// Verificar estado del direccionamiento: anulada una facturación
-            return { ...state, invoiceStatusNull: { ...state.invoiceStatusNull, ...action.payload } }
-        case "UPDATE_DELIVERY_REPORT_STATUS_NULL": // Verificar estado del direccionamiento: anulado un reporte entrega
-            return { ...state, deliveryReportStatusNull: { ...state.deliveryReportStatusNull, ...action.payload } }
         default:
             return state
     }
@@ -150,40 +141,24 @@ export const SearchFormProvider = ({ children }) => {
 
                 // Iterar sobre el array invoice y obtener los datos de la facturación 
                 let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
-                let IDFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
                 let EstFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.EstFacturacion : null
 
                 dispatch({
                     type: "UPDATE_DELIVERY_STATUS",
-                    payload: { [direccionamiento.ID]: delivery ? { IDEntrega: delivery.IDEntrega} : null }
+                    payload: { [direccionamiento.ID]: delivery ? delivery.EstEntrega  : null }
                 })
                 dispatch({
                     type: "UPDATE_INVOICE_STATUS",
-                    payload: { [direccionamiento.ID]: IDFacturacion ? { IDFacturacion } : null },
+                    payload: { [direccionamiento.ID]: EstFacturacion ?  EstFacturacion  : null }
                 })
                 dispatch({
                     type: "UPDATE_DELIVERY_REPORT_STATUS",
-                    payload: { [direccionamiento.ID]: deliveryReport ? { IDReporteEntrega: deliveryReport.IDReporteEntrega } : null, },
+                    payload: { [direccionamiento.ID]: deliveryReport ?  deliveryReport.EstRepEntrega  : null }
                 })
-                dispatch({
-                    type: "UPDATE_DELIVERY_NULL",
-                    payload: { [direccionamiento.ID]: delivery ? { EstEntrega: delivery.EstEntrega } : null }
-                })
-                dispatch({
-                    type: "UPDATE_INVOICE_STATUS_NULL",
-                    payload: { [direccionamiento.ID]: EstFacturacion ? { EstFacturacion } : null },
-                })
-                dispatch({
-                    type: "UPDATE_DELIVERY_REPORT_STATUS_NULL",
-                    payload: { [direccionamiento.ID]: deliveryReport ? { EstRepEntrega: deliveryReport.EstRepEntrega } : null, },
-                }) 
             } catch (error) {
                 console.error(`Error al obtener el estado de (facturación y reporte entrega) para el direccionamiento: ${direccionamiento.NoPrescripcion}`, error);
                 dispatch({ type: "UPDATE_INVOICE_STATUS", payload: { [direccionamiento.ID]: null } })
                 dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS", payload: { [direccionamiento.ID]: null } })
-                dispatch({ type: "UPDATE_DELIVERY_NULL", payload: { [direccionamiento.ID]: null } })
-                dispatch({ type: "UPDATE_INVOICE_STATUS_NULL", payload: { [direccionamiento.ID]: null } })
-                dispatch({ type: "UPDATE_DELIVERY_REPORT_STATUS_NULL", payload: { [direccionamiento.ID]: null } })
                 dispatch({ type: "UPDATE_DELIVERY_STATUS", payload: { [direccionamiento.ID]: null } })
             }
         }))

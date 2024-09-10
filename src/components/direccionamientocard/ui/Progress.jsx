@@ -2,9 +2,6 @@ import { useSearchForm } from "@/context/searchFormContext";
 import Badge from "./Badge"
 const Progress = ({ direccionamiento }) => {
     const { deliveryStatus, invoiceStatus, deliveryReportStatus } = useSearchForm()
-    console.log(deliveryStatus)
-    console.log(invoiceStatus)
-    console.log(deliveryReportStatus)
 
     // Semáforo del estado en el cual está el direccionamiento
     const isDireccionado = direccionamiento.ID // Estado: direccionado

@@ -9,7 +9,7 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
   const isDireccionamiento = currentModule === "direccionamientos";
 
   // Bg para la card dependiendo si está anulada o no
-  const bg = direccionamiento.EstDireccionamiento || direccionamiento.EstProgramacion === 0  ? "bg-card-null" : "bg-card-default";
+  const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0  ? "bg-card-null" : "bg-card-default";
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,9 +21,10 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
     }
   }, [isExpanded, completeData, fetchCompleteData, loading]);
 
-  const cardFields = [
+  const cardFields = [ // Campos a renderizar en la card
     { title: "ID", content: direccionamiento.ID },
     { title: "Est programación", content: direccionamiento.EstProgramacion },
+    { title: "Est direccionamiento", content: direccionamiento.EstDireccionamiento },
     { title: "Número de prescripción", content: direccionamiento.NoPrescripcion, },
     { title: "Número de entrega", content: direccionamiento.NoEntrega },
     {

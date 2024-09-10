@@ -47,7 +47,7 @@ export const ModalProvider = ({ children }) => {
             // Filtrar los direccionamientos que cumplan la condición (servicio entregado)
             let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
             // Iterar sobre el array invoice y obtener el ValorTotFacturado  del direccionamiento
-            let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
+            let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega && item.EstFacturacion !== 0)
             let ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
             let completeDireccionamiento = { ...direccionamiento, ValorTotFacturado: ValorTotFacturado }
             openModal(completeDireccionamiento, "report")

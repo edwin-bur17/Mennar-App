@@ -5,12 +5,14 @@ import { getOverrideEndPoint } from "@/utils";
 
 export async function PUT(request) {
     let { type, id } = await request.json()
+
+    if (!id) return NextResponse.json({ message: "No hay un id para hacer la anulación :(" }, { status: 422 })
     // Obtener el query token
     const cookieStore = cookies()
     const queryToken = cookieStore.get("queryToken")
     
     let endPoint = getOverrideEndPoint(type)  // Obtener el endpoint adecuado
-    if (!endPoint) return NextResponse.json({ message: "Tipo de anulación inválida (revisar los endpoints)" }, { status: 400 })
+    if (!endPoint) return NextResponse.json({ message: "Tipo de anulación inválida (revisar los endpoints) :(" }, { status: 422 })
 
     // Obtener la base url
     let baseUrl = type === "facturacion" ? process.env.NEXT_PUBLIC_API_FAC_URL : process.env.NEXT_PUBLIC_API_URL

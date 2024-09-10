@@ -1,85 +1,81 @@
-import React from 'react';
+import React from 'react'
 import { useSearchForm } from "@/context/searchFormContext"
-import { useModal } from "@/context/modalContext";
+import { useModal } from "@/context/modalContext"
 import ActionButton from "./ActionButton"
-import OverrideButton from "./OverrideButton";
-import { TbInfoCircle } from "react-icons/tb";
+import CycleCompletedAlert from './CycleCompletedAlert'
+import OverrideButton from "./OverrideButton"
 
 const ActionsButtonsGroup = ({ direccionamiento, completeData, isDireccionamiento }) => {
   const { deliveryStatus, invoiceStatus, deliveryReportStatus } = useSearchForm()
   const { openModal } = useModal()
 
+  // Renderizar los botones apropiados para el estado del direccionamiento
   const renderButtons = () => {
-    const delivery = deliveryStatus[direccionamiento.ID];
-    const invoice = invoiceStatus[direccionamiento.ID];
-    const deliveryReport = deliveryReportStatus[direccionamiento.ID];
+    let delivery = deliveryStatus[direccionamiento.ID]
+    let invoice = invoiceStatus[direccionamiento.ID]
+    let deliveryReport = deliveryReportStatus[direccionamiento.ID]
 
-    if (isDireccionamiento && completeData && direccionamiento.EstDireccionamiento === 2) { // Botones: Anular programación
-      return (
-        <OverrideButton type="programacion" id={completeData.IdProgramacion} text="Anular programación" />
-      );
-    }
+    switch (true) {
+      case isDireccionamiento && completeData && direccionamiento.EstDireccionamiento === 2 &&
+        (delivery === null || delivery === 0) && (invoice === null || invoice === 0) &&
+        (deliveryReport === null || deliveryReport === 0): // Botón : Anular programación desde el módulo direccionamentos
+        return <OverrideButton type="programacion" id={completeData.IdProgramacion} text="Programación" />
 
-    if (completeData && direccionamiento.EstProgramacion === 1) { // Botones: Entrega y Anular programación
-      return (
-        <div className="flex justify-between">
-          <ActionButton
-            onClick={() => openModal(direccionamiento, "delivery")}
-            text="Entrega"
-            style="bg-sky-default hover:bg-sky-500 text-white"
-          />
-          <OverrideButton type="programacion" id={direccionamiento.IDProgramacion} text="Anular programación" />
-        </div>
-      );
-    }
+      case !isDireccionamiento && completeData && direccionamiento.EstProgramacion === 1: // Botones: Entrega y Anular programación
+        return (
+          <>
+            <ActionButton
+              onClick={() => openModal(direccionamiento, "delivery")}
+              text="Entrega"
+              style="bg-sky-default hover:bg-sky-500 text-white"
+            />
+            <OverrideButton type="programacion" id={direccionamiento.IDProgramacion} text="Programación" />
+          </>
+        )
 
-    if (completeData && delivery === 1 && (invoice === null || invoice === 0)) { // Botones: facturación y anular la entrega
-      return (
-        <div className="flex justify-between">
-          <ActionButton
-            onClick={() => openModal(completeData, "invoice")}
-            text="Facturación"
-            style="bg-success-default hover:bg-success-hover text-white"
-          />
-          <OverrideButton type="entrega" id={completeData.IdEntrega} text="Anular entrega" />
-        </div>
-      );
-    }
+      case !isDireccionamiento && completeData && delivery === 1 && (invoice === null || invoice === 0): // Botones: facturación y anular la entrega
+        return (
+          <>
+            <ActionButton
+              onClick={() => openModal(completeData, "invoice")}
+              text="Facturación"
+              style="bg-success-default hover:bg-success-hover text-white"
+            />
+            <OverrideButton type="entrega" id={completeData.IdEntrega} text="Entrega" />
+          </>
+        )
 
-    if (completeData && invoice === 1 && (deliveryReport === null || deliveryReport === 0)) {// Botones: Reporte entrega y anular facturación
-      return (
-        <div className="flex justify-between">
-          <ActionButton
-            onClick={() => openModal(completeData, "report")}
-            text="Reporte Entrega"
-            style="bg-warning-default hover:bg-warning-hover text-white"
-          />
-          <OverrideButton type="facturacion" id={completeData.IdFacturacion} text="Anular facturación" />
-        </div>
-      );
-    }
+      case !isDireccionamiento && completeData &&
+        invoice === 1 && (deliveryReport === null || deliveryReport === 0): // Botones: Reporte entrega y anular facturación
+        return (
+          <>
+            <ActionButton
+              onClick={() => openModal(completeData, "report")}
+              text="Reporte Entrega"
+              style="bg-warning-default hover:bg-warning-hover text-white"
+            />
+            <OverrideButton type="facturacion" id={completeData.IdFacturacion} text="Facturación" />
+          </>
+        )
 
-    if (completeData && deliveryReport === 1) { // Botones: Anular el reporte 
-      return (
-        <OverrideButton type="reporteEntrega" id={completeData.IdReporteEntrega} text="Anular reporte entrega" />
-      );
+      case completeData && deliveryReport === 1: // Botones: Anular el reporte 
+        return (<OverrideButton type="reporteEntrega" id={completeData.IdReporteEntrega} text="Reporte Entrega" />)
+
+      default:
+        break
     }
-    return null;
-  };
+  }
 
   return (
     <>
-      {renderButtons()}
       <div className="flex justify-between">
-        {deliveryReportStatus[direccionamiento.ID] === 2 && (
-          <span className="flex justify-between bg-success-700 rounded-lg text-white p-2">
-            <TbInfoCircle className="me-2" size={26} />
-            Ciclo del direccionamiento completado
-          </span>
-        )}
+        {renderButtons()}
       </div>
+      {deliveryReportStatus[direccionamiento.ID] === 2 && (
+        <CycleCompletedAlert />
+      )}
     </>
-  );
-};
+  )
+}
 
-export default ActionsButtonsGroup;
+export default ActionsButtonsGroup

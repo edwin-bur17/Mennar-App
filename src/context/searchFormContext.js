@@ -89,16 +89,17 @@ export const SearchFormProvider = ({ children }) => {
                 fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "reporteEntrega"),
                 fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "entrega"),
             ])
+            console.log(additionalData)
             // Filtrar los direccionamientos que cumplan la condición (servicio entregado)
             let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar)
             // Iterar sobre el array invoice y obtener los valores deseados de facturación 
-            let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
+            let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega && item.EstFacturacion !== 0)
             let ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
             let FecFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecFacturacion : null
             let IdFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
             let FecAnulacionFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecAnulacion : null
             // Obtener el id reporte de entrega
-            let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID)
+            let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID && item.EstRepEntrega !== 0)
             let IDReporteEntrega = deliveryReport ? deliveryReport.IDReporteEntrega : null
             let FecAnulacionReporte = deliveryReport ? deliveryReport.EstRepEntrega : null
 
@@ -136,11 +137,11 @@ export const SearchFormProvider = ({ children }) => {
 
                 // Buscar y filtrar los datos de acuerdo a cada direccionamiento
                 let invoice = invoiceData.filter((item) => item.CodSerTecAEntregado === direccionamiento.CodSerTecAEntregar);
-                let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID);
-                let delivery = deliveryData.find((item) => item.ID === direccionamiento.ID);
+                let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID && item.EstRepEntrega !== 0);
+                let delivery = deliveryData.find((item) => item.ID === direccionamiento.ID && item.EstEntrega !== 0);
 
                 // Iterar sobre el array invoice y obtener los datos de la facturación 
-                let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega)
+                let invoiceWithMatchingNoEntrega = invoice.find((item) => item.NoEntrega === direccionamiento.NoEntrega && item.EstFacturacion !== 0)
                 let EstFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.EstFacturacion : null
 
                 dispatch({

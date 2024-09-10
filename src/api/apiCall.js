@@ -46,7 +46,7 @@ export const apiCall = () => {
             // Consulta al módulo de entrega
             let urlEntrega = `${process.env.NEXT_PUBLIC_API_URL}/EntregaXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             let resEntrega = await axios(urlEntrega)
-            let entregaData = resEntrega.data.find(e => e.ID === Id)
+            let entregaData = resEntrega.data.find(e => e.ID === Id && e.EstEntrega !== 0)
 
             return {
                 NoSubEntrega: direccionamientoData?.NoSubEntrega,

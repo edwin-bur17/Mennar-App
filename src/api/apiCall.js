@@ -12,7 +12,20 @@ export const apiCall = () => {
         try {
             const token = await getQueryToken()
             let res = await getDateRangeData(startDate, endDate, token, documentType, documentNumber, currentModule)
-            return res
+            console.log(res)
+            let filteredRes = res.filter(response => {
+                switch (currentModule) {
+                    case "direccionamientos":
+                        return response.EstDireccionamiento !== 0
+                    case "entrega":
+                        return response.EstProgramacion !== 0
+                    default:
+                        break;
+                }
+            })
+            filteredRes.sort((a, b) => a.ID - b.ID)
+            console.log(filteredRes)
+            return filteredRes
         } catch (error) {
             console.error("Error al obtener el direcccionamiento por fecha, desde useApiCall.js: ", error)
             return "Error al obtener el direcccionamiento por fecha (rango/paciente)"
@@ -26,8 +39,21 @@ export const apiCall = () => {
             let endpoint = getEndPoint(apiModule, "porPrescripcion")
             let url = `${process.env.NEXT_PUBLIC_API_URL}/${endpoint}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             let res = await axios(url)
+            let resData = res.data
             console.log(res.data)
-            return res.data
+            let filteredRes = resData.filter(response => {
+                switch (currentModule) {
+                    case "direccionamientos":
+                        return response.EstDireccionamiento !== 0
+                    case "entrega":
+                        return response.EstProgramacion !== 0
+                    default:
+                        break;
+                }
+            })
+            filteredRes.sort((a, b) => a.ID - b.ID)
+            console.log(filteredRes)
+            return filteredRes
         } catch (error) {
             console.error("Error al obtener el direcccionamiento por número de prescripción, desde useApiCall.js: ", error)
             return "Error al obtener el direcccionamiento por número de prescripción"

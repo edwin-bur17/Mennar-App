@@ -1,4 +1,3 @@
-import React from 'react'
 import { useSearchForm } from "@/context/searchFormContext"
 import { useModal } from "@/context/modalContext"
 import ActionButton from "./ActionButton"
@@ -16,12 +15,12 @@ const ActionsButtonsGroup = ({ direccionamiento, completeData, isDireccionamient
     let deliveryReport = deliveryReportStatus[direccionamiento.ID]
 
     switch (true) {
-      case isDireccionamiento && completeData && direccionamiento.EstDireccionamiento === 2 &&
-        (delivery === null || delivery === 0) && (invoice === null || invoice === 0) &&
-        (deliveryReport === null || deliveryReport === 0): // Botón : Anular programación desde el módulo direccionamentos
-        return <OverrideButton type="programacion" id={completeData.IdProgramacion} text="Programación" />
+      // case isDireccionamiento && completeData && direccionamiento.EstDireccionamiento === 2 &&
+      //   (delivery === null || delivery === 0) && (invoice === null || invoice === 0) &&
+      //   (deliveryReport === null || deliveryReport === 0): // Botón : Anular programación desde el módulo direccionamentos
+      //   return <OverrideButton type="programacion" id={completeData.IdProgramacion} text="Programación" />
 
-      case !isDireccionamiento && completeData && direccionamiento.EstProgramacion === 1: // Botones: Entrega y Anular programación
+      case !isDireccionamiento && direccionamiento.EstProgramacion === 1: // Botones: Entrega y Anular programación
         return (
           <>
             <ActionButton

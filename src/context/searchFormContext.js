@@ -82,12 +82,13 @@ export const SearchFormProvider = ({ children }) => {
 
     // Completar el direccionamiento con la data faltante
     const fetchCompleteDireccionamiento = useCallback(async (direccionamiento) => {
+        console.log(direccionamiento)
         try {
-            const [additionalData, invoiceData, deliveryReportData, programmingData] = await Promise.all([
+            const [additionalData, invoiceData, deliveryReportData] = await Promise.all([
                 fecthAdditionalData(direccionamiento.NoPrescripcion, direccionamiento.ID),
                 fetchInvoiceData(direccionamiento.NoPrescripcion),
                 fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "reporteEntrega"),
-                fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "entrega"),
+                // fecthByPrescriptionNumber(direccionamiento.NoPrescripcion, "entrega"),
             ])
             console.log(additionalData)
             // Filtrar los direccionamientos que cumplan la condición (servicio entregado)
@@ -97,15 +98,15 @@ export const SearchFormProvider = ({ children }) => {
             let ValorTotFacturado = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.ValorTotFacturado : null
             let FecFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecFacturacion : null
             let IdFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.IDFacturacion : null
-            let FecAnulacionFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecAnulacion : null
+            // let FecAnulacionFacturacion = invoiceWithMatchingNoEntrega ? invoiceWithMatchingNoEntrega.FecAnulacion : null
             // Obtener el id reporte de entrega
             let deliveryReport = deliveryReportData.find((item) => item.ID === direccionamiento.ID && item.EstRepEntrega !== 0)
             let IDReporteEntrega = deliveryReport ? deliveryReport.IDReporteEntrega : null
-            let FecAnulacionReporte = deliveryReport ? deliveryReport.EstRepEntrega : null
+            // let FecAnulacionReporte = deliveryReport ? deliveryReport.EstRepEntrega : null
 
             // Obtener el id de la programación
-            let programming = programmingData.find((item) => item.ID === direccionamiento.ID)
-            let IDProgramacion = programming ? programming.IDProgramacion : null
+            // let programming = programmingData.find((item) => item.ID === direccionamiento.ID)
+            // let IDProgramacion = programming ? programming.IDProgramacion : null
 
             const completeDireccionamiento = {
                 ...direccionamiento,
@@ -114,9 +115,9 @@ export const SearchFormProvider = ({ children }) => {
                 FecFacturacion: FecFacturacion,
                 IdFacturacion: IdFacturacion,
                 IdReporteEntrega: IDReporteEntrega,
-                IdProgramacion: IDProgramacion,
-                FecAnulacionFacturacion: FecAnulacionFacturacion,
-                FecAnulacionReporte: FecAnulacionReporte
+                // IdProgramacion: IDProgramacion,
+                // FecAnulacionFacturacion: FecAnulacionFacturacion,
+                // FecAnulacionReporte: FecAnulacionReporte
             }
             dispatch({ type: 'UPDATE_COMPLETE_DIRECCIONAMIENTO', payload: completeDireccionamiento })
         } catch (error) {
@@ -146,15 +147,15 @@ export const SearchFormProvider = ({ children }) => {
 
                 dispatch({
                     type: "UPDATE_DELIVERY_STATUS",
-                    payload: { [direccionamiento.ID]: delivery ? delivery.EstEntrega  : null }
+                    payload: { [direccionamiento.ID]: delivery ? delivery.EstEntrega : null }
                 })
                 dispatch({
                     type: "UPDATE_INVOICE_STATUS",
-                    payload: { [direccionamiento.ID]: EstFacturacion ?  EstFacturacion  : null }
+                    payload: { [direccionamiento.ID]: EstFacturacion ? EstFacturacion : null }
                 })
                 dispatch({
                     type: "UPDATE_DELIVERY_REPORT_STATUS",
-                    payload: { [direccionamiento.ID]: deliveryReport ?  deliveryReport.EstRepEntrega  : null }
+                    payload: { [direccionamiento.ID]: deliveryReport ? deliveryReport.EstRepEntrega : null }
                 })
             } catch (error) {
                 console.error(`Error al obtener el estado de (facturación y reporte entrega) para el direccionamiento: ${direccionamiento.NoPrescripcion}`, error);
@@ -262,6 +263,7 @@ export const SearchFormProvider = ({ children }) => {
             showAlert("Error al actualizar la data", "error");
         }
     }, [state.searchResults, setSearchResults, currentModule])
+
 
     // Paginación
     const paginatedData = useMemo(() => {

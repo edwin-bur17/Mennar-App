@@ -4,13 +4,9 @@ import { formatDate, technologyType, getNameProduct } from "@/utils";
 import CheckboxInput from "../CheckboxInput";
 import { CardField, Progress, MoreDetailsContent, ActionButton, ActionsButtonsGroup } from "./ui/ui";
 
-function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteData, selected, handleCheckboxChange }) {
+const DireccionamientoCard = ({ direccionamiento, completeData, fetchCompleteData, selected, handleCheckboxChange }) => {
   const { currentModule } = useModule()
   const isDireccionamiento = currentModule === "direccionamientos";
-
-  // Bg para la card dependiendo si está anulada o no
-  const bg = direccionamiento.EstDireccionamiento === 0 || direccionamiento.EstProgramacion === 0  ? "bg-card-null" : "bg-card-default";
-
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -23,8 +19,6 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
 
   const cardFields = [ // Campos a renderizar en la card
     { title: "ID", content: direccionamiento.ID },
-    { title: "Est programación", content: direccionamiento.EstProgramacion },
-    { title: "Est direccionamiento", content: direccionamiento.EstDireccionamiento },
     { title: "Número de prescripción", content: direccionamiento.NoPrescripcion, },
     { title: "Número de entrega", content: direccionamiento.NoEntrega },
     {
@@ -55,17 +49,19 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
   ];
 
   return (
-    <div className={` ${bg} p-5 rounded-lg text-black-default`}>
+    <div className={"bg-card-default p-5 rounded-lg text-black-default"}>
       <Progress direccionamiento={direccionamiento} />
       <div className="grid grid-cols-6 gap-1">
         {cardFields.map((field, index) => (
           <CardField key={index} {...field} />
         ))}
-        <ActionButton
-          onClick={() => { setIsExpanded(!isExpanded); }}
-          text={isExpanded ? "Ocultar detalles" : "Mostrar detalles"}
-          style="text-sky-default hover:underline text-sky-default"
-        />
+        {direccionamiento.EstProgramacion === 1 || (isDireccionamiento && direccionamiento.EstDireccionamiento === 2) ? "" : (
+          <ActionButton
+            onClick={() => { setIsExpanded(!isExpanded); }}
+            text={isExpanded ? "Ocultar detalles" : "Mostrar detalles"}
+            style="text-sky-default hover:underline text-sky-default"
+          />
+        )}
       </div>
       {isExpanded && (
         <MoreDetailsContent direccionamiento={direccionamiento} loading={loading} completeData={completeData} />
@@ -77,7 +73,7 @@ function DireccionamientoCard({ direccionamiento, completeData, fetchCompleteDat
           direccionamiento={direccionamiento}
         />
       )}
-      <ActionsButtonsGroup direccionamiento={direccionamiento} completeData={completeData} isDireccionamiento={isDireccionamiento}/>
+      <ActionsButtonsGroup direccionamiento={direccionamiento} completeData={completeData} isDireccionamiento={isDireccionamiento} />
     </div>
   );
 }

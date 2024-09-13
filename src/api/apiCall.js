@@ -12,7 +12,6 @@ export const apiCall = () => {
         try {
             const token = await getQueryToken()
             let res = await getDateRangeData(startDate, endDate, token, documentType, documentNumber, currentModule)
-            console.log(res)
             let filteredRes = res.filter(response => {
                 switch (currentModule) {
                     case "direccionamientos":
@@ -24,7 +23,6 @@ export const apiCall = () => {
                 }
             })
             filteredRes.sort((a, b) => a.ID - b.ID)
-            console.log(filteredRes)
             return filteredRes
         } catch (error) {
             console.error("Error al obtener el direcccionamiento por fecha, desde useApiCall.js: ", error)
@@ -40,7 +38,6 @@ export const apiCall = () => {
             let url = `${process.env.NEXT_PUBLIC_API_URL}/${endpoint}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             let res = await axios(url)
             let resData = res.data
-            console.log(res.data)
             let filteredRes = resData.filter(response => {
                 switch (currentModule) {
                     case "direccionamientos":
@@ -52,7 +49,6 @@ export const apiCall = () => {
                 }
             })
             filteredRes.sort((a, b) => a.ID - b.ID)
-            console.log(filteredRes)
             return filteredRes
         } catch (error) {
             console.error("Error al obtener el direcccionamiento por número de prescripción, desde useApiCall.js: ", error)
@@ -95,7 +91,6 @@ export const apiCall = () => {
             const token = await getQueryToken()
             let url = `${process.env.NEXT_PUBLIC_API_FAC_URL}/FacturacionXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             let res = await axios(url)
-            console.log(res.data)
             return res.data
         } catch (error) {
             console.error("Error al intentar obtener los datos de una facturación", error)

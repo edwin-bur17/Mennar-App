@@ -1,12 +1,14 @@
-import getQueryToken from "@/services/queryToken";
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
+import { cookies } from "next/headers";
 import axios from "axios";
 
 export async function PUT(request) {
     const { formData } = await request.json()
+    // Obtener el query token
+    const cookieStore = cookies()
+    const queryToken = cookieStore.get("queryToken")
     try {
-        const queryToken = await getQueryToken()
-        const ulrQuery = `${process.env.NEXT_PUBLIC_API_URL}/Entrega/${process.env.NEXT_PUBLIC_NIT}/${queryToken}`
+        const ulrQuery = `${process.env.NEXT_PUBLIC_API_URL}/Entrega/${process.env.NEXT_PUBLIC_NIT}/${queryToken.value}`
         const res = await axios.put(ulrQuery, formData)
         return NextResponse.json({ message: "Entrega exitosa", Ids: res.data[0] }, { status: 200 })
     } catch (error) {

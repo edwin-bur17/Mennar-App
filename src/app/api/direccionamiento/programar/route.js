@@ -1,12 +1,13 @@
-import getQueryToken from "@/services/queryToken";
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
+import { cookies } from "next/headers";
 import axios from "axios";
 
 export async function PUT(request) {
     const { direccionamientos } = await request.json() // Extraer el array de direccionamientos para programar
+    const cookieStore = cookies()
+    const queryToken = cookieStore.get("queryToken")
     try {
-        const queryToken = await getQueryToken()
-        const ulrQuery = `${process.env.NEXT_PUBLIC_API_URL}/Programacion/${process.env.NEXT_PUBLIC_NIT}/${queryToken}`
+        const ulrQuery = `${process.env.NEXT_PUBLIC_API_URL}/Programacion/${process.env.NEXT_PUBLIC_NIT}/${queryToken.value}`
         const responses = [] // respuestas
         for (const direccionamiento of direccionamientos) { // Ciclo for para enviar cada direccionamiento del array
             try {

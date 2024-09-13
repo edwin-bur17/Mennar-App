@@ -1,16 +1,16 @@
 import axios from "axios";
-import getQueryToken from "@/services/queryToken";
+import Cookies from "js-cookie";
 import getDateRangeData from "@/services/fecthdate/getDateRangeData";
 import { useModule } from "@/context/moduleContext";
 import { getEndPoint } from "@/utils/index.js"
 
 export const apiCall = () => {
     const { currentModule } = useModule()
+    const token = Cookies.get("queryToken")
 
     // Llamado a la api para buscar direccionamiento por rango de fecha y paciente
     const fetchByDate = async (startDate, endDate, documentType, documentNumber) => {
         try {
-            const token = await getQueryToken()
             let res = await getDateRangeData(startDate, endDate, token, documentType, documentNumber, currentModule)
             let filteredRes = res.filter(response => {
                 switch (currentModule) {
@@ -33,7 +33,6 @@ export const apiCall = () => {
     // Llamado a la api para buscar direccionamiento por número de prescripción
     const fecthByPrescriptionNumber = async (prescriptionNumber, apiModule) => {
         try {
-            const token = await getQueryToken()
             let endpoint = getEndPoint(apiModule, "porPrescripcion")
             let url = `${process.env.NEXT_PUBLIC_API_URL}/${endpoint}/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             let res = await axios(url)
@@ -59,7 +58,6 @@ export const apiCall = () => {
     // Agregar data adicional luego de hacer una entrega
     const fecthAdditionalData = async (prescriptionNumber, Id) => {
         try {
-            const token = await getQueryToken()
             // Consulta al módulo de direccionamientos
             let urlDireccionamiento = `${process.env.NEXT_PUBLIC_API_URL}/DireccionamientoXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             let resDireccionamiento = await axios(urlDireccionamiento)
@@ -88,7 +86,6 @@ export const apiCall = () => {
     // Agregar los datos de la facturación al direccionamiento
     const fetchInvoiceData = async (prescriptionNumber) => {
         try {
-            const token = await getQueryToken()
             let url = `${process.env.NEXT_PUBLIC_API_FAC_URL}/FacturacionXPrescripcion/${process.env.NEXT_PUBLIC_NIT}/${token}/${prescriptionNumber}`
             let res = await axios(url)
             return res.data

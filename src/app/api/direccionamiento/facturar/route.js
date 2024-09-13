@@ -1,12 +1,13 @@
-import getQueryToken from "@/services/queryToken";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import axios from "axios";
 
 export async function PUT(request) {
     const { invoiceData } = await request.json()
+    const cookieStore = cookies()
+    const queryToken = cookieStore.get("queryToken")
     try {
-        const queryToken = await getQueryToken()
-        const ulrQuery = `${process.env.NEXT_PUBLIC_API_FAC_URL}/Facturacion/${process.env.NEXT_PUBLIC_NIT}/${queryToken}`
+        const ulrQuery = `${process.env.NEXT_PUBLIC_API_FAC_URL}/Facturacion/${process.env.NEXT_PUBLIC_NIT}/${queryToken.value}`
         await axios.put(ulrQuery, invoiceData)
         return NextResponse.json({ message: "Facturación exitosa" })
     } catch (error) {

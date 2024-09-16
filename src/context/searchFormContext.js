@@ -219,7 +219,7 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: false })
         }
 
-    }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults, state.totalItems,])
+    }, [state.formData, fetchByDate, fecthByPrescriptionNumber, setSelected, validateFields, resetForm, setSearchResults, checkStatus, currentModule, getPaginatedData, setPage])
 
     // Actualizar la data 
     const updateData = useCallback(async () => {
@@ -252,14 +252,14 @@ export const SearchFormProvider = ({ children }) => {
             setSearchResults({ loading: false });
             showAlert("Error al actualizar la data", "error");
         }
-    }, [state.searchResults, setSearchResults, currentModule])
+    }, [state.searchResults, setSearchResults, currentModule, checkStatus, fecthByPrescriptionNumber, fetchByDate, getPaginatedData])
 
     // Paginación
     const paginatedData = useMemo(() => {
         const { data } = state.searchResults
         const startIndex = (currentPage - 1) * itemsPerPage
         return data.slice(startIndex, startIndex + itemsPerPage)
-    }, [state.searchResults.data, currentPage, itemsPerPage])
+    }, [state.searchResults, currentPage, itemsPerPage])
 
     const value = useMemo(() => ({
         ...state,

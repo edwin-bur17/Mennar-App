@@ -38,7 +38,7 @@ export const ModalProvider = ({ children }) => {
             console.error("Error al abrir la modal de facturación con la data adicional luego de hacer una entrega: ", error)
             showAlert("Error al cargar los datos para la facturación", "error")
         }
-    }, [fecthAdditionalData])
+    }, [fecthAdditionalData, openModal])
 
     // Abrir la modal de reporte entrega (automáticamente) luego de hacer una facturación exitosa
     const openModalReport = useCallback(async (direccionamiento) => {
@@ -55,7 +55,7 @@ export const ModalProvider = ({ children }) => {
             console.error("Error al abrir la modal de facturación con la data adicional luego de hacer una entrega: ", error)
             showAlert("Error al cargar los datos para la facturación", "error")
         }
-    }, [fetchInvoiceData])
+    }, [fetchInvoiceData, openModal])
 
     const value = {...modalState, openModal, closeModal, setModalStep, openModalInvoice, openModalReport}
     return (<ModalContext.Provider value={value} >{children}</ModalContext.Provider>)

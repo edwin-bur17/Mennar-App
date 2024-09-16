@@ -21,7 +21,7 @@ export const PaginationProvider = ({ children }) => {
     const getPaginatedData = useCallback((data, page = currentPage) => {
         const startIndex = (page - 1) * itemsPerPage;
         return data.slice(startIndex, startIndex + itemsPerPage);
-    }, [itemsPerPage]);
+    }, [itemsPerPage, currentPage]);
 
     const value = {currentPage, itemsPerPage, setPage, getPaginatedData}
 

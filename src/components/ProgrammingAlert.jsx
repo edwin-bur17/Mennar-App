@@ -29,7 +29,7 @@ const ProgrammingAlert = () => {
         } finally {
             setIsProgramming(false)
         }
-    }, [selected, setSelected, updateData])
+    }, [selected, setSelected, updateData, isProgramming])
 
     return (
         <div className="sticky top-0 z-10 flex justify-between items-center bg-slate text-black-default p-3 mt-8 rounded-md transition-all duration-500 ease-in-out">

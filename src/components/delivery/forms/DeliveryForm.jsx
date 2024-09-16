@@ -5,6 +5,7 @@ import { useState } from "react"
 import { getNameProduct, typeOptions } from "@/utils"
 import showAlert from "@/services/alertSweet"
 import { Button, Alert, Input } from "./ui/ui"
+
 const DeliveryForm = () => {
     const { updateData } = useSearchForm()
     const { closeModal, currentData, openModalInvoice } = useModal()
@@ -22,41 +23,68 @@ const DeliveryForm = () => {
     })
     const [isLoading, setIsLoading] = useState(false)
     const [alert, setAlert] = useState("")
+    const [errors, setErrors] = useState({})
 
-    const validateFields = () => { // Validar los campos 
+    const validateFields = () => {
+        let newErrors = {}
+        let isValid = true
+
         if (Number(formData.CantTotEntregada) > Number(CantTotAEntregar)) {
-            setAlert("La cantidad entregada no puede ser mayor que la cantidad a entregar")
-            return false
+            newErrors.CantTotEntregada = "La cantidad entregada no puede ser mayor que la cantidad a entregar"
+            isValid = false
         }
-        return Object.values(formData).every(value => value !== "" && value !== null && value !== undefined);
-    };
 
-    const handleChange = (e) => { // Manejo del cambio en los inputs
+        if (formData.NoIDRecibe.length > 15) {
+            newErrors.NoIDRecibe = "El número de identificación no puede tener más de 15 dígitos"
+            isValid = false
+        }
+
+        Object.entries(formData).forEach(([key, value]) => {
+            if (value === "" || value === null || value === undefined) {
+                newErrors[key] = "Este campo es obligatorio"
+                isValid = false
+            }
+        })
+        setErrors(newErrors)
+        return isValid
+    }
+
+    const handleChange = (e) => {
         const { id, value } = e.target
-        if (id === 'CantTotEntregada') {
-            const numValue = Number(value)
-            if (numValue > Number(CantTotAEntregar)) {
-                setAlert("La cantidad entregada no puede ser mayor que la cantidad a entregar")
-                return
-            }
-        }
-        if (id === 'NoIDRecibe') {
-            if (value.length > 10) {
-                setAlert("El número de identificación no puede tener más de 10 dígitos")
-                return
-            }
-        }
         setFormData(prevData => ({
             ...prevData,
             [id]: value,
         }))
-        setAlert("")
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            [id]: undefined
+        }))
+        switch (id) {
+            case "CantTotEntregada":
+                if (Number(value) > Number(CantTotAEntregar)) {
+                    setErrors(prevErrors => ({
+                        ...prevErrors,
+                        CantTotEntregada: "La cantidad entregada no puede ser mayor que la cantidad a entregar"
+                    }))
+                }
+                break;
+            case "NoIDRecibe":
+                if (value.length > 15) {
+                    setErrors(prevErrors => ({
+                        ...prevErrors,
+                        NoIDRecibe: "El número de identificación no puede tener más de 15 dígitos"
+                    }))
+                }else { setAlert("") }
+                break;
+            default:
+                break;
+        }
     }
 
-    const handleSubmit = async (e) => { // Envío del formulario
+    const handleSubmit = async (e) => {
         e.preventDefault()
         if (!validateFields()) {
-            setAlert("Todos los campos son obligatorios para hacer la entrega")
+            setAlert("Por favor, corrige los errores antes de enviar el formulario")
             return
         }
         try {
@@ -79,15 +107,16 @@ const DeliveryForm = () => {
         }
     }
 
-    const formFields = [ //Campos del formulario
+    const formFields = [// Campos de renderizado
         { label: "Código servicio a entregar:", id: "CodSerTecAEntregar", type: "text", value: `${CodSerTecAEntregar} - ${getNameProduct(CodSerTecAEntregar)}`, readOnly: true },
         { label: "Cantidad Total a entregar:", id: "CantTotAEntregar", type: "text", value: CantTotAEntregar, readOnly: true },
-        { label: "Cantidad entregada:", id: "CantTotEntregada", type: "number", value: formData.CantTotEntregada, placeholder: "Digita la cantidad entregada", max: CantTotAEntregar },
+        { label: "Cantidad entregada:", id: "CantTotEntregada", type: "number", value: formData.CantTotEntregada, placeholder: "Digita la cantidad entregada" },
         { label: "Fecha de Entrega:", id: "FecEntrega", type: "date", value: formData.FecEntrega },
         { label: "Número de lote:", id: "NoLote", type: "text", value: formData.NoLote, placeholder: "Digita el número del lote" },
         { label: "Tipo de Identificación:", id: "TipoIDRecibe", type: "select", value: formData.TipoIDRecibe, options: typeOptions },
-        { label: "Número de Identificación:", id: "NoIDRecibe", type: "number", value: formData.NoIDRecibe, maxLength: 10, placeholder: "Digita el número de identificación" },
+        { label: "Número de Identificación:", id: "NoIDRecibe", type: "number", value: formData.NoIDRecibe, placeholder: "Digita el número de identificación" },
     ];
+
     return (
         <form onSubmit={handleSubmit}>
             {alert && <Alert message={alert} />}
@@ -98,7 +127,7 @@ const DeliveryForm = () => {
                         {...field}
                         onChange={handleChange}
                         colSpan={index === 0 ? "col-span-2" : ""}
-                        className="w-full py-2 px-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                        error={errors[field.id]}
                     />
                 ))}
             </div>

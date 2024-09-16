@@ -106,7 +106,6 @@ export const InvoiceForm = () => {
             {...field}
             value={formatMonetaryField(field.id)}
             onChange={handleOnChange}
-            className="w-full py-2 px-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
           />
         ))}
       </div>
@@ -114,5 +113,4 @@ export const InvoiceForm = () => {
     </form>
   )
 }
-
 export default InvoiceForm

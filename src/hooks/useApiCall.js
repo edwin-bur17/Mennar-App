@@ -4,7 +4,7 @@ import getDateRangeData from "@/services/fecthdate/getDateRangeData";
 import { useModule } from "@/context/moduleContext";
 import { getEndPoint } from "@/utils/index.js"
 
-export const apiCall = () => {
+export const useApiCall = () => {
     const { currentModule } = useModule()
     const token = Cookies.get("queryToken")
 

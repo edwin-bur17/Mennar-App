@@ -1,7 +1,7 @@
 "use client"
 import { useModule } from "./moduleContext"
 import { createContext, useContext, useReducer, useCallback, useMemo } from "react"
-import { apiCall } from "@/api/apiCall"
+import { useApiCall } from "@/hooks/useApiCall"
 import showAlert from "@/services/alertSweet"
 import { useOnChangeCheckbox } from "@/hooks/useOnChangeCheckbox"
 import { usePagination } from "./paginationContext"
@@ -57,7 +57,7 @@ function reducer(state, action) {
 
 export const SearchFormProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { fecthByPrescriptionNumber, fetchByDate, fecthAdditionalData, fetchInvoiceData } = apiCall()
+    const { fecthByPrescriptionNumber, fetchByDate, fecthAdditionalData, fetchInvoiceData } = useApiCall()
     const { selected, setSelected, handleCheckboxChange, handleSelectAllAssets } = useOnChangeCheckbox()
     const { currentModule } = useModule()
     const { currentPage, itemsPerPage, setPage: setPaginationPage, getPaginatedData } = usePagination();

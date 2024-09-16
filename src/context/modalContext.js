@@ -1,12 +1,12 @@
 "use client"
 import { createContext, useContext, useState, useCallback } from "react";
-import { apiCall } from "@/api/apiCall";
+import { useApiCall } from "@/hooks/useApiCall";
 import showAlert from "@/services/alertSweet";
 
 const ModalContext = createContext()
 
 export const ModalProvider = ({ children }) => {
-    const { fecthAdditionalData, fetchInvoiceData } = apiCall()
+    const { fecthAdditionalData, fetchInvoiceData } = useApiCall()
     const [modalState, setModalState] = useState({
         isOpen: false,
         currentData: null,

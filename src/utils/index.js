@@ -1,4 +1,3 @@
-export { estadoDireccionamiento } from "@/utils/direccionamientoCard/estadoDireccionamiento"
 export { formatDate } from "@/utils/direccionamientoCard/formatDate"
 export { getNameProduct, getNameEps } from "@/utils/direccionamientoCard/getName"
 export { technologyType } from "@/utils/direccionamientoCard/technologyType"

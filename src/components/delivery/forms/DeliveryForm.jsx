@@ -2,7 +2,7 @@ import { useSearchForm } from "@/context/searchFormContext"
 import { useModal } from "@/context/modalContext"
 import axios from "axios"
 import { useState } from "react"
-import { getNameProduct, typeOptions } from "@/utils"
+import { getNameProduct, typeOptions, validateFields } from "@/utils"
 import showAlert from "@/services/alertSweet"
 import { Button, Alert, Input } from "./ui/ui"
 
@@ -25,65 +25,40 @@ const DeliveryForm = () => {
     const [alert, setAlert] = useState("")
     const [errors, setErrors] = useState({})
 
-    const validateFields = () => {
-        let newErrors = {}
-        let isValid = true
-
-        if (Number(formData.CantTotEntregada) > Number(CantTotAEntregar)) {
-            newErrors.CantTotEntregada = "La cantidad entregada no puede ser mayor que la cantidad a entregar"
-            isValid = false
-        }
-
-        if (formData.NoIDRecibe.length > 15) {
-            newErrors.NoIDRecibe = "El número de identificación no puede tener más de 15 dígitos"
-            isValid = false
-        }
-
-        Object.entries(formData).forEach(([key, value]) => {
-            if (value === "" || value === null || value === undefined) {
-                newErrors[key] = "Este campo es obligatorio"
-                isValid = false
-            }
-        })
-        setErrors(newErrors)
-        return isValid
+    const validateFormFields = () => { // validar los campos
+        const { isValid, errors } = validateFields(formData, currentData)
+        setErrors(errors);
+        return isValid;
     }
 
-    const handleChange = (e) => {
+    const handleChange = (e) => { // Manejo del onChange para los inputs
         const { id, value } = e.target
-        setFormData(prevData => ({
-            ...prevData,
-            [id]: value,
-        }))
-        setErrors(prevErrors => ({
-            ...prevErrors,
-            [id]: undefined
-        }))
-        switch (id) {
+        setFormData(prevData => ({ ...prevData, [id]: value, }))
+        setErrors(prevErrors => ({ ...prevErrors, [id]: undefined }))
+        switch (id) { // Validaciones extras para determinados campos
             case "CantTotEntregada":
                 if (Number(value) > Number(CantTotAEntregar)) {
                     setErrors(prevErrors => ({
-                        ...prevErrors,
-                        CantTotEntregada: "La cantidad entregada no puede ser mayor que la cantidad a entregar"
+                        ...prevErrors, CantTotEntregada: `La cantidad entregada no puede ser mayor a ${CantTotAEntregar}`
                     }))
                 }
                 break;
             case "NoIDRecibe":
                 if (value.length > 15) {
-                    setErrors(prevErrors => ({
-                        ...prevErrors,
-                        NoIDRecibe: "El número de identificación no puede tener más de 15 dígitos"
+                    setErrors(prevErrors => ({ 
+                        ...prevErrors, NoIDRecibe: "El número de identificación no puede tener más de 15 dígitos" 
                     }))
-                }else { setAlert("") }
+                }
                 break;
             default:
                 break;
         }
+        if (Object.values(errors).every(value => value === undefined)){ setAlert("") }
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => { // Envío del formulario
         e.preventDefault()
-        if (!validateFields()) {
+        if (!validateFormFields()) {
             setAlert("Por favor, corrige los errores antes de enviar el formulario")
             return
         }

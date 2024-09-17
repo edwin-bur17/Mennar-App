@@ -3,7 +3,7 @@ import axios from "axios";
 import { useSearchForm } from "@/context/searchFormContext";
 import { useModal } from "@/context/modalContext";
 import { Input, Button, Alert } from "./ui/ui"
-import { totalInvoiceValue, formatCOP, unformatCOP } from "@/utils"
+import { totalInvoiceValue, formatCOP, unformatCOP, validateFields } from "@/utils"
 import showAlert from "@/services/alertSweet";
 
 export const InvoiceForm = () => {
@@ -28,16 +28,19 @@ export const InvoiceForm = () => {
     CuotaModer: "",
     Copago: ""
   })
-  const [alert, setAlert] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [alert, setAlert] = useState("")
+  const [errors, setErrors] = useState({})
 
   const formatMonetaryField = (value) => { // Formatear a formato moneda - COP
     return ["ValorUnitFacturado", "CuotaModer", "Copago", "ValorTotFacturado"].includes(value) ? formatCOP(invoiceData[value]) : invoiceData[value];
   };
 
-  const validateFields = () => { // Validar los campos 
-    return Object.values(invoiceData).every(value => value !== "" && value !== null && value !== undefined);
-  };
+  const validateFormFields = () => { // Validar los campos
+    const { isValid, errors } = validateFields(invoiceData);
+    setErrors(errors);
+    return isValid;
+  }
 
   useEffect(() => { // Manejo del onChange del cálculo de ValorTotFacturado
     setInvoiceData(prevData => ({
@@ -54,17 +57,23 @@ export const InvoiceForm = () => {
     const { id, value } = e.target
     let newValue = ["ValorUnitFacturado", "CuotaModer", "Copago"].includes(id) ? unformatCOP(value) : value
     setInvoiceData(prevData => ({
-      ...prevData,
-      [id]: newValue,
+      ...prevData, [id]: newValue,
       ...(id === "CuotaModer" && value !== "" ? { Copago: "0" } : {}),
       ...(id === "Copago" && value !== "" ? { CuotaModer: "0" } : {})
     }))
+    setErrors(prevErrors => ({ ...prevErrors, [id]: undefined }))
+    if (id === "CuotaModer" && value !== "") {
+      setErrors((prevErrors) => ({ ...prevErrors, Copago: undefined }));
+    } else if (id === "Copago" && value !== "") {
+      setErrors((prevErrors) => ({ ...prevErrors, CuotaModer: undefined }));
+    }
+    if (Object.values(errors).every(value => value === undefined)) { setAlert("") }
   }
 
-  const handleOnSubmit = async (e) => {
+  const handleOnSubmit = async (e) => { // Envío del formulario 
     e.preventDefault()
-    if (!validateFields()) {
-      setAlert("Todos los campos son obligatorios para hacer la entrega")
+    if (!validateFormFields()) {
+      setAlert("Por favor, corrige los errores antes de enviar el formulario")
       return
     }
     try {
@@ -106,6 +115,7 @@ export const InvoiceForm = () => {
             {...field}
             value={formatMonetaryField(field.id)}
             onChange={handleOnChange}
+            error={errors[field.id]}
           />
         ))}
       </div>

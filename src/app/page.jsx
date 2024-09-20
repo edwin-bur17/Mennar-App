@@ -1,22 +1,12 @@
-"use client"
-import getQueryToken from "@/services/queryToken";
-import { useEffect, useState } from "react";
+import { LoginForm } from "@/components/LoginForm";
 
 export default function HomePage() {
-  const [token, setToken] = useState("")
-
-  useEffect(() => {
-    const getToken = async () => {
-      const token = await getQueryToken()
-      setToken(token)
-    }
-    getToken()
-  }, [token])
-  console.log(token)
   return (
-    <div className="text-white">
-      <h1>Página de inicio</h1>
-      <p>Token para hacer la consulta:{token}</p>
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-white">
+        <LoginForm />
+      <div className="hidden md:flex items-center justify-center">
+        <h3>Aquí va la imagen</h3>
+      </div>
     </div>
   );
 }

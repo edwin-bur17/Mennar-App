@@ -25,16 +25,22 @@ export async function POST(request) {
         const token = generateJWT(user._id) // generar el jwt
         const queryToken = await generateQueryToken() // generar el query token (mipres)
 
-        return NextResponse.json({
+        const response = NextResponse.json({
             message: "Inicio de sesión exitoso",
             user: {
                 _id: user._id,
                 fullname: user.fullname,
                 email: user.email,
-                token: token,
-                queryToken: queryToken,
             }
         }, { status: 200 })
+
+        // Agregar las cookies al navegador
+        response.headers.set('Set-Cookie', [
+            `token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`, // expires in 1 day
+            `queryToken=${queryToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`, // expires in 1 day
+        ])
+
+        return response
 
     } catch (error) {
         console.error("Error en el inicio de sesión:", error)

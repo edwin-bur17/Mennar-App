@@ -39,6 +39,7 @@ module.exports = {
       slate: "#f1f5f9",
       transparent: "transparent",
       gray: {
+        50: "#f9fafb",
         300 : "#d1d5db",
         700: "#374151"
       },

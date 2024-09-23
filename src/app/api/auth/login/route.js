@@ -35,9 +35,9 @@ export async function POST(request) {
         }, { status: 200 })
 
         // Agregar las cookies al navegador
-        response.headers.set('Set-Cookie', [
-            `token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`, // expires in 1 day
-            `queryToken=${queryToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`, // expires in 1 day
+        response.headers.set("Set-Cookie", [
+            `token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`, 
+            `queryToken=${queryToken}; Path=/; Secure; SameSite=strict; Max-Age=86400`, 
         ])
 
         return response

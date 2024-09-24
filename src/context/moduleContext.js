@@ -11,7 +11,6 @@ export const ModuleProvider = ({ children }) => {
 
     useEffect(() => {
         const updateModule = () => {
-          console.log("Módulo actual: ", pathname);
           if (pathname.startsWith("/direccionamientos")) {
             setCurrentModule("direccionamientos");
           } else if (pathname.startsWith("/entrega")) {

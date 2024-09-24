@@ -4,6 +4,8 @@ export { technologyType } from "@/utils/direccionamientoCard/technologyType"
 
 export { validateFields } from "@/utils/formValidation"
 
+export { getInitials } from "@/utils/getInitials"
+
 export { getEndPoint, getOverrideEndPoint } from "@/utils/endPoints/getEndPoint"
 
 export { formatCOP, unformatCOP } from "@/utils/invoicing/formatCOP"

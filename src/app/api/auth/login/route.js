@@ -7,19 +7,19 @@ import { generateJWT, generateQueryToken } from "@/helpers/generateToken"
 export async function POST(request) {
     const { email, password } = await request.json()
     if (!email || !password) {
-        return NextResponse.json({ error: "Email y contraseña son requeridos" }, { status: 400 })
+        return NextResponse.json({ error: "El correo y contraseña son requeridos" }, { status: 400 })
     }
 
     try {
         await connectDB()
         const user = await User.findOne({ email }).select("+password") // verificar si el usuario existe
         if (!user) {
-            return NextResponse.json({ message: "El usuario no existe" }, { status: 422 })
+            return NextResponse.json({ message: "El usuario no existe, revisa tus credenciales" }, { status: 422 })
         }
 
         const isMatch = await bcrypt.compare(password, user.password) // verificar la si la contraseña es la correcta
         if (!isMatch) {
-            return NextResponse.json({ message: "Credenciales incorrectas" }, { status: 422 })
+            return NextResponse.json({ message: "Credenciales incorrectas, revisalas e intenta nuevamente" }, { status: 422 })
         }
 
         const token = generateJWT(user._id) // generar el jwt
@@ -36,7 +36,7 @@ export async function POST(request) {
 
         // Agregar las cookies al navegador
         response.headers.set("Set-Cookie", [
-            `token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`, 
+            `token=${token}; Path=/ ; Secure; SameSite=Lax; Max-Age=86400`, 
             `queryToken=${queryToken}; Path=/; Secure; SameSite=strict; Max-Age=86400`, 
         ])
 

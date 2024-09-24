@@ -3,22 +3,25 @@ import { ModuleProvider } from "@/context/moduleContext";
 import { SearchFormProvider } from "@/context/searchFormContext";
 import { PaginationProvider } from "@/context/paginationContext";
 import { ModalProvider } from "@/context/modalContext";
+import { ProtectedRoutes } from "./ProtectedRoutes";
 
 export default function DashboardLayout({ children }) {
   return (
-        <ModuleProvider>
-          <PaginationProvider>
-            <ModalProvider>
-              <SearchFormProvider>
-                <div className="flex h-screen overflow-hidden">
-                  <Sidebar />
-                  <main className="flex-1 overflow-y-auto p-3 transition-all duration-300 bg-secondary my-5 mr-5 rounded-lg">
-                    {children}
-                  </main>
-                </div>
-              </SearchFormProvider>
-            </ModalProvider>
-          </PaginationProvider>
-        </ModuleProvider>
+    <ProtectedRoutes>
+      <ModuleProvider>
+        <PaginationProvider>
+          <ModalProvider>
+            <SearchFormProvider>
+              <div className="flex h-screen overflow-hidden">
+                <Sidebar />
+                <main className="flex-1 overflow-y-auto p-3 transition-all duration-300 bg-secondary my-5 mr-5 rounded-lg">
+                  {children}
+                </main>
+              </div>
+            </SearchFormProvider>
+          </ModalProvider>
+        </PaginationProvider>
+      </ModuleProvider>
+    </ProtectedRoutes>
   );
 }

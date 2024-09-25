@@ -3,11 +3,9 @@ import { ModuleProvider } from "@/context/moduleContext";
 import { SearchFormProvider } from "@/context/searchFormContext";
 import { PaginationProvider } from "@/context/paginationContext";
 import { ModalProvider } from "@/context/modalContext";
-import { ProtectedRoutes } from "./ProtectedRoutes";
 
 export default function DashboardLayout({ children }) {
   return (
-    <ProtectedRoutes>
       <ModuleProvider>
         <PaginationProvider>
           <ModalProvider>
@@ -22,6 +20,5 @@ export default function DashboardLayout({ children }) {
           </ModalProvider>
         </PaginationProvider>
       </ModuleProvider>
-    </ProtectedRoutes>
   );
 }

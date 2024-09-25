@@ -22,23 +22,36 @@ export async function POST(request) {
             return NextResponse.json({ message: "Credenciales incorrectas, revisalas e intenta nuevamente" }, { status: 422 })
         }
 
-        const token = generateJWT(user._id) // generar el jwt
+        const token = generateJWT(user._id) // generar el jwt (token de la sesión)
         const queryToken = await generateQueryToken() // generar el query token (mipres)
 
-        const response = NextResponse.json({
-            message: "Inicio de sesión exitoso",
-            user: {
-                _id: user._id,
-                fullname: user.fullname,
-                email: user.email,
-            }
-        }, { status: 200 })
+        const response = NextResponse.json(
+            {
+                message: "Inicio de sesión exitoso",
+                // user: {
+                //     id: user._id,
+                //     fullname: user.fullname,
+                //     email: user.email
+                // },
+            },
+            { status: 200 }
+        );
 
-        // Agregar las cookies al navegador
-        response.headers.set("Set-Cookie", [
-            `token=${token}; Path=/ ; Secure; SameSite=Lax; Max-Age=86400`, 
-            `queryToken=${queryToken}; Path=/; Secure; SameSite=strict; Max-Age=86400`, 
-        ])
+        response.cookies.set("session", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV !== "development",
+            sameSite: "strict",
+            maxAge: 86400,
+            path: "/",
+        });
+
+        response.cookies.set("queryToken", queryToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV !== "development",
+            sameSite: "strict",
+            maxAge: 86400,
+            path: "/",
+        });
 
         return response
 

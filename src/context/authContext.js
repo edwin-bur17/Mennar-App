@@ -1,23 +1,20 @@
 "use client"
 import { createContext, useContext, useState } from "react"
 import axios from "axios"
-import Cookies from "js-cookie"
-import { useRouter } from "next/navigation"
 
 const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState("")
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(false)
-    const router = useRouter()
 
     // Iniciar sesión
     const login = async (email, password) => {
         try {
             setLoading(true)
-            const res = await axios.post("/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json" } })
-            setUser(res.data.user)
+            const res = await axios.post("/api/auth/login", { email, password }, {
+                headers: { "Content-Type": "application/json" }
+            })
             setIsAuthenticated(true)
             return { success: true, message: res.data.message }
         } catch (error) {
@@ -31,47 +28,39 @@ export const AuthProvider = ({ children }) => {
     }
 
     // Cerrar sesión
-    const logout = () => {
-        Cookies.remove("token")
-        Cookies.remove("queryToken")
-        setUser("")
-        setIsAuthenticated(false)
-        setTimeout(() => {
-            router.push("/")
-        }, 800)
+    const logout = async () => {
+        try {
+            const res = await axios.post("/api/auth/logout", {
+                headers: { "Content-Type": "application/json" },
+                withCredentials: true
+            })
+            return { success: true, message: res.data.message }
+        } catch (error) {
+            console.error("Error al cerrar la sesión: ", error)
+            return { success: false, error: "Error al cerrar sesión" }
+        }
     }
 
-    // Verificar si el usuario está logueado al cargar la página inicial o navegar en cualquier otra
-    const checkAuth = async () => {
-        const token = Cookies.get("token")
-        if (!token) {
-            // No hay token, el usuario no está autenticado
-            setIsAuthenticated(false)
-            setUser("")
-            return
-        }
-
+    // Obtener el perfil del usuario
+    const getProfile = async () => {
         try {
-            const res = await axios.post("/api/auth", { token }, { headers: { "Content-Type": "application/json" } })
-            setUser(res.data.user)
-            setIsAuthenticated(true)
+            const res = await axios("/api/auth/profile", {
+                headers: { "Content-Type": "application/json" },
+                withCredentials: true
+            })
+            return { data: res.data.user }
         } catch (error) {
-            console.error("Error de autenticación", error)
-            if (error.response && error.response.status === 401) {
-                // token expirado o inválido
-                logout()
-            }
-            setIsAuthenticated(false)
+            console.error("Error al obtener el perfil del usuario autenticado: ", error)
+            return { success: false, error: "Error al obtener el perfil del usuario autenticado" }
         }
     }
 
     const value = {
         login,
         logout,
-        user,
         loading,
         isAuthenticated,
-        checkAuth
+        getProfile
     }
 
     return (<AuthContext.Provider value={value}>{children}</AuthContext.Provider>)

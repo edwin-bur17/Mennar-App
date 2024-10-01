@@ -5,7 +5,7 @@ export const metadata = {
   title: "Mennar - Iniciar sesión"
 };
 
-export default function HomePage() {
+export default function LoginPage() {
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-white">
         <LoginForm />
@@ -15,7 +15,7 @@ export default function HomePage() {
           alt="Imagen de login"
           width={650}
           height={0}
-          objectFit="cover"
+          style={{ objectFit: "cover" }}
           priority
         />
       </div>

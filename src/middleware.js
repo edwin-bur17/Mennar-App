@@ -19,6 +19,7 @@ export async function middleware(request) {
 
 export const config = {
     matcher: [
+        "/inicio",
         "/direccionamientos",
         "/entrega",
         "/mi-perfil",

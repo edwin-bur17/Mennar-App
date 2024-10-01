@@ -28,11 +28,11 @@ export async function POST(request) {
         const response = NextResponse.json(
             {
                 message: "Inicio de sesión exitoso",
-                // user: {
-                //     id: user._id,
-                //     fullname: user.fullname,
-                //     email: user.email
-                // },
+                user: {
+                    //     id: user._id,
+                    fullname: user.fullname,
+                    //     email: user.email
+                },
             },
             { status: 200 }
         );

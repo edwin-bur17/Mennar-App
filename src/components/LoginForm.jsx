@@ -26,7 +26,7 @@ const LoginForm = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            router.push("/direccionamientos")
+            router.push("/inicio")
         }
     }, [isAuthenticated, router])
 
@@ -45,7 +45,7 @@ const LoginForm = () => {
             const result = await login(formData.email, formData.password)
             if (result.success) {
                 showAlert(result.message, "success")
-                setTimeout(() => router.push("/direccionamientos"), 1500)
+                setTimeout(() => router.push("/inicio"), 1500)
             } else {
                 showAlert(result.error, "error")
             }

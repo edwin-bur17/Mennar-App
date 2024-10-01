@@ -7,6 +7,7 @@ const AuthContext = createContext()
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(false)
+    const [user, setUser] = useState("")
 
     // Iniciar sesión
     const login = async (email, password) => {
@@ -15,10 +16,12 @@ export const AuthProvider = ({ children }) => {
             const res = await axios.post("/api/auth/login", { email, password }, {
                 headers: { "Content-Type": "application/json" }
             })
+            setUser(res.data.user)
             setIsAuthenticated(true)
             return { success: true, message: res.data.message }
         } catch (error) {
             console.error("Error de login:", error)
+            setUser("")
             setIsAuthenticated(false)
             const errorMessage = error.response?.data?.message || error.response?.data?.error || "Error en la petición al intentar iniciar sesión"
             return { success: false, error: errorMessage }
@@ -56,6 +59,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const value = {
+        user,
         login,
         logout,
         loading,

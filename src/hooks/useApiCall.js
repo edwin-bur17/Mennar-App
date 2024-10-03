@@ -94,5 +94,12 @@ export const useApiCall = () => {
             throw Error
         }
     }
-    return { fetchByDate, fecthByPrescriptionNumber, fecthAdditionalData, fetchInvoiceData }
+
+    // Direccionamientos próximos a vencer la fecha de entrega
+    const fetchNextToExpire = async (startDate, endDate) => {
+        let res = await getDateRangeData(startDate, endDate, token, "direccionamientos")
+        console.log(res)
+        return res
+    }
+    return { fetchByDate, fecthByPrescriptionNumber, fecthAdditionalData, fetchInvoiceData, fetchNextToExpire }
 }

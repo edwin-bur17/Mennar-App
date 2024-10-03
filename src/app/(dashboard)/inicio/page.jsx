@@ -1,15 +1,21 @@
 "use client"
-import { useAuth } from "@/context/authContext"
+import { useState, useEffect } from "react"
 
 const HomePage = () => {
-    const { user } = useAuth()
-    console.log(user)
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user")
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
+
   return (
     <div>
-        <h1>Bienvenido, {user.fullname}</h1>
-
+      <h1 className="text-4xl text-white">Bienvenid@, {user ? user.fullname : "..."}</h1>
     </div>
   )
 }
 
-export default HomePage
+export default HomePage 

@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
             const res = await axios.post("/api/auth/login", { email, password }, {
                 headers: { "Content-Type": "application/json" }
             })
+            localStorage.setItem("user", JSON.stringify(res.data.user))
             setUser(res.data.user)
             setIsAuthenticated(true)
             return { success: true, message: res.data.message }

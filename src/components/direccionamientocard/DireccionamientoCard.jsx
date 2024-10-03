@@ -49,7 +49,7 @@ const DireccionamientoCard = ({ direccionamiento, completeData, fetchCompleteDat
   ];
 
   return (
-    <div className={"bg-card-default p-5 rounded-lg text-black-default"}>
+    <div className={"bg-card-default p-5 rounded-lg text-[#0a2e27] border border-[#61c2a3]"}>
       <Progress direccionamiento={direccionamiento} />
       <div className="grid grid-cols-6 gap-1">
         {cardFields.map((field, index) => (

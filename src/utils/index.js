@@ -6,6 +6,8 @@ export { validateFields } from "@/utils/formValidation"
 
 export { getInitials } from "@/utils/getInitials"
 
+export { getSemaphorization } from "@/utils/getSemaphorization"
+
 export { getEndPoint, getOverrideEndPoint } from "@/utils/endPoints/getEndPoint"
 
 export { formatCOP, unformatCOP } from "@/utils/invoicing/formatCOP"

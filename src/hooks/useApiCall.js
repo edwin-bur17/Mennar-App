@@ -98,8 +98,12 @@ export const useApiCall = () => {
     // Direccionamientos próximos a vencer la fecha de entrega
     const fetchNextToExpire = async (startDate, endDate) => {
         let res = await getDateRangeData(startDate, endDate, token, "direccionamientos")
-        console.log(res)
-        return res
+
+        // Filtrar solo los direccionamientos activos
+        let filteredRes = res.filter(item => item.EstDireccionamiento === 1)
+        // Organizar descendientemente por fecha
+        filteredRes.sort((a, b) => new Date(a.FecMaxEnt) - new Date(b.FecMaxEnt))
+        return filteredRes
     }
     return { fetchByDate, fecthByPrescriptionNumber, fecthAdditionalData, fetchInvoiceData, fetchNextToExpire }
 }

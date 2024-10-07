@@ -5,7 +5,7 @@ export function getSemaphorization(FecMaxEnt) {
     const maximumDeliveryDate = startOfDay(parseISO(FecMaxEnt)) // FecMaxEnt
 
     // Obtener la diferencia 
-    let remainingDays = differenceInDays(maximumDeliveryDate, today) + 1
+    let remainingDays = differenceInDays(maximumDeliveryDate, today) 
 
     // Devolver el estado de acuerdo a la diferencia de días
     if (remainingDays < 0) return { status: "Fecha vencida", style: "bg-danger-600", remainingDays: `Vencido hace ${Math.abs(remainingDays)} días` }

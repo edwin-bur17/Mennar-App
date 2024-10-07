@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "@/context/authContext"
 import { getInitials } from "@/utils"
 import { useRouter } from "next/navigation"
+import Loading from "./Loading"
 import { MdOutlineAlternateEmail } from "react-icons/md"
 import { TbUserCircle } from "react-icons/tb"
 
@@ -32,9 +33,10 @@ const ProfileCard = () => {
         }
     }
 
-    if (!user) return <div className="text-center text-white">Cargando...</div>
+    if (!user) return <Loading />
+
     return (
-        <div className="bg-white max-w-md mx-auto rounded-lg">
+        <div className="bg-white max-w-md mx-auto rounded-lg mt-3">
             <div className="h-32 bg-sky-default rounded-t-lg relative mb-12">
                 <div className="absolute -bottom-12 inset-x-0 flex justify-center">
                     <span className="w-28 h-28 bg-sky-default rounded-full flex justify-center items-center text-white text-7xl -mt-16 border-4 border-white">

@@ -1,10 +1,10 @@
-import React from 'react'
+import styles from "@/app/styles/Spinner.module.css"
 
 function Loading() {
   return (
-      <div className="flex justify-center items-center mt-10">
-        <div className="animate-spin rounded-full h-14 w-14 border-8 border-sky-500 border-t-sky-300"></div>
-      </div>
+    <div className={styles.container}>
+      <span className={styles.loader}></span>
+    </div>
   )
 }
 

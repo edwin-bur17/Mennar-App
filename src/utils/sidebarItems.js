@@ -8,6 +8,6 @@ export const sidebarItems = [
     { icon: GiMedicinePills, text: "Entrega", path: "/entrega", matchPath: /^\/entrega/ },
     { icon: FaUser, text: "Perfil", path: "/mi-perfil", matchPath: /^\/mi-perfil/ },
     { icon: FaNewspaper, text: "Novedades", path: "/novedades", matchPath: /^\/novedades/ },
-    { icon: FaEnvelope, text: "Mensajes", path: "/messages", matchPath: /^\/message/ },
-    { icon: FaCog, text: "Configuración", path: "/settings", matchPath: /^\/settings/ }
+    // { icon: FaEnvelope, text: "Mensajes", path: "/messages", matchPath: /^\/message/ },
+    // { icon: FaCog, text: "Configuración", path: "/settings", matchPath: /^\/settings/ }
 ]

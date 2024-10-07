@@ -4,6 +4,7 @@ import { useApiCall } from "@/hooks/useApiCall"
 import { format, subMonths } from "date-fns"
 import { formatDate, getSemaphorization } from "@/utils"
 import DireccionamientoItem from "./DireccionamientoItem"
+import Loading from "../Loading"
 
 const PageContent = () => {
     const [data, setData] = useState([])
@@ -25,7 +26,7 @@ const PageContent = () => {
         getDireccionamientos()
     }, [])
 
-    if (loading) return "cargando ..."
+    if (loading) return <Loading />
 
     return (
         <section>

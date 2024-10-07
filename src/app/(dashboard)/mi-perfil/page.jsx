@@ -4,7 +4,12 @@ export const metadata = {
 };
 
 const Profile = () => {
-  return ( <ProfileCard/>)
+  return (
+    <>
+      <h1 className="text-white text-center text-2xl font-bold">MI PERFIL</h1>
+      <ProfileCard />
+    </>
+  )
 }
 
 export default Profile

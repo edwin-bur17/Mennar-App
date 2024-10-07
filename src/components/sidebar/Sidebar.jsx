@@ -6,7 +6,7 @@ import { HiMiniChevronDoubleLeft, HiMiniChevronDoubleRight } from "react-icons/h
 import { sidebarItems } from "@/utils";
 
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
 

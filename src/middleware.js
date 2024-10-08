@@ -23,6 +23,7 @@ export const config = {
         "/direccionamientos",
         "/entrega",
         "/mi-perfil",
+        "/novedades",
         "/api/direccionamiento/:path"
         // Agregar aquí otras rutas para proteger
     ],

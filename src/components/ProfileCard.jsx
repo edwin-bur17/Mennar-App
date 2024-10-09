@@ -10,6 +10,7 @@ import { TbUserCircle } from "react-icons/tb"
 const ProfileCard = () => {
     const { getProfile, logout } = useAuth()
     const [user, setUser] = useState(null)
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
 
     useEffect(() => { // Obtener los datos del usuario
@@ -26,7 +27,9 @@ const ProfileCard = () => {
 
     const handleLogout = async () => { // Cerrar sesión
         try {
+            setLoading(true)
             await logout()
+            setLoading(false)
             router.push("/")
         } catch (error) {
             console.error("Error al cerrar sesión:", error)
@@ -58,7 +61,7 @@ const ProfileCard = () => {
                         <button
                             onClick={handleLogout}
                             className="w-full text-white p-2 bg-danger-600 hover:bg-danger-400 rounded-md mt-5">
-                            Cerrar sesión
+                            {loading ? "Cerrando sesión ..." : "Cerrar sesión"}
                         </button>
                     </li>
                 </ul>

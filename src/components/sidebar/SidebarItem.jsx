@@ -12,7 +12,7 @@ const SidebarItem = ({ icon: Icon, text, isOpen, isActive, onClick }) => {
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <Icon className="text-xl" />
+      <Icon className="text-2xl" />
       {isOpen && <span className="ml-2">{text}</span>}
       {!isOpen && showTooltip && (
         <span className={classToltip} >

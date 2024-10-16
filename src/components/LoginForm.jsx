@@ -57,7 +57,7 @@ const LoginForm = () => {
 
     return (
         <div className="flex items-center justify-center p-5">
-            <div className="w-full max-w-md bg-gray-50 p-5 border border-gray-300 shadow-xl rounded-lg">
+            <div className="w-full max-w-lg bg-gray-50 p-5 border border-gray-300 shadow-xl rounded-lg">
                 <h3 className="text-3xl text-sky-default text-center font-bold mb-2">Iniciar sesión</h3>
                 <p className="mb-5 text-sm">Ingresa tus credenciales para acceder a tu cuenta</p>
                 <form onSubmit={handleSubmit}>
@@ -88,6 +88,7 @@ const LoginForm = () => {
                             </div>
                         </div>
                     ))}
+                    <a className="hover:text-sky-default hover:underline" href="/olvide-contrasena">Olvidé mi contraseña</a>
                     <button type="submit" className={buttonClass} disabled={loading}>
                         {loading ? <Spinner text="" /> : "Iniciar sesión"}
                     </button>

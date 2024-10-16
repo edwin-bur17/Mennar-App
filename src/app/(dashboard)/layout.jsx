@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }) {
         <PaginationProvider>
           <ModalProvider>
             <SearchFormProvider>
-              <div className="flex h-screen overflow-hidden">
+              <div className="flex h-screen overflow-hidden bg-primary">
                 <Sidebar />
                 <main className="flex-1 overflow-y-auto p-3 transition-all duration-300 bg-secondary my-5 mr-5 rounded-lg relative">
                   {children}

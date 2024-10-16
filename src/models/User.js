@@ -25,6 +25,8 @@ const UserSchema = new mongoose.Schema({
         minlength: [8, "La contraseña debe tener mínimo 8 carácteres"],
         select: false,
     },
+    resetPasswordToken: String,
+    resetPasswordTokenExpiration: Date,
 },{timestamps: true})
 
 export default mongoose.models.User || mongoose.model("User", UserSchema)

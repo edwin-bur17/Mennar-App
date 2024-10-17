@@ -2,11 +2,13 @@ import { NextResponse } from "next/server"
 import User from "@/models/User"
 import { createHash } from "node:crypto"
 import { hashPassword } from "@/helpers/hashPassword"
+import connectDB from "@/libs/mongodb"
 
 export async function POST(request) {
     const { token, newPassword } = await request.json()
 
     try {
+        await connectDB()
         // Hashear el token para poder verificarlo
         const resetPasswordToken = createHash("sha256").update(token).digest("hex")
 

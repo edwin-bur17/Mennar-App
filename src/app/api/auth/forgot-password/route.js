@@ -2,11 +2,13 @@ import { NextResponse } from "next/server"
 import User from "@/models/User"
 import { randomBytes, createHash } from "node:crypto"
 import { sendResetPasswordEmail } from "@/libs/nodemailer"
+import connectDB from "@/libs/mongodb"
 
 export async function POST(request) {
     const { email } = await request.json()
 
     try {
+        await connectDB()
         const user = await User.findOne({ email })
 
         if (!user) {

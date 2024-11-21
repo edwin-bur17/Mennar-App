@@ -1,5 +1,5 @@
-import * as XLSX from "xlsx" 
-import { getNameEps, getNameProduct } from "@/utils" 
+import * as XLSX from "xlsx"
+import { getNameEps, getNameProduct, technologyType } from "@/utils"
 /**
  * Prepara los datos para exportación a Excel
  * @param {Array} data - Datos originales
@@ -7,6 +7,8 @@ import { getNameEps, getNameProduct } from "@/utils"
  */
 const prepareDataForExcel = (data) => {
     return data.map(direccionamiento => ({
+        "ID General": direccionamiento.ID,
+        "ID Direccionamiento": direccionamiento.IDDireccionamiento,
         "Número de Prescripción": direccionamiento.NoPrescripcion,
         "Tipo de documento": direccionamiento.TipoIDPaciente,
         "Número de documento": direccionamiento.NoIDPaciente,
@@ -16,11 +18,12 @@ const prepareDataForExcel = (data) => {
         "Cantidad total a entregar": direccionamiento.CantTotAEntregar,
         "Código servicio/tecnología": direccionamiento.CodSerTecAEntregar,
         "Servicio/Tecnología": getNameProduct(direccionamiento.CodSerTecAEntregar),
-        "Fecha Máxima de Entrega": direccionamiento.FecMaxEnt ? new Date(direccionamiento.FecMaxEnt).toLocaleDateString() : "",
+        "Tipo Serv/Tec": technologyType(direccionamiento.TipoTec),
+        "Fecha Máxima de Entrega": direccionamiento.FecMaxEnt.split("-").reverse().join("/"),
         "Fecha del direccionamiento": direccionamiento.FecDireccionamiento ? new Date(direccionamiento.FecDireccionamiento).toLocaleDateString() : "",
         "Estado": direccionamiento.EstDireccionamiento,
     }))
-} 
+}
 
 /**
  * Exporta datos a un archivo Excel
@@ -29,27 +32,35 @@ const prepareDataForExcel = (data) => {
  * @returns {Promise} Promesa con información de la exportación
  */
 export const exportToExcel = async (data, fileName = "direccionamientos_reporte.xlsx") => {
-    const startTime = performance.now() 
-    const totalItems = data.length 
+    const startTime = performance.now()
+    const totalItems = data.length
 
     return new Promise((resolve, reject) => {
         try {
-            const excelData = prepareDataForExcel(data) 
-            const workbook = XLSX.utils.book_new() 
-            const worksheet = XLSX.utils.json_to_sheet(excelData) 
+            const excelData = prepareDataForExcel(data)
+            const workbook = XLSX.utils.book_new()
+            const worksheet = XLSX.utils.json_to_sheet(excelData)
             
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Direccionamientos") 
-            
+            // Configurar ancho de columnas
+            worksheet['!cols'] = Object.keys(excelData[0]).map(key => ({
+                wch: Math.max(
+                    key.length,
+                    ...excelData.map(row => String(row[key]).length)
+                ) + 2 
+            }));
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Direccionamientos")
+
             setTimeout(() => {
-                XLSX.writeFile(workbook, fileName) 
-                const endTime = performance.now() 
+                XLSX.writeFile(workbook, fileName)
+                const endTime = performance.now()
                 resolve({
                     duration: ((endTime - startTime) / 1000).toFixed(2),
                     totalItems
-                }) 
-            }, 500) 
+                })
+            }, 500)
         } catch (error) {
-            reject(error) 
+            reject(error)
         }
-    }) 
+    })
 } 

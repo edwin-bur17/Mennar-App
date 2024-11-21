@@ -10,6 +10,8 @@ export { getSemaphorization } from "@/utils/getSemaphorization"
 
 export { getEndPoint, getOverrideEndPoint } from "@/utils/endPoints/getEndPoint"
 
+export { exportToExcel } from "@/utils/exportExcel"
+
 export { formatCOP, unformatCOP } from "@/utils/invoicing/formatCOP"
 export { totalInvoiceValue } from "@/utils/invoicing/totalInvoiceValue"
 

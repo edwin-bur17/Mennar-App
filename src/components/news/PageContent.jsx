@@ -4,6 +4,7 @@ import { useApiCall } from "@/hooks/useApiCall"
 import { format, subMonths } from "date-fns"
 import { formatDate, getSemaphorization } from "@/utils"
 import DireccionamientoItem from "./DireccionamientoItem"
+import { ExportButton } from "./ExportedButtom"
 import Loading from "../Loading"
 
 const PageContent = () => {
@@ -32,7 +33,10 @@ const PageContent = () => {
         <section>
             {data.length > 0 ? (
                 <>
-                    <p className="text-white mb-2">Listados los direccionamientos del último mes: {`${formatDate(startDate)}`} - {`${formatDate(endDate)}`}</p>
+                    <div className="flex justify-between items-center mb-2">
+                        <p className="text-white">Listados los direccionamientos del último mes: {`${formatDate(startDate)}`} - {`${formatDate(endDate)}`}</p>
+                        <ExportButton data={data} startDate={startDate} endDate={endDate} />
+                    </div>
                     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         {data.map((direccionamiento, index) => {
                             const semaphorization = getSemaphorization(direccionamiento.FecMaxEnt)

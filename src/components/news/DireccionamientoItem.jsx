@@ -1,5 +1,5 @@
-import { formatDate } from "@/utils"
-import { TbNumber, TbCalendarTime, TbClock } from "react-icons/tb"
+import { formatDate, getNameEps, getNameProduct } from "@/utils"
+import { TbNumber, TbCalendarTime, TbClock, TbBuildingHospital, TbReportMedical } from "react-icons/tb"
 import { HiOutlineIdentification } from "react-icons/hi2"
 
 const DireccionamientoItem = ({ direccionamiento, status, style, remainingDays }) => {
@@ -8,6 +8,8 @@ const DireccionamientoItem = ({ direccionamiento, status, style, remainingDays }
     { icon: TbNumber, label: "Prescripción", value: direccionamiento.NoPrescripcion },
     { icon: HiOutlineIdentification, label: "Paciente", value: `${direccionamiento.TipoIDPaciente} - ${direccionamiento.NoIDPaciente}` },
     { icon: TbCalendarTime, label: "Fecha máxima", value: formatDate(direccionamiento.FecMaxEnt) },
+    { icon: TbBuildingHospital, label: "Eps", value: getNameEps(direccionamiento.CodEPS) },
+    { icon: TbReportMedical, label: "Servicio", value: `${direccionamiento.CodSerTecAEntregar} - ${getNameProduct(direccionamiento.CodSerTecAEntregar)}` },
   ]
 
   // clases - styles
